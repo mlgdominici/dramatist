@@ -1,0 +1,715 @@
+%%
+%% This is file `dramatist.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% dramatist.dtx  (with options: `dramatist')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from dramatist.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file dramatist.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%% dramatist.dtx
+%% Copyright (C) 2003-2005 Massimiliano Dominici
+%% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_ Grave accent  \`
+%%       Left brace    \{     Vertical bar  \| Right brace   \}     Tilde
+%%     \~}
+%%
+\ProvidesPackage{dramatist}[2006/02/01 v2.0beta1 Package for typesetting drama
+                            -- Author: Massimiliano Dominici]
+\NeedsTeXFormat{LaTeX2e}
+\RequirePackage{xspace}
+\RequirePackage{keyval}
+\RequirePackage{ifmtarg}
+\RequirePackage{etoolbox}
+\newcommand\Drama@define@key[4]{% <id><fam><key><default>
+  \ifx#1c%
+    \Drama@define{command}{#2}{#3}{#4}%
+  \else%
+    \ifx#1l%
+      \Drama@define{length}{#2}{#3}{#4}%
+    \else%
+      \ifx#1b%
+        \Drama@define{bool}{#2}{#3}{#4}%
+      \else%
+        \ifx#1L%
+          \Drama@define{glength}{#2}{#3}{#4}%
+        \fi%
+      \fi%
+    \fi%
+  \fi%
+}
+\newcommand\Drama@define[1]{\csname Drama@define@#1key\endcsname}
+\newcommand\Drama@define@commandkey[3]{%
+  \define@key{#1}{#2}[#3]{%
+    \expandafter\def\csname DR@#1@#2\endcsname{##1}%
+  }%
+  \expandafter\def\csname DR@#1@#2\endcsname{#3}%
+}
+\newcommand\Drama@define@lengthkey[3]{%
+  \define@key{#1}{#2}[#3]{%
+    \expandafter\setlength\csname DR@#1@#2\endcsname{##1}
+  }%
+  \expandafter\newlength\csname DR@#1@#2\endcsname%
+  \expandafter\setlength\csname DR@#1@#2\endcsname{#3}%
+}
+\newcommand\Drama@define@glengthkey[3]{%
+  \define@key{#1}{#2}[#3]{%
+    \global\expandafter\setlength\csname DR@#1@#2\endcsname{##1}% for \DR@speaker@labelwidth
+  }%
+  \expandafter\newlength\csname DR@#1@#2\endcsname%
+  \expandafter\setlength\csname DR@#1@#2\endcsname{#3}%
+}
+\newcommand\Drama@define@boolkey[3]{%
+  \define@key{#1}{#2}[#3]{%
+  \csname DR@#1@#2##1\endcsname
+  }%
+  \expandafter\newif\csname ifDR@#1@#2\endcsname%
+  \csname DR@#1@#2#3\endcsname%
+}
+\newcommand\Drama@define@defaults[2]{%
+  \expandafter\def\csname default@#1\endcsname{#2}
+}
+\newcommand\Drama@setvalues[1]{%
+  \csname default@#1\endcsname%
+  \csname setup@#1\endcsname%
+}
+%%----------------------------------------------------------------------
+%% Public Tools
+\newcommand\DRSetup[3]{% <name><fam><spec>
+  \expandafter\def\csname setup@#1\endcsname{%
+    \setkeys{#2}{#3}%
+    }%
+}
+\newcommand\NewStyle[2]{% <name><code>
+  \expandafter\def\csname DR@style@#1\endcsname{#2}
+}
+\newcommand\ApplyStyle[1]{%
+  \csname DR@style@#1\endcsname
+}
+%%----------------------------------------------------------------------
+\@ifundefined{if@openright}{\newif\if@openright}{}
+\newif\if@cglist
+\newif\if@drverse
+\newif\if@poemscol
+\newif\if@stagedir
+\newif\if@lnpa
+\newif\if@lnps
+\newif\if@lnpd
+\DeclareOption{lnpa}{\@lnpatrue}
+\DeclareOption{lnps}{\@lnpstrue}
+\ProcessOptions
+\newcounter{storelineno}
+\setcounter{storelineno}{0}
+\if@poemscol\else
+\refstepcounter{storelineno}\fi
+\newcounter{storeprintlineindex}
+\newcounter{character}
+\newcounter{act}
+\newcounter{scene}[act]
+\renewcommand{\theact}{\roman{act}}
+\renewcommand{\thescene}{\roman{scene}}
+\newlength\verse@leftmargin
+\setlength\verse@leftmargin{\leftmarginii}
+%%----------------------------------------------------------
+%% Drama
+\Drama@define@key{l}{drama}{leftmargin}{\leftmargini}
+\Drama@define@key{l}{drama}{rightmargin}{0pt}
+\Drama@define@key{l}{drama}{speakswidth}{0pt}
+\Drama@define@key{l}{drama}{speaksindent}{-\labelwidth}
+\Drama@define@key{l}{drama}{speechskip}{\itemsep}
+\Drama@define@key{l}{drama}{parsep}{0pt}
+\Drama@define@key{l}{drama}{labelsep}{\labelsep}
+\Drama@define@key{c}{drama}{speakerlabel}{}
+\Drama@define@key{c}{drama}{font}{}
+\Drama@define@key{c}{drama}{postitem}{}
+
+\newenvironment{DR@drama@prose}{%
+  \let\DR@pidefault\DR@drama@postitem
+    \if@lnpa
+    \PackageWarning{dramatist}{\@lnpwarning{a}}
+    \fi
+    \if@lnps
+    \PackageWarning{dramatist}{\@lnpwarning{s}}
+    \fi
+    \list{}{%
+      \leftmargin\DR@drama@leftmargin%
+      \rightmargin\DR@drama@rightmargin%
+      \labelwidth\DR@drama@speakswidth%
+      \itemindent\DR@drama@speaksindent%
+      \itemsep\DR@drama@speechskip%
+      \parsep\DR@drama@parsep%
+      \labelsep\DR@drama@labelsep%
+    }%
+    \DR@drama@font%
+    }{\endlist}
+
+\newenvironment{drama}[1][]{%
+  \Drama@setvalues{drama}
+  \setkeys{drama}{#1}
+  \DR@drama@prose}{\endDR@drama@prose}
+
+\newenvironment{DR@drama@verse}{%
+  \let\DR@pidefault\DR@drama@postitem%
+  \list{}{%
+      \leftmargin=\dimexpr-\verse@leftmargin+\DR@drama@leftmargin\relax%
+      \rightmargin\DR@drama@rightmargin%
+      }%
+  \item\relax%
+  % \labelwidth=\dimexpr\DR@drama@leftmargin-\labelsep\relax%
+    \@drversetrue%
+    % \leftmargini\DR@drama@leftmargin 
+    \if@poemscol%
+    \typeout{\the\verse@leftmargin}
+        \begin{poem}%
+        \setcounter{verselinenumber}{\value{storelineno}}%
+        \setcounter{printlineindex}{\value{storeprintlineindex}}%
+    \else%
+        \begin{verse}%
+    \fi%
+    \ifx\poemlines\@undefined\else%
+        \setcounter{poemline}{\value{storelineno}}%
+    \fi%
+    \DR@drama@font%
+    \vspace{-\dimexpr\parsep+\partopsep\relax}%
+    }{%
+    \ifx\poemlines\@undefined\else
+        \setcounter{storelineno}{\value{poemline}}
+    \fi
+    \if@poemscol
+        \end{poem}
+        \setcounter{storelineno}{\value{verselinenumber}}
+        \setcounter{storeprintlineindex}{\value{printlineindex}}
+    \else
+        \end{verse}
+    \fi
+    \@drversefalse
+  \endlist
+}
+\newenvironment{versedrama}[1][]{%
+  \Drama@setvalues{versedrama}%
+  \setkeys{drama}{#1}%
+  \DR@drama@verse}{\endDR@drama@verse}
+\expandafter\def\csname drama*\endcsname{\versedrama}
+\expandafter\def\csname enddrama*\endcsname{\endversedrama}
+
+%%------------------------------------------------------------------------
+%% Document divisions
+\Drama@define@key{c}{sections}{namefont}{}
+\Drama@define@key{c}{sections}{numfont}{\DR@sections@namefont}
+\Drama@define@key{c}{sections}{titlefont}{}
+\Drama@define@key{c}{sections}{name}{}
+\Drama@define@key{c}{sections}{sep}{ -- }
+\Drama@define@key{l}{sections}{beforeskip}{0pt}
+\Drama@define@key{l}{sections}{afterskip}{0pt}
+
+\providecommand\phantomsection{}
+\newcommand\actmark[1]{}
+\newcommand{\printactname}{\centering\DR@sections@namefont \DR@sections@name}
+\newcommand{\printactnum}{\DR@sections@numfont \theact}
+\newcommand{\printacttitle}[1]{\DR@sections@titlefont\ #1}
+\newcommand{\printsep}{\ }
+\def\actheadstart{\vspace*{\DR@sections@beforeskip}}
+\def\afteract{\par\nobreak\vskip\DR@sections@afterskip}
+\newcommand\@openact{%
+    \@ifundefined{if@openright}{\clearpage}{%
+        \if@openright
+            \clearpage{\thispagestyle{empty}\cleardoublepage}
+        \else
+            \clearpage
+        \fi}
+    \thispagestyle{plain}
+    \refstepcounter{act}
+    \if@lnpa
+        \setcounter{storelineno}{0}
+        \if@poemscol
+            \setcounter{storeprintlineindex}{0}
+        \else
+            \refstepcounter{storelineno}
+        \fi
+    \fi
+}
+\newcommand\act{%
+    \@openact
+    \secdef\@act\@sact}
+\newcommand\@act[1][]{%
+    {\phantomsection
+    \Drama@setvalues{act}
+    \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact}
+    \actmark{\DR@sections@name\ \theact}
+    \m@ke@cthead{#1}
+    \@afterindentfalse
+    \@afterheading}}
+\newcommand\@sact[1][]{%
+    \m@ke@cthead{#1}
+    \@afterindentfalse
+    \@afterheading}
+\newcommand\Act{%
+    \@openact
+    \secdef\@Act\@sact}
+\def\@Act[#1]#2{%
+    {\phantomsection
+    \Drama@setvalues{act}
+    \ifnum\c@secnumdepth>\m@ne
+        \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact\ #1}
+    \else
+        \addcontentsline{toc}{chapter}{#1}
+    \fi
+    \actmark{\DR@sections@name\ \theact\ #1}
+    \m@ke@cthead{#2}
+    \@afterindentfalse
+    \@afterheading}}
+\newcommand\m@ke@cthead[1]{%
+    \actheadstart
+    \parindent \z@
+    \ifnum\c@secnumdepth>\m@ne
+        \printactname \printsep \printactnum
+    \fi
+        \printacttitle{#1}
+    \afteract
+}
+\newcommand\scenemark[1]{}
+\newcommand{\printscenename}{\centering\DR@sections@namefont \DR@sections@name}
+\newcommand{\printscenenum}{\DR@sections@numfont \theact\DR@sections@sep\thescene}
+\newcommand{\printscenetitle}[1]{\DR@sections@titlefont\ #1}
+\def\sceneheadstart{\vspace*{\DR@sections@beforeskip}}
+\def\afterscene{\par\nobreak\vskip\DR@sections@afterskip}
+\newcommand\@openscene{%
+    \stepcounter{scene}
+    \if@lnps
+        \setcounter{storelineno}{0}
+        \if@poemscol
+            \setcounter{storeprintlineindex}{0}
+        \else
+            \refstepcounter{storelineno}
+        \fi
+    \fi
+}
+\newcommand\scene{%
+    \@openscene
+    \secdef\@scene\@sscene}
+\newcommand\@scene[1][]{%
+    {\phantomsection
+    \Drama@setvalues{scene}
+    \addcontentsline{toc}{section}{\DR@sections@name\ \thescene}
+    \scenemark{\DR@sections@name\ \thescene}
+    \m@kescenehead{#1}
+    \@afterindentfalse
+    \@afterheading}}
+\newcommand\@sscene[1][]{%
+    \m@kescenehead{#1}
+    \@afterindentfalse
+    \@afterheading}
+\newcommand\Scene{%
+    \@openscene
+    \secdef\@Scene\@sscene}
+\def\@Scene[#1]#2{%
+    {\phantomsection
+    \Drama@setvalues{scene}
+    \ifnum\c@secnumdepth>\z@
+        \addcontentsline{toc}{section}{\DR@sections@name\ \thescene\ #1}
+    \else
+        \addcontentsline{toc}{section}{#1}
+    \fi
+    \scenemark{\DR@sections@name\ \thescene\ #1}
+    \m@kescenehead{#2}
+    \@afterindentfalse
+    \@afterheading}}
+\newcommand\m@kescenehead[1]{%
+    \sceneheadstart
+    \parindent \z@
+    \ifnum\c@secnumdepth>\z@
+        \printscenename \printsep \printscenenum
+    \fi
+    \printscenetitle{#1}
+    \afterscene
+}
+%%----------------------------------------------------------------------------------
+%% Characters
+\Drama@define@key{c}{character}{dirname}{\DR@character@speakername}
+\Drama@define@key{c}{character}{speakername}{}
+\Drama@define@key{c}{character}{role}{\DR@character@speakername}
+\Drama@define@key{c}{character}{desc}{}
+\Drama@define@key{c}{character}{actor}{}
+\Drama@define@key{c}{character}{rdsep}{}
+\Drama@define@key{c}{character}{speaksadd}{speaks}
+\Drama@define@key{b}{character}{entry}{true}
+\Drama@define@key{c}{character}{namefont}{}
+\Drama@define@key{c}{speaker}{font}{}
+\Drama@define@key{c}{speaker}{del}{}
+\Drama@define@key{c}{speaker}{prelabel}{}
+\Drama@define@key{c}{speaker}{postlabel}{}
+\Drama@define@key{L}{speaker}{labelwidth}{0pt}
+
+\newcommand\dramaphantom[2][0pt]{%
+  \settowidth{\@tempdimb}{#2}%
+  \addtolength{\@tempdimb}{\dimexpr-\DR@speaker@labelwidth+\labelwidth-#1\relax}
+  \hskip\@tempdimb}
+
+\newcommand\DR@character@label{%
+  \noexpand\Drama@setvalues{character}%
+  {\noexpand\DR@character@namefont \DR@character@dirname}\noexpand\xspace
+}
+
+\newcommand\DR@speaker[2]{%
+  \Drama@setvalues{speaker}%
+  \DR@speaker@prelabel%
+  \settowidth{\@tempdimb}{\strut\DR@speaker@font#1\DR@speaker@del\@ifmtarg{#2}{}{\ #2}\strut}
+  \ifdim\@tempdimb>\dimexpr\textwidth-\leftmargin-\rightmargin+\labelwidth+\labelsep\relax
+    \setlength{\@tempdimb}{\dimexpr\textwidth-\leftmargin-\rightmargin+\labelwidth+\labelsep\relax}
+  \fi
+  \parbox{\@tempdimb}{\strut\DR@speaker@font#1\DR@speaker@del\@ifmtarg{#2}{}{\ #2}\strut}%
+  \DR@speaker@postlabel%
+}
+\def\@speaker#1[#2]{%
+  \settowidth{\@tempdima}{\DR@speaker{#1}{#2}}
+  \Drama@setvalues{speaker}
+  % \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}{#2}}]\DR@drama@postitem
+  \item[\DR@speaker{#1}{#2}]\DR@drama@postitem
+}
+
+\newcommand\DR@character[2]{%
+  \def\DR@character@speakername{#1}
+    \global\expandafter\edef\csname#2\endcsname{% \global is needed for CharacterGroup
+      \DR@character@label}%                     % \edef because expansion must be at declaration time
+    \global\expandafter\def\csname#2\DR@character@speaksadd\endcsname{%
+      \def\DR@drama@postitem{\DR@pidefault}% here, because otherwise it shields \@speaker{#1}...
+      \@ifstar{\def\DR@drama@postitem{}\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}%
+        {\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}}%
+  \ifDR@character@entry
+    \if@cglist
+      \stepcounter{g\roman{character}}
+      \global\expandafter\edef\csname gpersona\Roman{character}\roman{g\roman{character}}\endcsname{%
+        \DR@dramper@entry}
+    \else
+      \stepcounter{character}
+      \global\expandafter\edef\csname persona\roman{character}\endcsname{%
+        \DR@dramper@entry}
+    \fi
+  \fi
+}
+\newcommand\Character[3][entry=false]{%
+  {
+    \Drama@setvalues{character}
+    \setkeys{character}{#1}
+    \DR@character{#2}{#3}
+  }
+}
+
+\newenvironment{CharacterGroup}[1]{%
+  \@cglisttrue
+    \stepcounter{character}
+    \newcounter{g\roman{character}}
+        \grouplist{#1}
+}{\@cglistfalse}
+\newsavebox{\tbox}
+\newcommand\grouplist[1]{%
+    \global\expandafter\def\csname persona\roman{character}\endcsname{%
+    \settowidth{\DR@dramatis@castwidth}{\DR@dramatis@headfont #1}
+    \DR@checkwidth
+    \begin{lrbox}{\tbox}
+        \begin{minipage}[c]{\DR@dramatis@charwidth}\raggedright
+         \list{}{%
+    \leftmargin\z@% same indentation of outer list
+    \itemsep\DR@dramatis@itemsep%
+    \parsep\DR@dramatis@parsep}%
+           \dogrouplist
+         \endlist
+        \end{minipage}
+    \end{lrbox}
+    \parbox{\DR@dramatis@charwidth}{\usebox{\tbox}}%
+    \parbox{\DR@dramatis@parenwidth}{$\left.\rule{0pt}{\ht\tbox}\right\}$}
+    \parbox{\DR@dramatis@castwidth}{\DR@dramatis@headfont #1\strut}
+    \global\setlength{\DR@dramatis@charwidth}{\z@}
+  }
+}
+\newcommand\DR@checkwidth{
+  \@tempcntb\z@
+  \@whilenum\value{g\@roman{\@tempcnta}}>\@tempcntb\do{%
+    \advance\@tempcntb\@ne
+    \settowidth{\@tempdima}{\@nameuse{gpersona\@Roman{\@tempcnta}\@roman{\@tempcntb}}}%
+    \ifdim\@tempdima>\DR@dramatis@charwidth%
+      \global\setlength{\DR@dramatis@charwidth}{\@tempdima}%
+    \fi%
+  }
+  \@tempdima=\dimexpr\DR@dramatis@charwidth+\DR@dramatis@parenwidth+\DR@dramatis@castwidth+%
+    \DR@dramatis@leftmargin+\DR@dramatis@rightmargin+5pt\relax
+  \ifdim\@tempdima>\dimexpr\textwidth% why?
+    \PackageWarning{dramatist}{\@checkcgwwarning}
+    \DR@dramatis@castwidth=\dimexpr\textwidth-\DR@dramatis@parenwidth-\DR@dramatis@charwidth-%
+      \DR@dramatis@rightmargin-\DR@dramatis@leftmargin-5pt\relax
+  \fi
+}
+\newcommand{\dogrouplist}{%
+  \@tempcntb\z@
+  \@whilenum\value{g\@roman{\@tempcnta}}>\@tempcntb\do{%
+    \advance\@tempcntb\@ne
+    \item\@nameuse{gpersona\@Roman{\@tempcnta}\@roman{\@tempcntb}}\strut%
+  }%
+}
+\newcommand*\speaker{%
+  \def\DR@drama@postitem{\DR@pidefault}%
+  \@ifstar{\def\DR@drama@postitem{}\@xspeaker}{\@xspeaker}%
+}
+\newcommand*\@xspeaker[2][]{%
+  \@speaker{#2}[#1]%
+}
+\newcommand*\character[1]{%
+  \Drama@setvalues{character}%
+  {\DR@character@namefont #1}\xspace%
+}
+%%---------------------------------------------------------------------------------
+%% Dramatis personae
+\Drama@define@key{l}{dramatis}{leftmargin}{0pt}
+\Drama@define@key{l}{dramatis}{rightmargin}{0pt}
+\Drama@define@key{l}{dramatis}{itemsep}{0pt}
+\Drama@define@key{l}{dramatis}{topsep}{\topsep}
+\Drama@define@key{l}{dramatis}{parsep}{0pt}
+\Drama@define@key{l}{dramatis}{partopsep}{\partopsep}
+\Drama@define@key{l}{dramatis}{charwidth}{0pt}
+\Drama@define@key{l}{dramatis}{castwidth}{0pt}
+\Drama@define@key{l}{dramatis}{parenwidth}{15pt}
+\Drama@define@key{c}{dramatis}{rolefont}{}
+\Drama@define@key{c}{dramatis}{descfont}{}
+\Drama@define@key{c}{dramatis}{actorfont}{}
+\Drama@define@key{c}{dramatis}{headfont}{}
+\Drama@define@key{c}{dramatis}{dasep}{}
+\Drama@define@key{c}{dramatis}{titlefont}{}
+\Drama@define@key{c}{dramatis}{titlename}{}
+\Drama@define@key{l}{dramatis}{beforeskip}{0pt}
+\Drama@define@key{l}{dramatis}{afterskip}{0pt}
+
+\newcommand\DR@dramper@entry{%
+  {\noexpand\DR@dramatis@rolefont\DR@character@role}%
+  \DR@character@rdsep%
+  {\noexpand\DR@dramatis@descfont\DR@character@desc}%
+  \noexpand\DR@dramatis@dasep%
+  {\noexpand\DR@dramatis@actorfont\DR@character@actor}}
+
+\newcommand\drampermark[1]{}
+\newcommand{\printcasttitle}{\centering\DR@dramatis@titlefont \DR@dramatis@titlename}
+\def\castheadstart{\vspace*{\DR@dramatis@beforeskip}}
+\def\aftercasttitle{\par\nobreak\vskip\DR@dramatis@afterskip}
+\newcommand{\DramPer}{%
+  \Drama@setvalues{dramatis}%
+  \@ifundefined{if@openright}{\clearpage}{%
+    \if@openright\cleardoublepage\else\clearpage\fi}
+  \secdef\DR@dramper\DR@sdramper}
+\newcommand\DR@dramper[1][]{%
+  \phantomsection
+  \addcontentsline{toc}{chapter}{\DR@dramatis@titlename}
+  \drampermark{\DR@dramatis@titlename}
+  \DR@dramperhead{#1}}
+\newcommand\DR@sdramper[1][]{%
+  \DR@dramperhead{#1}}
+\newcommand\DR@dramperhead[1]{
+  \castheadstart
+  {\printcasttitle #1
+  \aftercasttitle}
+  \begin{list}{}{%
+    \leftmargin\DR@dramatis@leftmargin%
+    \rightmargin\DR@dramatis@rightmargin%
+    \topsep\DR@dramatis@topsep%
+    \partopsep\DR@dramatis@partopsep%
+    \itemsep\DR@dramatis@itemsep%
+    \parsep\DR@dramatis@parsep%
+    }
+  \dodramperlist
+  \end{list}
+}
+\newcommand{\dodramperlist}{%
+  \@tempcnta\z@
+  \@whilenum\c@character >\@tempcnta\do{%
+    \advance\@tempcnta\@ne
+  \item\@nameuse{persona\@roman{\@tempcnta}}\strut%
+  }%
+}
+%%-----------------------------------------------------------------
+%% Stage
+\Drama@define@key{l}{stage}{leftmargin}{0pt}
+\Drama@define@key{l}{stage}{rightmargin}{0pt}
+\Drama@define@key{l}{stage}{topsep}{0pt}
+\Drama@define@key{l}{stage}{partopsep}{0pt}
+\Drama@define@key{l}{stage}{parsep}{0pt}
+\Drama@define@key{l}{stage}{itemsep}{0pt}
+\Drama@define@key{c}{stage}{font}{}
+\Drama@define@key{c}{stage}{justification}{}
+\Drama@define@key{c}{stage}{rightdelimiter}{}
+\Drama@define@key{c}{stage}{leftdelimiter}{}
+
+\newenvironment{DR@stage@display}{%
+      \list{}{%
+      \leftmargin\DR@stage@leftmargin%
+      \rightmargin\DR@stage@rightmargin%
+      \topsep\DR@stage@topsep%
+      \partopsep\DR@stage@partopsep%
+      \parsep\DR@stage@parsep%
+      \itemsep\DR@stage@itemsep%
+      }
+      \DR@stage@justification%
+      \DR@stage@font%
+      \item[]
+      \DR@stage@leftdelimiter}{%
+      \DR@stage@rightdelimiter%
+      \endlist
+}
+\newcommand\DR@stage@inline[1]{%
+  \DR@stage@leftdelimiter{\DR@stage@font#1}\DR@stage@rightdelimiter
+}
+
+\newenvironment{Settings}[1][]{%
+    \Drama@setvalues{settings}
+    \setkeys{stage}{#1}
+    \DR@stage@display
+  }{%
+    \endDR@stage@display
+}
+\newcommand\settings[2][]{%
+  {
+    \Drama@setvalues{settings}
+    \setkeys{stage}{#1}
+    \DR@stage@display#2
+    \endDR@stage@display
+  }
+}
+
+\newcommand\set[2][]{%
+  {
+    \Drama@setvalues{set}
+    \setkeys{stage}{#1}
+    \DR@stage@display#2
+    \endDR@stage@display
+  }
+}
+
+\newcommand\direction[2][]{%
+  {%
+    \Drama@setvalues{direction}
+    \setkeys{stage}{#1}
+    \DR@stage@display#2~%
+    \endDR@stage@display
+  }%
+}
+
+\newcommand\delivery[2][]{%
+  {%
+    \Drama@setvalues{delivery}%
+    \setkeys{stage}{#1}%
+    \DR@stage@inline{#2}%
+  }%
+}
+%%-------------------------------------------------------------------------------
+%% Configuration
+\Drama@define@defaults{drama}{%
+  \DR@drama@speaksindent=-\leftmargin%
+  \DR@drama@speechskip\itemsep%
+  \DR@drama@labelsep\labelsep%
+}
+\Drama@define@defaults{versedrama}{%
+}
+\Drama@define@defaults{act}{%
+  \def\DR@sections@namefont{\large\scshape}%
+  \def\DR@sections@name{Act}%
+  \DR@sections@beforeskip\baselineskip%
+  \DR@sections@afterskip\baselineskip%
+}
+\Drama@define@defaults{scene}{%
+  \def\DR@sections@namefont{\scshape}%
+  \def\DR@sections@name{Scene}%
+  \DR@sections@afterskip\baselineskip%
+}
+\Drama@define@defaults{character}{%
+  \def\DR@character@font{\normalfont\scshape}% \normalfont because \bfseries+\scshape=\bfseries
+}
+\Drama@define@defaults{speaker}{%
+  \DR@speaker@labelwidth\@tempdima%
+  \def\DR@speaker@font{\scshape}%
+  \def\DR@speaker@del{:}%
+}
+\Drama@define@defaults{dramatis}{%
+  \def\DR@dramatis@rolefont{\scshape}%
+  \DR@dramatis@leftmargin\z@%
+  \DR@dramatis@rightmargin\z@%
+  \def\DR@dramatis@titlename{Dramatis Person\ae}%
+  \def\DR@dramatis@titlefont{\scshape\Large}%
+  \def\DR@dramatis@dasep{\hfill}%
+}
+\Drama@define@defaults{settings}{%
+  \def\DR@stage@font{\itshape}%
+}
+\Drama@define@defaults{direction}{%
+  \DR@stage@topsep\topsep%
+  \def\DR@stage@font{\itshape}%
+}
+\Drama@define@defaults{delivery}{%
+  \def\DR@stage@font{\itshape}%
+  \def\DR@stage@leftdelimiter{(}%
+  \def\DR@stage@rightdelimiter{)}%
+}
+\Drama@define@defaults{set}{%
+  \def\DR@stage@justification{\centering}%
+  \def\DR@stage@font{\itshape}%
+}
+\DRSetup{drama}{drama}{}
+\DRSetup{versedrama}{drama}{}
+\DRSetup{act}{sections}{}
+\DRSetup{scene}{sections}{}
+\DRSetup{speaker}{speaker}{}
+\DRSetup{character}{character}{}
+\DRSetup{dramatis}{dramatis}{}
+\DRSetup{settings}{stage}{}
+\DRSetup{direction}{stage}{}
+\DRSetup{delivery}{stage}{}
+\DRSetup{set}{stage}{}
+
+\AtBeginDocument{
+  \@ifpackageloaded{poemscol}{\@poemscoltrue}{\@poemscolfalse}
+  \if@poemscol
+    \setlength\verse@leftmargin{1sp}
+    \patchcmd{\pmclverse}{\item[]}{\item[]\labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax}{\typeout{OK}}{\typeout{AARGH!}}
+  \else
+    \apptocmd{\verse}{\labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax}{\typeout{AWRIGHT}}{\typeout{MYEOUW!}}%
+  \fi%
+}
+
+%%-------------------------------------------------------------------------------
+%% Errors and Warnings
+\newcommand\@lnpwarning[1]{The option `lnp#1' is meaningless outside the%
+                            `versedrama' environment}
+\newcommand\@checkcgwwarning{Dimension too large}
+\newcommand\@inputfilewarning{\PackageWarningNoLine{dramatist}{^^J^^J%
+********************************************************^^J%
+* No Configuration file found, using default settings. *^^J%
+********************************************************^^J%
+}}
+\newcommand\@foundfile{\PackageWarningNoLine{dramatist}{^^J^^J%
+*******************************************^^J%
+* Using Configuration file dramatist.cfg. *^^J%
+*******************************************^^J%
+}}
+\InputIfFileExists{\jobname.cfg}{\@foundfile}{\@inputfilewarning}
+\endinput
+%%
+%% End of file `dramatist.sty'.
