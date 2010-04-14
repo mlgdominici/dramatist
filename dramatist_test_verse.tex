@@ -4,9 +4,9 @@
 \usepackage[T1]{fontenc}
 \usepackage{xjunicode}
 \usepackage{dramatist}
-% \usepackage{verse}
 \usepackage{fancyhdr}
-\usepackage{poemscol}
+% \usepackage{verse}
+% \usepackage{poemscol}
 \usepackage{geometry}
 
 \def\testodicontrollo{%
@@ -22,9 +22,22 @@ voi; e la sola inutile altrui compassione vi accompagnò nella
 tomba.
 }
 
-\DRSetup{versedrama}{drama}{leftmargin=1em,
-  speakswidth=1em
+\DRSetup{versedrama}{drama}{leftmargin=2em,
+  speakswidth=2em,labelsep=0pt,
 }
+
+\makeatletter
+\DRSetup{drama}{drama}{leftmargin=0pt,
+  speaksindent=0pt,labelsep=0pt,
+  speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
+}
+% \DRSetup{speaker}{speaker}{labelwidth=\dimexpr\textwidth-\DR@drama@leftmargin-\DR@drama@rightmargin\relax,prelabel=\hss,postlabel=\hss}
+
+\newlength\difference
+\setlength\difference{\dimexpr\leftmargini-\leftmarginii\relax}
+\typeout{\the\difference}
+
+\fboxsep=-\fboxrule
 
 \parindent=1em
 
@@ -38,6 +51,14 @@ tomba.
 
 \begin{versedrama}
   \speaker{anfar.}
+  Pur, per quanto sia giusto in te lo sdegno,\\
+  premilo in petto, se sbramarlo or vuoi.\\
+  Io men di te non odio Agide altero;\\
+  e la sua pompa di virtudi antiche,\\
+  finta in biasmo di noi. Sparta ridurre\\
+  qual giá la fea Licurgo, è al par crudele,\\
+  che ambizíosa stolidezza: è tale\\
+  \speaker{agid.}
   Pur, per quanto sia giusto in te lo sdegno,\\
   premilo in petto, se sbramarlo or vuoi.\\
   Io men di te non odio Agide altero;\\
@@ -69,6 +90,31 @@ tomba.
   ogni dí piú degli Spartani in core\\
   si fa costei: temer si debbe anch'ella.\\
 \end{verse}
+
+\testodicontrollo
+
+\begin{drama}
+\speaker{endymion} I find, Eumenides, in all things both variety to
+content and satiety to glut, saving only in my affections,
+which are so stayed, and withal so stately, that I can
+neither satisfy my heart with love nor mine eyes with
+wonder. My thoughts, Eumenides, are stitched to the
+stars, which being as high as I can see, thou may'st
+imagine how much higher they are than I can reach.
+
+\speaker{eumenides} If you be enamored of anything above the
+moon, your thoughts are ridiculous; for that things immortal
+are not subject to affections. If allured or enchanted with
+these transitory things under the moon, you show yourself
+yourself senseless to attribute such lofty titles to such low
+trifles.
+
+\speaker{endymion} My love is placed neither under the moon nor
+above.
+
+\item[\scshape endymion] My love is placed neither under the moon nor
+above.
+\end{drama}
 
 \end{document}
 

@@ -41,58 +41,58 @@
                             -- Author: Massimiliano Dominici]
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xspace}
-\RequirePackage{keyval}
+\RequirePackage{xkeyval}
 \RequirePackage{ifmtarg}
 \RequirePackage{etoolbox}
-\newcommand\Drama@define@key[4]{% <id><fam><key><default>
+\newcommand\DR@define@key[4]{% <id><fam><key><default>
   \ifx#1c%
-    \Drama@define{command}{#2}{#3}{#4}%
+    \DR@define{command}{#2}{#3}{#4}%
   \else%
     \ifx#1l%
-      \Drama@define{length}{#2}{#3}{#4}%
+      \DR@define{length}{#2}{#3}{#4}%
     \else%
       \ifx#1b%
-        \Drama@define{bool}{#2}{#3}{#4}%
+        \DR@define{bool}{#2}{#3}{#4}%
       \else%
         \ifx#1L%
-          \Drama@define{glength}{#2}{#3}{#4}%
+          \DR@define{glength}{#2}{#3}{#4}%
         \fi%
       \fi%
     \fi%
   \fi%
 }
-\newcommand\Drama@define[1]{\csname Drama@define@#1key\endcsname}
-\newcommand\Drama@define@commandkey[3]{%
+\newcommand\DR@define[1]{\csname DR@define@#1key\endcsname}
+\newcommand\DR@define@commandkey[3]{%
   \define@key{#1}{#2}[#3]{%
     \expandafter\def\csname DR@#1@#2\endcsname{##1}%
   }%
   \expandafter\def\csname DR@#1@#2\endcsname{#3}%
 }
-\newcommand\Drama@define@lengthkey[3]{%
+\newcommand\DR@define@lengthkey[3]{%
   \define@key{#1}{#2}[#3]{%
     \expandafter\setlength\csname DR@#1@#2\endcsname{##1}
   }%
   \expandafter\newlength\csname DR@#1@#2\endcsname%
   \expandafter\setlength\csname DR@#1@#2\endcsname{#3}%
 }
-\newcommand\Drama@define@glengthkey[3]{%
+\newcommand\DR@define@glengthkey[3]{%
   \define@key{#1}{#2}[#3]{%
     \global\expandafter\setlength\csname DR@#1@#2\endcsname{##1}% for \DR@speaker@labelwidth
   }%
   \expandafter\newlength\csname DR@#1@#2\endcsname%
   \expandafter\setlength\csname DR@#1@#2\endcsname{#3}%
 }
-\newcommand\Drama@define@boolkey[3]{%
+\newcommand\DR@define@boolkey[3]{%
   \define@key{#1}{#2}[#3]{%
   \csname DR@#1@#2##1\endcsname
   }%
   \expandafter\newif\csname ifDR@#1@#2\endcsname%
   \csname DR@#1@#2#3\endcsname%
 }
-\newcommand\Drama@define@defaults[2]{%
+\newcommand\DR@define@defaults[2]{%
   \expandafter\def\csname default@#1\endcsname{#2}
 }
-\newcommand\Drama@setvalues[1]{%
+\newcommand\DR@setvalues[1]{%
   \csname default@#1\endcsname%
   \csname setup@#1\endcsname%
 }
@@ -118,6 +118,7 @@
 \newif\if@lnpa
 \newif\if@lnps
 \newif\if@lnpd
+\newif\if@firstdirection
 \DeclareOption{lnpa}{\@lnpatrue}
 \DeclareOption{lnps}{\@lnpstrue}
 \ProcessOptions
@@ -135,18 +136,19 @@
 \setlength\verse@leftmargin{\leftmarginii}
 %%----------------------------------------------------------
 %% Drama
-\Drama@define@key{l}{drama}{leftmargin}{\leftmargini}
-\Drama@define@key{l}{drama}{rightmargin}{0pt}
-\Drama@define@key{l}{drama}{speakswidth}{0pt}
-\Drama@define@key{l}{drama}{speaksindent}{-\labelwidth}
-\Drama@define@key{l}{drama}{speechskip}{\itemsep}
-\Drama@define@key{l}{drama}{parsep}{0pt}
-\Drama@define@key{l}{drama}{labelsep}{\labelsep}
-\Drama@define@key{c}{drama}{speakerlabel}{}
-\Drama@define@key{c}{drama}{font}{}
-\Drama@define@key{c}{drama}{postitem}{}
+\DR@define@key{l}{drama}{leftmargin}{0pt}
+\DR@define@key{l}{drama}{rightmargin}{0pt}
+\DR@define@key{l}{drama}{speakswidth}{0pt}
+\DR@define@key{l}{drama}{speaksindent}{0pt}
+\DR@define@key{l}{drama}{speechskip}{0pt}
+\DR@define@key{l}{drama}{parsep}{0pt}
+\DR@define@key{l}{drama}{labelsep}{0pt}
+\DR@define@key{c}{drama}{speakerlabel}{}
+\DR@define@key{c}{drama}{font}{}
+\DR@define@key{c}{drama}{postitem}{}
 
 \newenvironment{DR@drama@prose}{%
+  \@firstdirectiontrue
   \let\DR@pidefault\DR@drama@postitem
     \if@lnpa
     \PackageWarning{dramatist}{\@lnpwarning{a}}
@@ -167,7 +169,7 @@
     }{\endlist}
 
 \newenvironment{drama}[1][]{%
-  \Drama@setvalues{drama}
+  \DR@setvalues{drama}
   \setkeys{drama}{#1}
   \DR@drama@prose}{\endDR@drama@prose}
 
@@ -209,7 +211,7 @@
   \endlist
 }
 \newenvironment{versedrama}[1][]{%
-  \Drama@setvalues{versedrama}%
+  \DR@setvalues{versedrama}%
   \setkeys{drama}{#1}%
   \DR@drama@verse}{\endDR@drama@verse}
 \expandafter\def\csname drama*\endcsname{\versedrama}
@@ -217,13 +219,13 @@
 
 %%------------------------------------------------------------------------
 %% Document divisions
-\Drama@define@key{c}{sections}{namefont}{}
-\Drama@define@key{c}{sections}{numfont}{\DR@sections@namefont}
-\Drama@define@key{c}{sections}{titlefont}{}
-\Drama@define@key{c}{sections}{name}{}
-\Drama@define@key{c}{sections}{sep}{ -- }
-\Drama@define@key{l}{sections}{beforeskip}{0pt}
-\Drama@define@key{l}{sections}{afterskip}{0pt}
+\DR@define@key{c}{sections}{namefont}{}
+\DR@define@key{c}{sections}{numfont}{\DR@sections@namefont}
+\DR@define@key{c}{sections}{titlefont}{}
+\DR@define@key{c}{sections}{name}{}
+\DR@define@key{c}{sections}{sep}{ -- }
+\DR@define@key{l}{sections}{beforeskip}{0pt}
+\DR@define@key{l}{sections}{afterskip}{0pt}
 
 \providecommand\phantomsection{}
 \newcommand\actmark[1]{}
@@ -256,7 +258,7 @@
     \secdef\@act\@sact}
 \newcommand\@act[1][]{%
     {\phantomsection
-    \Drama@setvalues{act}
+    \DR@setvalues{act}
     \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact}
     \actmark{\DR@sections@name\ \theact}
     \m@ke@cthead{#1}
@@ -271,7 +273,7 @@
     \secdef\@Act\@sact}
 \def\@Act[#1]#2{%
     {\phantomsection
-    \Drama@setvalues{act}
+    \DR@setvalues{act}
     \ifnum\c@secnumdepth>\m@ne
         \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact\ #1}
     \else
@@ -312,7 +314,7 @@
     \secdef\@scene\@sscene}
 \newcommand\@scene[1][]{%
     {\phantomsection
-    \Drama@setvalues{scene}
+    \DR@setvalues{scene}
     \addcontentsline{toc}{section}{\DR@sections@name\ \thescene}
     \scenemark{\DR@sections@name\ \thescene}
     \m@kescenehead{#1}
@@ -327,7 +329,7 @@
     \secdef\@Scene\@sscene}
 \def\@Scene[#1]#2{%
     {\phantomsection
-    \Drama@setvalues{scene}
+    \DR@setvalues{scene}
     \ifnum\c@secnumdepth>\z@
         \addcontentsline{toc}{section}{\DR@sections@name\ \thescene\ #1}
     \else
@@ -348,20 +350,21 @@
 }
 %%----------------------------------------------------------------------------------
 %% Characters
-\Drama@define@key{c}{character}{dirname}{\DR@character@speakername}
-\Drama@define@key{c}{character}{speakername}{}
-\Drama@define@key{c}{character}{role}{\DR@character@speakername}
-\Drama@define@key{c}{character}{desc}{}
-\Drama@define@key{c}{character}{actor}{}
-\Drama@define@key{c}{character}{rdsep}{}
-\Drama@define@key{c}{character}{speaksadd}{speaks}
-\Drama@define@key{b}{character}{entry}{true}
-\Drama@define@key{c}{character}{namefont}{}
-\Drama@define@key{c}{speaker}{font}{}
-\Drama@define@key{c}{speaker}{del}{}
-\Drama@define@key{c}{speaker}{prelabel}{}
-\Drama@define@key{c}{speaker}{postlabel}{}
-\Drama@define@key{L}{speaker}{labelwidth}{0pt}
+\DR@define@key{c}{character}{dirname}{\DR@character@speakername}
+\DR@define@key{c}{character}{speakername}{}
+\DR@define@key{c}{character}{role}{\DR@character@speakername}
+\DR@define@key{c}{character}{desc}{}
+\DR@define@key{c}{character}{actor}{}
+\DR@define@key{c}{character}{rdsep}{}
+\DR@define@key{c}{character}{speaksadd}{speaks}
+\DR@define@key{b}{character}{entry}{true}
+\DR@define@key{c}{character}{namefont}{}
+\DR@define@key{c}{speaker}{font}{}
+\DR@define@key{c}{speaker}{case}{} %% Valori permessi ` ', \MakeLowercase, MakeUppercase
+\DR@define@key{c}{speaker}{del}{}
+\DR@define@key{c}{speaker}{prelabel}{}
+\DR@define@key{c}{speaker}{postlabel}{}
+\DR@define@key{L}{speaker}{labelwidth}{0pt}
 
 \newcommand\dramaphantom[2][0pt]{%
   \settowidth{\@tempdimb}{#2}%
@@ -369,25 +372,31 @@
   \hskip\@tempdimb}
 
 \newcommand\DR@character@label{%
-  \noexpand\Drama@setvalues{character}%
+  \noexpand\DR@setvalues{character}%
   {\noexpand\DR@character@namefont \DR@character@dirname}\noexpand\xspace
 }
 
-\newcommand\DR@speaker[2]{%
-  \Drama@setvalues{speaker}%
+
+%% Ho temporaneamente modificato \@speaker e \DR@speaker, in modo che eventuali 'direzioni' che seguono
+%% immediatamente il parlante siano composte *fuori* da \item[]. Questo è assolutamente necssario per
+%% mantenere il contenuto di \item[] su una sola riga. Tuttavia, a parte l'ineleganza della soluzione,
+%% il problema opposto si riproporrà non appena vorrò passare allo stile 'centrato'.
+\newcommand\DR@speaker[1]{%
+  \DR@setvalues{speaker}%
   \DR@speaker@prelabel%
-  \settowidth{\@tempdimb}{\strut\DR@speaker@font#1\DR@speaker@del\@ifmtarg{#2}{}{\ #2}\strut}
-  \ifdim\@tempdimb>\dimexpr\textwidth-\leftmargin-\rightmargin+\labelwidth+\labelsep\relax
-    \setlength{\@tempdimb}{\dimexpr\textwidth-\leftmargin-\rightmargin+\labelwidth+\labelsep\relax}
-  \fi
-  \parbox{\@tempdimb}{\strut\DR@speaker@font#1\DR@speaker@del\@ifmtarg{#2}{}{\ #2}\strut}%
-  \DR@speaker@postlabel%
+%  \settowidth{\@tempdimb}{\strut\DR@speaker@font\DR@speaker@case{#1}\DR@speaker@del\@ifmtarg{#2}{}{\ #2}\strut}%
+%  \ifdim\@tempdimb>\dimexpr\textwidth-\leftmargin-\rightmargin+\labelwidth+\labelsep\relax
+%    \setlength{\@tempdimb}{\dimexpr\textwidth-\leftmargin-\rightmargin+\labelwidth+\labelsep\relax}
+%  \fi
+%   \parbox{\@tempdimb}{\strut\DR@speaker@font\DR@speaker@case{#1}\DR@speaker@del\@ifmtarg{#2}{}{\ #2}\strut}%
+  \DR@speaker@font\DR@speaker@case{#1}\DR@speaker@del%\@ifmtarg{#2}{}{\unskip\relax\ #2\hskip\DR@drama@labelsep}
+  \DR@speaker@postlabel
 }
 \def\@speaker#1[#2]{%
-  \settowidth{\@tempdima}{\DR@speaker{#1}{#2}}
-  \Drama@setvalues{speaker}
-  % \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}{#2}}]\DR@drama@postitem
-  \item[\DR@speaker{#1}{#2}]\DR@drama@postitem
+  \settowidth{\@tempdima}{\DR@speaker{#1}{#2}}%
+  \DR@setvalues{speaker}%
+%   \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}{#2}}]\DR@drama@postitem
+  \item[\DR@speaker{#1}]\@ifmtarg{#2}{}{\hskip-\DR@drama@labelsep\ #2\hskip\DR@drama@labelsep}\DR@drama@postitem
 }
 
 \newcommand\DR@character[2]{%
@@ -412,7 +421,7 @@
 }
 \newcommand\Character[3][entry=false]{%
   {
-    \Drama@setvalues{character}
+    \DR@setvalues{character}
     \setkeys{character}{#1}
     \DR@character{#2}{#3}
   }
@@ -477,29 +486,29 @@
   \@speaker{#2}[#1]%
 }
 \newcommand*\character[1]{%
-  \Drama@setvalues{character}%
+  \DR@setvalues{character}%
   {\DR@character@namefont #1}\xspace%
 }
 %%---------------------------------------------------------------------------------
 %% Dramatis personae
-\Drama@define@key{l}{dramatis}{leftmargin}{0pt}
-\Drama@define@key{l}{dramatis}{rightmargin}{0pt}
-\Drama@define@key{l}{dramatis}{itemsep}{0pt}
-\Drama@define@key{l}{dramatis}{topsep}{\topsep}
-\Drama@define@key{l}{dramatis}{parsep}{0pt}
-\Drama@define@key{l}{dramatis}{partopsep}{\partopsep}
-\Drama@define@key{l}{dramatis}{charwidth}{0pt}
-\Drama@define@key{l}{dramatis}{castwidth}{0pt}
-\Drama@define@key{l}{dramatis}{parenwidth}{15pt}
-\Drama@define@key{c}{dramatis}{rolefont}{}
-\Drama@define@key{c}{dramatis}{descfont}{}
-\Drama@define@key{c}{dramatis}{actorfont}{}
-\Drama@define@key{c}{dramatis}{headfont}{}
-\Drama@define@key{c}{dramatis}{dasep}{}
-\Drama@define@key{c}{dramatis}{titlefont}{}
-\Drama@define@key{c}{dramatis}{titlename}{}
-\Drama@define@key{l}{dramatis}{beforeskip}{0pt}
-\Drama@define@key{l}{dramatis}{afterskip}{0pt}
+\DR@define@key{l}{dramatis}{leftmargin}{0pt}
+\DR@define@key{l}{dramatis}{rightmargin}{0pt}
+\DR@define@key{l}{dramatis}{itemsep}{0pt}
+\DR@define@key{l}{dramatis}{topsep}{0pt}
+\DR@define@key{l}{dramatis}{parsep}{0pt}
+\DR@define@key{l}{dramatis}{partopsep}{0pt}
+\DR@define@key{l}{dramatis}{charwidth}{0pt}
+\DR@define@key{l}{dramatis}{castwidth}{0pt}
+\DR@define@key{l}{dramatis}{parenwidth}{15pt}
+\DR@define@key{c}{dramatis}{rolefont}{}
+\DR@define@key{c}{dramatis}{descfont}{}
+\DR@define@key{c}{dramatis}{actorfont}{}
+\DR@define@key{c}{dramatis}{headfont}{}
+\DR@define@key{c}{dramatis}{dasep}{}
+\DR@define@key{c}{dramatis}{titlefont}{}
+\DR@define@key{c}{dramatis}{titlename}{}
+\DR@define@key{l}{dramatis}{beforeskip}{0pt}
+\DR@define@key{l}{dramatis}{afterskip}{0pt}
 
 \newcommand\DR@dramper@entry{%
   {\noexpand\DR@dramatis@rolefont\DR@character@role}%
@@ -513,7 +522,7 @@
 \def\castheadstart{\vspace*{\DR@dramatis@beforeskip}}
 \def\aftercasttitle{\par\nobreak\vskip\DR@dramatis@afterskip}
 \newcommand{\DramPer}{%
-  \Drama@setvalues{dramatis}%
+  \DR@setvalues{dramatis}%
   \@ifundefined{if@openright}{\clearpage}{%
     \if@openright\cleardoublepage\else\clearpage\fi}
   \secdef\DR@dramper\DR@sdramper}
@@ -548,16 +557,16 @@
 }
 %%-----------------------------------------------------------------
 %% Stage
-\Drama@define@key{l}{stage}{leftmargin}{0pt}
-\Drama@define@key{l}{stage}{rightmargin}{0pt}
-\Drama@define@key{l}{stage}{topsep}{0pt}
-\Drama@define@key{l}{stage}{partopsep}{0pt}
-\Drama@define@key{l}{stage}{parsep}{0pt}
-\Drama@define@key{l}{stage}{itemsep}{0pt}
-\Drama@define@key{c}{stage}{font}{}
-\Drama@define@key{c}{stage}{justification}{}
-\Drama@define@key{c}{stage}{rightdelimiter}{}
-\Drama@define@key{c}{stage}{leftdelimiter}{}
+\DR@define@key{l}{stage}{leftmargin}{0pt}
+\DR@define@key{l}{stage}{rightmargin}{0pt}
+\DR@define@key{l}{stage}{topsep}{0pt}
+\DR@define@key{l}{stage}{partopsep}{0pt}
+\DR@define@key{l}{stage}{parsep}{0pt}
+\DR@define@key{l}{stage}{itemsep}{0pt}
+\DR@define@key{c}{stage}{font}{}
+\DR@define@key{c}{stage}{justification}{}
+\DR@define@key{c}{stage}{rightdelimiter}{}
+\DR@define@key{c}{stage}{leftdelimiter}{}
 
 \newenvironment{DR@stage@display}{%
       \list{}{%
@@ -580,7 +589,7 @@
 }
 
 \newenvironment{Settings}[1][]{%
-    \Drama@setvalues{settings}
+    \DR@setvalues{settings}
     \setkeys{stage}{#1}
     \DR@stage@display
   }{%
@@ -588,7 +597,7 @@
 }
 \newcommand\settings[2][]{%
   {
-    \Drama@setvalues{settings}
+    \DR@setvalues{settings}
     \setkeys{stage}{#1}
     \DR@stage@display#2
     \endDR@stage@display
@@ -597,7 +606,7 @@
 
 \newcommand\set[2][]{%
   {
-    \Drama@setvalues{set}
+    \DR@setvalues{set}
     \setkeys{stage}{#1}
     \DR@stage@display#2
     \endDR@stage@display
@@ -606,49 +615,52 @@
 
 \newcommand\direction[2][]{%
   {%
-    \Drama@setvalues{direction}
+    \DR@setvalues{direction}
     \setkeys{stage}{#1}
+    \if@firstdirection\item\relax\fi
     \DR@stage@display#2~%
     \endDR@stage@display
+    \if@firstdirection\par\vskip\DR@stage@topsep\fi
+    \global\@firstdirectionfalse
   }%
 }
 
 \newcommand\delivery[2][]{%
   {%
-    \Drama@setvalues{delivery}%
+    \DR@setvalues{delivery}%
     \setkeys{stage}{#1}%
     \DR@stage@inline{#2}%
   }%
 }
 %%-------------------------------------------------------------------------------
 %% Configuration
-\Drama@define@defaults{drama}{%
+\DR@define@defaults{drama}{%
   \DR@drama@speaksindent=-\leftmargin%
   \DR@drama@speechskip\itemsep%
   \DR@drama@labelsep\labelsep%
 }
-\Drama@define@defaults{versedrama}{%
+\DR@define@defaults{versedrama}{%
 }
-\Drama@define@defaults{act}{%
+\DR@define@defaults{act}{%
   \def\DR@sections@namefont{\large\scshape}%
   \def\DR@sections@name{Act}%
   \DR@sections@beforeskip\baselineskip%
   \DR@sections@afterskip\baselineskip%
 }
-\Drama@define@defaults{scene}{%
+\DR@define@defaults{scene}{%
   \def\DR@sections@namefont{\scshape}%
   \def\DR@sections@name{Scene}%
   \DR@sections@afterskip\baselineskip%
 }
-\Drama@define@defaults{character}{%
+\DR@define@defaults{character}{%
   \def\DR@character@font{\normalfont\scshape}% \normalfont because \bfseries+\scshape=\bfseries
 }
-\Drama@define@defaults{speaker}{%
+\DR@define@defaults{speaker}{%
   \DR@speaker@labelwidth\@tempdima%
   \def\DR@speaker@font{\scshape}%
   \def\DR@speaker@del{:}%
 }
-\Drama@define@defaults{dramatis}{%
+\DR@define@defaults{dramatis}{%
   \def\DR@dramatis@rolefont{\scshape}%
   \DR@dramatis@leftmargin\z@%
   \DR@dramatis@rightmargin\z@%
@@ -656,19 +668,19 @@
   \def\DR@dramatis@titlefont{\scshape\Large}%
   \def\DR@dramatis@dasep{\hfill}%
 }
-\Drama@define@defaults{settings}{%
+\DR@define@defaults{settings}{%
   \def\DR@stage@font{\itshape}%
 }
-\Drama@define@defaults{direction}{%
+\DR@define@defaults{direction}{%
   \DR@stage@topsep\topsep%
   \def\DR@stage@font{\itshape}%
 }
-\Drama@define@defaults{delivery}{%
+\DR@define@defaults{delivery}{%
   \def\DR@stage@font{\itshape}%
   \def\DR@stage@leftdelimiter{(}%
   \def\DR@stage@rightdelimiter{)}%
 }
-\Drama@define@defaults{set}{%
+\DR@define@defaults{set}{%
   \def\DR@stage@justification{\centering}%
   \def\DR@stage@font{\itshape}%
 }
@@ -688,9 +700,19 @@
   \@ifpackageloaded{poemscol}{\@poemscoltrue}{\@poemscolfalse}
   \if@poemscol
     \setlength\verse@leftmargin{1sp}
-    \patchcmd{\pmclverse}{\item[]}{\item[]\labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax}{\typeout{OK}}{\typeout{AARGH!}}
+    \patchcmd{\pmclverse}{\item[]}{%
+      \item[]
+      \labelsep=\DR@drama@labelsep
+      \labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax
+      \itemsep\DR@drama@speechskip
+      }{\typeout{OK}}{\typeout{AARGH!}}
   \else
-    \apptocmd{\verse}{\labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax}{\typeout{AWRIGHT}}{\typeout{MYEOUW!}}%
+    \apptocmd{\verse}{%
+      \labelsep=\DR@drama@labelsep
+      % \labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax
+      \labelwidth=\DR@drama@speakswidth
+      \itemsep\DR@drama@speechskip
+    }{\typeout{AWRIGHT}}{\typeout{MYEOUW!}}%
   \fi%
 }
 
