@@ -224,6 +224,7 @@
 \DR@define@key{c}{sections}{titlefont}{}
 \DR@define@key{c}{sections}{name}{}
 \DR@define@key{c}{sections}{sep}{ -- }
+\DR@define@key{c}{sections}{pagestyle}{empty}
 \DR@define@key{l}{sections}{beforeskip}{0pt}
 \DR@define@key{l}{sections}{afterskip}{0pt}
 
@@ -242,7 +243,7 @@
         \else
             \clearpage
         \fi}
-    \thispagestyle{plain}
+    \thispagestyle{\DR@sections@pagestyle}
     \refstepcounter{act}
     \if@lnpa
         \setcounter{storelineno}{0}
@@ -396,7 +397,7 @@
   \settowidth{\@tempdima}{\DR@speaker{#1}{#2}}%
   \DR@setvalues{speaker}%
 %   \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}{#2}}]\DR@drama@postitem
-  \item[\DR@speaker{#1}]\@ifmtarg{#2}{}{\hskip-\DR@drama@labelsep\ #2\hskip\DR@drama@labelsep}\DR@drama@postitem
+  \item[\DR@speaker{#1}]\@ifmtarg{#2}{}{\hskip-\DR@drama@labelsep\hskip 0pt plus 4pt\ #2\hskip\DR@drama@labelsep}\DR@drama@postitem
 }
 
 \newcommand\DR@character[2]{%
@@ -493,6 +494,7 @@
 %% Dramatis personae
 \DR@define@key{l}{dramatis}{leftmargin}{0pt}
 \DR@define@key{l}{dramatis}{rightmargin}{0pt}
+\DR@define@key{l}{dramatis}{indent}{0pt}
 \DR@define@key{l}{dramatis}{itemsep}{0pt}
 \DR@define@key{l}{dramatis}{topsep}{0pt}
 \DR@define@key{l}{dramatis}{parsep}{0pt}
@@ -500,6 +502,7 @@
 \DR@define@key{l}{dramatis}{charwidth}{0pt}
 \DR@define@key{l}{dramatis}{castwidth}{0pt}
 \DR@define@key{l}{dramatis}{parenwidth}{15pt}
+\DR@define@key{c}{dramatis}{rolecase}{}
 \DR@define@key{c}{dramatis}{rolefont}{}
 \DR@define@key{c}{dramatis}{descfont}{}
 \DR@define@key{c}{dramatis}{actorfont}{}
@@ -507,12 +510,13 @@
 \DR@define@key{c}{dramatis}{dasep}{}
 \DR@define@key{c}{dramatis}{titlefont}{}
 \DR@define@key{c}{dramatis}{titlename}{}
+\DR@define@key{c}{dramatis}{pagestyle}{empty}
 \DR@define@key{l}{dramatis}{beforeskip}{0pt}
 \DR@define@key{l}{dramatis}{afterskip}{0pt}
 
 \newcommand\DR@dramper@entry{%
-  {\noexpand\DR@dramatis@rolefont\DR@character@role}%
-  \DR@character@rdsep%
+  {\noexpand\DR@dramatis@rolefont\noexpand\DR@dramatis@rolecase{\DR@character@role}}%
+  \ifx\DR@character@desc\relax\else\DR@character@rdsep\fi%
   {\noexpand\DR@dramatis@descfont\DR@character@desc}%
   \noexpand\DR@dramatis@dasep%
   {\noexpand\DR@dramatis@actorfont\DR@character@actor}}
@@ -534,10 +538,12 @@
 \newcommand\DR@sdramper[1][]{%
   \DR@dramperhead{#1}}
 \newcommand\DR@dramperhead[1]{
+  \thispagestyle{\DR@dramatis@pagestyle}
   \castheadstart
   {\printcasttitle #1
   \aftercasttitle}
   \begin{list}{}{%
+    \itemindent\DR@dramatis@indent%
     \leftmargin\DR@dramatis@leftmargin%
     \rightmargin\DR@dramatis@rightmargin%
     \topsep\DR@dramatis@topsep%
