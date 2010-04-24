@@ -37,8 +37,10 @@
 %%       Left brace    \{     Vertical bar  \| Right brace   \}     Tilde
 %%     \~}
 %%
-\ProvidesPackage{dramatist}[2006/02/01 v2.0beta1 Package for typesetting drama
-                            -- Author: Massimiliano Dominici]
+\RequirePackage{svn-prov}
+%\ProvidesPackage{dramatist}[2006/02/01 v2.0beta1 Package for typesetting drama
+%                            -- Author: Massimiliano Dominici]
+\ProvidesPackageSVN{$Id: $}[v1.99]
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xspace}
 \RequirePackage{xkeyval}
@@ -360,6 +362,7 @@
 \DR@define@key{c}{character}{speaksadd}{speaks}
 \DR@define@key{b}{character}{entry}{true}
 \DR@define@key{c}{character}{namefont}{}
+\DR@define@key{c}{character}{namecase}{}
 \DR@define@key{c}{speaker}{font}{}
 \DR@define@key{c}{speaker}{case}{} %% Valori permessi ` ', \MakeLowercase, MakeUppercase
 \DR@define@key{c}{speaker}{del}{}
@@ -374,7 +377,7 @@
 
 \newcommand\DR@character@label{%
   \noexpand\DR@setvalues{character}%
-  {\noexpand\DR@character@namefont \DR@character@dirname}\noexpand\xspace
+  {\noexpand\DR@character@namefont \noexpand\DR@character@namecase{\DR@character@dirname}}\noexpand\xspace
 }
 
 
@@ -488,7 +491,7 @@
 }
 \newcommand*\character[1]{%
   \DR@setvalues{character}%
-  {\DR@character@namefont #1}\xspace%
+  {\DR@character@namefont\DR@character@namecase{#1}}\xspace%
 }
 %%---------------------------------------------------------------------------------
 %% Dramatis personae
