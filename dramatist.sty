@@ -40,7 +40,7 @@
 \RequirePackage{svn-prov}
 %\ProvidesPackage{dramatist}[2006/02/01 v2.0beta1 Package for typesetting drama
 %                            -- Author: Massimiliano Dominici]
-\ProvidesPackageSVN{$Id$}[v1.99]
+\ProvidesPackageSVN{$Id:$}[v1.99]
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xspace}
 \RequirePackage{xkeyval}
@@ -182,9 +182,7 @@
       \rightmargin\DR@drama@rightmargin%
       }%
   \item\relax%
-  % \labelwidth=\dimexpr\DR@drama@leftmargin-\labelsep\relax%
     \@drversetrue%
-    % \leftmargini\DR@drama@leftmargin 
     \if@poemscol%
     \typeout{\the\verse@leftmargin}
         \begin{poem}%
@@ -718,7 +716,6 @@
   \else
     \apptocmd{\verse}{%
       \labelsep=\DR@drama@labelsep
-      % \labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax
       \labelwidth=\DR@drama@speakswidth
       \itemsep\DR@drama@speechskip
     }{}{}%
