@@ -74,11 +74,8 @@
   \define@cmdkey{#1}[DR@#1@]{#2}[#3]{}%
 }
 \newcommand\DR@define@boolkey[3]{%
-  \define@key{#1}{#2}[#3]{%
-  \csname DR@#1@#2##1\endcsname
-  }%
-  \expandafter\newif\csname ifDR@#1@#2\endcsname%
-  \csname DR@#1@#2#3\endcsname%
+  \define@boolkey+{#1}[DR@#1@]{#2}[#3]{}{%
+    \PackageWarning{dramatist}{Invalid input for key `#2' in family `#1'}}%
 }
 \newcommand\DR@define@defaults[2]{%
   \expandafter\def\csname default@#1\endcsname{#2}
