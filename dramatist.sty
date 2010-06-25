@@ -65,28 +65,13 @@
 }
 \newcommand\DR@define[1]{\csname DR@define@#1key\endcsname}
 \newcommand\DR@define@commandkey[3]{%
-  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{%
-    % \expandafter\def\csname DR@#1@#2\endcsname{##1}%
-    %\XKV@header
-    % ##1%
-    % \typeout{DR@#1@#2}
-    % \expandafter\def\csname DR@#1@#2\endcsname{##1}%
-  }%
-  % \expandafter\def\csname DR@#1@#2\endcsname{#3}%
+  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{}%
 }
 \newcommand\DR@define@lengthkey[3]{%
-  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{%
-    % \expandafter\setlength\csname DR@#1@#2\endcsname{##1}
-  }%
-  % \expandafter\newlength\csname DR@#1@#2\endcsname%
-  % \expandafter\setlength\csname DR@#1@#2\endcsname{#3}%
+  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{}%
 }
 \newcommand\DR@define@glengthkey[3]{%
-  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{%
-    % \global\expandafter\setlength\csname DR@#1@#2\endcsname{##1}% for \DR@speaker@labelwidth
-  }%
-  % \expandafter\newlength\csname DR@#1@#2\endcsname%
-  % \expandafter\setlength\csname DR@#1@#2\endcsname{#3}%
+  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{}%
 }
 \newcommand\DR@define@boolkey[3]{%
   \define@key{#1}{#2}[#3]{%
@@ -105,7 +90,7 @@
 %%----------------------------------------------------------------------
 %% Public Tools
 \newcommand\DRSetup[3]{% <name><fam><spec>
-  \expandafter\def\csname setup@#1\endcsname{%
+  \expandafter\appto\csname setup@#1\endcsname{%
     \presetkeys{#2}{#3}{}%
     \setkeys{#2}{}%
     }%
