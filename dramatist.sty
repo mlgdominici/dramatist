@@ -38,8 +38,6 @@
 %%     \~}
 %%
 \RequirePackage{svn-prov}
-%\ProvidesPackage{dramatist}[2006/02/01 v2.0beta1 Package for typesetting drama
-%                            -- Author: Massimiliano Dominici]
 \ProvidesPackageSVN{$Id$}[v1.99][Package for typesetting drama]
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xspace}
@@ -125,6 +123,10 @@
     \let\DR@lnps\DR@setlinenumber
   \fi
 }{}
+\define@key{dramatist.sty}{style}[modern]{%
+  \def\DR@stylefile{#1}
+}
+\ExecuteOptionsX{style}
 \ProcessOptionsX
 \newcounter{storelineno}
 \setcounter{storelineno}{0}
@@ -155,12 +157,6 @@
   \@firstdirectiontrue
   \let\DR@pidefault\DR@drama@postitem
   \DR@linenumberwarning%
-    % \if@lnpa
-    % \PackageWarning{dramatist}{\@lnpwarning{a}}
-    % \fi
-    % \if@lnps
-    % \PackageWarning{dramatist}{\@lnpwarning{s}}
-    % \fi
     \list{}{%
       \leftmargin\DR@drama@leftmargin%
       \rightmargin\DR@drama@rightmargin%
@@ -249,14 +245,6 @@
     \thispagestyle{\DR@sections@pagestyle}
     \refstepcounter{act}
     \DR@lnpa
-    % \if@lnpa
-    %     \setcounter{storelineno}{0}
-    %     \if@poemscol
-    %         \setcounter{storeprintlineindex}{0}
-    %     \else
-    %         \refstepcounter{storelineno}
-    %     \fi
-    % \fi
 }
 \newcommand\act{%
     \@openact
@@ -306,14 +294,6 @@
 \newcommand\@openscene{%
     \stepcounter{scene}
     \DR@lnps
-    % \if@lnps
-    %     \setcounter{storelineno}{0}
-    %     \if@poemscol
-    %         \setcounter{storeprintlineindex}{0}
-    %     \else
-    %         \refstepcounter{storelineno}
-    %     \fi
-    % \fi
 }
 \newcommand\scene{%
     \@openscene
@@ -795,6 +775,10 @@
     }{}{}%
   \fi%
   \setkeys+{dramatis,drama,sections,character,speaker,stage}{}
+  \InputIfFileExists{\DR@stylefile.dst}
+    {\PackageInfo{dramatist}{Load `\DR@stylefile' style.dst}}
+    {\input{modern.dst}
+     \PackageWarning{dramatist}{File \DR@stylefile.dst not found. Load default `modern' style}}
 }
 
 %%-------------------------------------------------------------------------------
