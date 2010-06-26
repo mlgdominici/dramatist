@@ -104,13 +104,28 @@
 \newif\if@drverse
 \newif\if@poemscol
 \newif\if@stagedir
-\newif\if@lnpa
-\newif\if@lnps
-\newif\if@lnpd
 \newif\if@firstdirection
-\DeclareOption{lnpa}{\@lnpatrue}
-\DeclareOption{lnps}{\@lnpstrue}
-\ProcessOptions
+\newcommand\DR@linenumberwarning{}
+\newcommand\DR@setlinenumber{%
+  \setcounter{storelineno}{0}
+  \if@poemscol
+    \setcounter{storeprintlineindex}{0}
+  \else
+    \refstepcounter{storelineno}
+  \fi
+}
+\def\DR@lnpa{}
+\def\DR@lnps{}
+\define@choicekey+{dramatist.sty}{numbering}[\val\nr]{act,section}{%
+  \renewcommand\DR@linenumberwarning{\PackageWarning{dramatist}{\DR@lnpwarning}}
+  \ifcase\nr\relax
+  \or
+    \let\DR@lnpa\DR@setlinenumber
+  \or
+    \let\DR@lnps\DR@setlinenumber
+  \fi
+}{}
+\ProcessOptionsX
 \newcounter{storelineno}
 \setcounter{storelineno}{0}
 \if@poemscol\else
@@ -139,12 +154,13 @@
 \newenvironment{DR@drama@prose}{%
   \@firstdirectiontrue
   \let\DR@pidefault\DR@drama@postitem
-    \if@lnpa
-    \PackageWarning{dramatist}{\@lnpwarning{a}}
-    \fi
-    \if@lnps
-    \PackageWarning{dramatist}{\@lnpwarning{s}}
-    \fi
+  \DR@linenumberwarning%
+    % \if@lnpa
+    % \PackageWarning{dramatist}{\@lnpwarning{a}}
+    % \fi
+    % \if@lnps
+    % \PackageWarning{dramatist}{\@lnpwarning{s}}
+    % \fi
     \list{}{%
       \leftmargin\DR@drama@leftmargin%
       \rightmargin\DR@drama@rightmargin%
@@ -232,14 +248,15 @@
         \fi}
     \thispagestyle{\DR@sections@pagestyle}
     \refstepcounter{act}
-    \if@lnpa
-        \setcounter{storelineno}{0}
-        \if@poemscol
-            \setcounter{storeprintlineindex}{0}
-        \else
-            \refstepcounter{storelineno}
-        \fi
-    \fi
+    \DR@lnpa
+    % \if@lnpa
+    %     \setcounter{storelineno}{0}
+    %     \if@poemscol
+    %         \setcounter{storeprintlineindex}{0}
+    %     \else
+    %         \refstepcounter{storelineno}
+    %     \fi
+    % \fi
 }
 \newcommand\act{%
     \@openact
@@ -288,14 +305,15 @@
 \def\afterscene{\par\nobreak\vskip\DR@sections@afterskip}
 \newcommand\@openscene{%
     \stepcounter{scene}
-    \if@lnps
-        \setcounter{storelineno}{0}
-        \if@poemscol
-            \setcounter{storeprintlineindex}{0}
-        \else
-            \refstepcounter{storelineno}
-        \fi
-    \fi
+    \DR@lnps
+    % \if@lnps
+    %     \setcounter{storelineno}{0}
+    %     \if@poemscol
+    %         \setcounter{storeprintlineindex}{0}
+    %     \else
+    %         \refstepcounter{storelineno}
+    %     \fi
+    % \fi
 }
 \newcommand\scene{%
     \@openscene
@@ -455,7 +473,7 @@
   \@tempdima=\dimexpr\DR@dramatis@charwidth+\DR@dramatis@parenwidth+\DR@dramatis@castwidth+%
     \DR@dramatis@leftmargin+\DR@dramatis@rightmargin+5pt\relax
   \ifdim\@tempdima>\dimexpr\textwidth% why?
-    \PackageWarning{dramatist}{\@checkcgwwarning}
+    \PackageWarning{dramatist}{\DR@checkcgwwarning}
     \DR@dramatis@castwidth=\dimexpr\textwidth-\DR@dramatis@parenwidth-\DR@dramatis@charwidth-%
       \DR@dramatis@rightmargin-\DR@dramatis@leftmargin-5pt\relax
   \fi
@@ -781,20 +799,20 @@
 
 %%-------------------------------------------------------------------------------
 %% Errors and Warnings
-\newcommand\@lnpwarning[1]{The option `lnp#1' is meaningless outside the%
+\newcommand\DR@lnpwarning{The option `numbering' is meaningless outside the%
                             `versedrama' environment}
-\newcommand\@checkcgwwarning{Dimension too large}
-\newcommand\@inputfilewarning{\PackageWarningNoLine{dramatist}{^^J^^J%
+\newcommand\DR@checkcgwwarning{Dimension too large}
+\newcommand\DR@inputfilewarning{\PackageWarningNoLine{dramatist}{^^J^^J%
 ********************************************************^^J%
 * No Configuration file found, using default settings. *^^J%
 ********************************************************^^J%
 }}
-\newcommand\@foundfile{\PackageWarningNoLine{dramatist}{^^J^^J%
+\newcommand\DR@foundfile{\PackageWarningNoLine{dramatist}{^^J^^J%
 *******************************************^^J%
 * Using Configuration file dramatist.cfg. *^^J%
 *******************************************^^J%
 }}
-\InputIfFileExists{\jobname.cfg}{\@foundfile}{\@inputfilewarning}
+\InputIfFileExists{\jobname.cfg}{\@foundfile}{\DR@inputfilewarning}
 \endinput
 %%
 %% End of file `dramatist.sty'.
