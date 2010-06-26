@@ -756,7 +756,12 @@
 %   \def\DR@stage@justification{\centering}%
 %   \def\DR@stage@font{\itshape}%
 % }
-
+\AtEndOfPackage{
+  \InputIfFileExists{\DR@stylefile.dst}
+    {\PackageInfo{dramatist}{Load `\DR@stylefile' style.dst}}
+    {\input{modern.dst}
+     \PackageWarning{dramatist}{File \DR@stylefile.dst not found. Load default `modern' style}}
+}
 \AtBeginDocument{
   \@ifpackageloaded{poemscol}{\@poemscoltrue}{\@poemscolfalse}
   \if@poemscol
@@ -775,10 +780,6 @@
     }{}{}%
   \fi%
   \setkeys+{dramatis,drama,sections,character,speaker,stage}{}
-  \InputIfFileExists{\DR@stylefile.dst}
-    {\PackageInfo{dramatist}{Load `\DR@stylefile' style.dst}}
-    {\input{modern.dst}
-     \PackageWarning{dramatist}{File \DR@stylefile.dst not found. Load default `modern' style}}
 }
 
 %%-------------------------------------------------------------------------------
