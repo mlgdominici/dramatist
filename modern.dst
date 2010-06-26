@@ -1,0 +1,56 @@
+\NewStyle{modern}{%
+  \DRSetup{drama}{drama}{
+    leftmargin=1.5em,
+    speaksindent=0pt,
+    labelsep=1em,
+    speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
+    speechskip=0pt,
+    parsep=0pt,
+    postitem=\hskip 0pt plus 4pt minus 4pt,
+  }
+
+  \DRSetup{speaker}{speaker}{
+    case=\MakeLowercase,
+    font=\scshape,
+  }
+
+  \DRSetup{direction}{stage}{
+    font=\itshape,
+    topsep=\baselineskip,
+    partopsep=0pt,
+  }
+  
+  \DRSetup{settings}{stage}{
+    font=\itshape,
+  }
+  
+  \DRSetup{delivery}{stage}{
+    font=\itshape,
+    leftdelimiter=(,
+    rightdelimiter=),
+  }
+  
+  \DRSetup{set}{stage}{
+    font=\itshape,
+    justification=\centering,
+  }
+  
+  \DRSetup{character}{character}{
+    rdsep={,\ },
+    namefont=\scshape,
+    namecase=\MakeLowercase,
+  }
+  
+  \DRSetup{dramatis}{dramatis}{
+    titlename=Dramatis Person\ae,
+    titlefont=\scshape\Large,
+    rolecase=\MakeLowercase,
+    rolefont=\scshape,
+    leftmargin=1.5em,
+    indent=-\DR@dramatis@leftmargin,
+    topsep=2\baselineskip,
+    dasep=\hfill
+  }
+}
+\ApplyStyle{modern}
+\endinput
