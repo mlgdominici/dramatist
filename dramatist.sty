@@ -114,7 +114,7 @@
 }
 \def\DR@lnpa{}
 \def\DR@lnps{}
-\define@choicekey+{dramatist.sty}{numbering}[\val\nr]{act,section}{%
+\define@choicekey+{dramatist.sty}{numbering}[\val\nr]{document,act,scene}{%
   \renewcommand\DR@linenumberwarning{\PackageWarning{dramatist}{\DR@lnpwarning}}
   \ifcase\nr\relax
   \or
@@ -122,7 +122,7 @@
   \or
     \let\DR@lnps\DR@setlinenumber
   \fi
-}{}
+}{\PackageWarning{dramatist}{Invalid input `##1' for option `##2'}}
 \define@key{dramatist.sty}{style}[modern]{%
   \def\DR@stylefile{#1}
 }
@@ -190,13 +190,13 @@
     \else%
         \begin{verse}%
     \fi%
-    \ifx\poemlines\@undefined\else%
+    \ifx\@vsifbang\@undefined\else%
         \setcounter{poemline}{\value{storelineno}}%
     \fi%
     \DR@drama@font%
     \vspace{-\dimexpr\parsep+\partopsep\relax}%
     }{%
-    \ifx\poemlines\@undefined\else
+    \ifx\@vsifbang\@undefined\else
         \setcounter{storelineno}{\value{poemline}}
     \fi
     \if@poemscol
@@ -287,7 +287,8 @@
 }
 \newcommand\scenemark[1]{}
 \newcommand{\printscenename}{\centering\DR@sections@namefont \DR@sections@name}
-\newcommand{\printscenenum}{\DR@sections@numfont \theact\DR@sections@sep\thescene}
+% \newcommand{\printscenenum}{\DR@sections@numfont \theact\DR@sections@sep\thescene}
+\newcommand{\printscenenum}{\DR@sections@numfont \thescene}
 \newcommand{\printscenetitle}[1]{\DR@sections@titlefont\ #1}
 \def\sceneheadstart{\vspace*{\DR@sections@beforeskip}}
 \def\afterscene{\par\nobreak\vskip\DR@sections@afterskip}
@@ -357,6 +358,7 @@
   \settowidth{\@tempdimb}{#2}%
   \addtolength{\@tempdimb}{\dimexpr-\DR@speaker@labelwidth+\labelwidth-#1\relax}
   \hskip\@tempdimb}
+\newcommand\phantomspeaker[1]{{\DR@speaker{#1}}\hskip-\labelwidth}
 
 \newcommand\DR@character@label{%
   \noexpand\DR@setvalues{character}%
@@ -722,7 +724,7 @@
 \DR@define@defaults{scene}{%
   \def\DR@sections@namefont{\scshape}%
   \def\DR@sections@name{Scene}%
-  \def\DR@sections@afterskip{\baselineskip}%
+  \def\DR@sections@afterskip{2\baselineskip}%
 }
 % \DR@define@defaults{character}{%
 %   \def\DR@character@font{\normalfont\scshape}% \normalfont because \bfseries+\scshape=\bfseries

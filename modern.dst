@@ -42,6 +42,7 @@
   }
   
   \DRSetup{set}{stage}{
+    topsep=\baselineskip,
     font=\itshape,
     justification=\centering,
   }
