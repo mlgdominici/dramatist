@@ -66,10 +66,16 @@
   \define@cmdkey{#1}[DR@#1@]{#2}[#3]{}%
 }
 \newcommand\DR@define@lengthkey[3]{%
-  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{}%
+  \expandafter\newlength\csname DR@#1@#2\endcsname
+  \define@key{#1}{#2}[#3]{%
+    \expandafter\setlength\csname DR@#1@#2\endcsname{##1}
+}%
 }
 \newcommand\DR@define@glengthkey[3]{%
-  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{}%
+  \expandafter\newlength\csname DR@#1@#2\endcsname
+  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{
+    \global\expandafter\setlength\csname DR@#1@#2\endcsname{##1}
+  }%
 }
 \newcommand\DR@define@boolkey[3]{%
   \define@boolkey+{#1}[DR@#1@]{#2}[#3]{}{%
@@ -103,6 +109,8 @@
 \newif\if@poemscol
 \newif\if@stagedir
 \newif\if@firstdirection
+\def\DRroman#1{\expandafter\romannumeral\csname c@#1\endcsname}
+\def\DR@roman#1{\romannumeral #1}
 \newcommand\DR@linenumberwarning{}
 \newcommand\DR@setlinenumber{%
   \setcounter{storelineno}{0}
@@ -112,6 +120,9 @@
     \refstepcounter{storelineno}
   \fi
 }
+\def\actname{Act}
+\def\scenename{Scene}
+\def\drampername{Dramatis Person\ae}
 \def\DR@lnpa{}
 \def\DR@lnps{}
 \define@choicekey+{dramatist.sty}{numbering}[\val\nr]{document,act,scene}{%
@@ -398,12 +409,12 @@
         {\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}}%
   \ifDR@character@entry
     \if@cglist
-      \stepcounter{g\roman{character}}
-      \global\expandafter\edef\csname gpersona\Roman{character}\roman{g\roman{character}}\endcsname{%
+      \stepcounter{g\DRroman{character}}
+      \global\expandafter\edef\csname gpersona\Roman{character}\DRroman{g\DRroman{character}}\endcsname{%
         \DR@dramper@entry}
     \else
       \stepcounter{character}
-      \global\expandafter\edef\csname persona\roman{character}\endcsname{%
+      \global\expandafter\edef\csname persona\DRroman{character}\endcsname{%
         \DR@dramper@entry}
     \fi
   \fi
@@ -418,24 +429,25 @@
 
 \newenvironment{CharacterGroup}[1]{%
   \@cglisttrue
-    \stepcounter{character}
-    \newcounter{g\roman{character}}
-        \grouplist{#1}
+  \stepcounter{character}
+  \newcounter{g\DRroman{character}}
+  \grouplist{#1}
 }{\@cglistfalse}
 \newsavebox{\tbox}
 \newcommand\grouplist[1]{%
-    \global\expandafter\def\csname persona\roman{character}\endcsname{%
-    \settowidth{\DR@dramatis@castwidth}{\DR@dramatis@headfont #1}
+    \global\expandafter\def\csname persona\DRroman{character}\endcsname{%
+    \settowidth{\DR@dramatis@castwidth}{\DR@dramatis@descfont #1}
     \DR@checkwidth
     \begin{lrbox}{\tbox}
-        \begin{minipage}[c]{\DR@dramatis@charwidth}\raggedright
-         \list{}{%
-    \leftmargin\z@% same indentation of outer list
-    \itemsep\DR@dramatis@itemsep%
-    \parsep\DR@dramatis@parsep}%
-           \dogrouplist
-         \endlist
-        \end{minipage}
+      \begin{minipage}[c]{\DR@dramatis@charwidth}
+        \list{}{%
+          \itemindent=\z@%
+          \leftmargin=\z@% same indentation of outer list
+          \itemsep\DR@dramatis@itemsep%
+          \parsep\DR@dramatis@parsep}%
+        \dogrouplist
+        \endlist
+      \end{minipage}
     \end{lrbox}
     \parbox{\DR@dramatis@charwidth}{\usebox{\tbox}}%
     \parbox{\DR@dramatis@parenwidth}{$\left.\rule{0pt}{\ht\tbox}\right\}$}
@@ -445,9 +457,9 @@
 }
 \newcommand\DR@checkwidth{
   \@tempcntb\z@
-  \@whilenum\value{g\@roman{\@tempcnta}}>\@tempcntb\do{%
+  \@whilenum\value{g\DR@roman{\@tempcnta}}>\@tempcntb\do{%
     \advance\@tempcntb\@ne
-    \settowidth{\@tempdima}{\@nameuse{gpersona\@Roman{\@tempcnta}\@roman{\@tempcntb}}}%
+    \settowidth{\@tempdima}{\@nameuse{gpersona\@Roman{\@tempcnta}\DR@roman{\@tempcntb}}}%
     \ifdim\@tempdima>\DR@dramatis@charwidth%
       \global\setlength{\DR@dramatis@charwidth}{\@tempdima}%
     \fi%
@@ -462,9 +474,9 @@
 }
 \newcommand{\dogrouplist}{%
   \@tempcntb\z@
-  \@whilenum\value{g\@roman{\@tempcnta}}>\@tempcntb\do{%
+  \@whilenum\value{g\DR@roman{\@tempcnta}}>\@tempcntb\do{%
     \advance\@tempcntb\@ne
-    \item\@nameuse{gpersona\@Roman{\@tempcnta}\@roman{\@tempcntb}}\strut%
+    \item\@nameuse{gpersona\@Roman{\@tempcnta}\DR@roman{\@tempcntb}}\strut%
   }%
 }
 \newcommand*\speaker{%
@@ -531,7 +543,6 @@
   {\printcasttitle #1
   \aftercasttitle}
   \begin{list}{}{%
-    \itemindent\DR@dramatis@indent%
     \leftmargin\DR@dramatis@leftmargin%
     \rightmargin\DR@dramatis@rightmargin%
     \topsep\DR@dramatis@topsep%
@@ -546,7 +557,7 @@
   \@tempcnta\z@
   \@whilenum\c@character >\@tempcnta\do{%
     \advance\@tempcnta\@ne
-  \item\@nameuse{persona\@roman{\@tempcnta}}\strut%
+  \item\@nameuse{persona\DR@roman{\@tempcnta}}\strut%
   }%
 }
 %%-----------------------------------------------------------------
@@ -627,6 +638,31 @@
   }%
 }
 %%-------------------------------------------------------------------------------
+%% Languages
+\@ifpackageloaded{babel}{
+  \addto\captionsitalian{%
+    \def\actname{Atto}
+    \def\scenename{Scena}
+    \def\drampername{Personaggi}
+  }
+  \addto\captionsgerman{%
+    \def\actname{Akt}
+    \def\scenename{Szene}
+    \def\drampername{Personen}
+  }
+  \addto\captionsfrench{%
+    \def\actname{Acte}
+    \def\scenename{Scene}
+    \def\drampername{Personnages}
+  }
+  \addto\captionsspanish{%
+    \def\actname{Acto}
+    \def\scenename{Escena}
+    \def\drampername{Personajes}
+  }
+}{}
+
+%%-------------------------------------------------------------------------------
 %% Configuration
 \presetkeys{drama}{
   leftmargin,
@@ -688,7 +724,7 @@
   headfont,
   dasep,
   titlefont,
-  titlename,
+  titlename=\drampername,
   pagestyle,
   beforeskip,
   afterskip,
@@ -717,13 +753,13 @@
 % }
 \DR@define@defaults{act}{%
   \def\DR@sections@namefont{\large\scshape}%
-  \def\DR@sections@name{Act}%
+  \def\DR@sections@name{\actname}%
   \def\DR@sections@beforeskip{\baselineskip}%
   \def\DR@sections@afterskip{\baselineskip}%
 }
 \DR@define@defaults{scene}{%
   \def\DR@sections@namefont{\scshape}%
-  \def\DR@sections@name{Scene}%
+  \def\DR@sections@name{\scenename}%
   \def\DR@sections@afterskip{2\baselineskip}%
 }
 % \DR@define@defaults{character}{%

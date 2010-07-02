@@ -54,7 +54,7 @@
   }
   
   \DRSetup{dramatis}{dramatis}{
-    titlename=Dramatis Person\ae,
+    titlename=\drampername,
     titlefont=\scshape\Large,
     rolecase=\MakeLowercase,
     rolefont=\scshape,
