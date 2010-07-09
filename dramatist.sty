@@ -90,7 +90,7 @@
     \PackageWarning{dramatist}{Invalid input for key `#2' in family `#1'}}%
 }
 \newcommand\DR@define@defaults[2]{%
-  \expandafter\def\csname default@#1\endcsname{#2}
+  \expandafter\def\csname default@#1\endcsname{#2}%
 }
 \newcommand\DR@setvalues[1]{%
   \csname default@#1\endcsname%
@@ -121,12 +121,12 @@
 \def\DR@roman#1{\romannumeral #1}
 \newcommand\DR@linenumberwarning{}
 \newcommand\DR@setlinenumber{%
-  \setcounter{storelineno}{0}
-  \if@poemscol
-    \setcounter{storeprintlineindex}{0}
-  \else
-    \refstepcounter{storelineno}
-  \fi
+  \setcounter{storelineno}{0}%
+  \if@poemscol%
+    \setcounter{storeprintlineindex}{0}%
+  \else%
+    \refstepcounter{storelineno}%
+  \fi%
 }
 \def\actname{Act}
 \def\scenename{Scene}
@@ -211,7 +211,6 @@
   \item\relax%
     \@drversetrue%
     \if@poemscol%
-    \typeout{\the\verse@leftmargin}
         \begin{poem}%
         \setcounter{verselinenumber}{\value{storelineno}}%
         \setcounter{printlineindex}{\value{storeprintlineindex}}%
@@ -362,7 +361,7 @@
         \addcontentsline{toc}{section}{#1}
     \fi
     \scenemark{\DR@sections@name\ \thescene\ #1}
-@kescenehead{#2}
+    \m@kescenehead{#2}
     \@afterindentfalse
     \@afterheading}}
 \newcommand\m@kescenehead[1]{%
@@ -835,16 +834,20 @@
   \if@poemscol
     \setlength\verse@leftmargin{1sp}
     \patchcmd{\pmclverse}{\item[]}{%
-      \item[]
-      \labelsep=\DR@drama@labelsep
-      \labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax
-      \itemsep\DR@drama@speechskip
+      \item[]%
+      \labelsep=\DR@drama@labelsep%
+      \labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax%
+      \itemsep\DR@drama@speechskip%
+      \itemindent\DR@drama@speaksindent%
+      \parsep=\DR@drama@parsep%
       }{}{}
   \else
     \apptocmd{\verse}{%
-      \labelsep=\DR@drama@labelsep
-      \labelwidth=\DR@drama@speakswidth
-      \itemsep\DR@drama@speechskip
+      \labelsep=\DR@drama@labelsep%
+      \labelwidth=\DR@drama@speakswidth%
+      \itemsep\DR@drama@speechskip%
+      \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
+      \parsep=\DR@drama@parsep%
     }{}{}%
   \fi%
   \setkeys+{dramatis,drama,sections,character,speaker,stage}{}

@@ -3,7 +3,7 @@
   \DRSetup{drama}{drama}{
     leftmargin=0pt,
     speaksindent=1em,
-    labelsep=1em,
+    labelsep=.5em,
     speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
     speechskip=0pt,
     parsep=0pt,
@@ -13,7 +13,7 @@
   \DRSetup{versedrama}{drama}{
     leftmargin=0pt,
     speaksindent=1em,
-    labelsep=1em,
+    labelsep=.5em,
     speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
     speechskip=0pt,
     parsep=0pt,
