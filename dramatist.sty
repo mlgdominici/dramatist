@@ -205,36 +205,36 @@
 \newenvironment{DR@drama@verse}{%
   \let\DR@pidefault\DR@drama@postitem%
   \list{}{%
-      \leftmargin=\dimexpr-\verse@leftmargin+\DR@drama@leftmargin\relax%
-      \rightmargin\DR@drama@rightmargin%
-      }%
-  \item\relax%
+    \leftmargin=\dimexpr-\verse@leftmargin+\DR@drama@leftmargin\relax%
+    \rightmargin\DR@drama@rightmargin%
+  }%
+    \item\relax%
     \@drversetrue%
     \if@poemscol%
-        \begin{poem}%
+      \begin{poem}%
         \setcounter{verselinenumber}{\value{storelineno}}%
         \setcounter{printlineindex}{\value{storeprintlineindex}}%
     \else%
-        \begin{verse}%
+      \begin{verse}%
     \fi%
     \ifx\@vsifbang\@undefined\else%
         \setcounter{poemline}{\value{storelineno}}%
     \fi%
-    \DR@drama@font%
-    \vspace{-\dimexpr\parsep+\partopsep\relax}%
+      \DR@drama@font%
+      \vspace{-\dimexpr\parsep+\partopsep\relax}%
     }{%
-    \ifx\@vsifbang\@undefined\else
+      \ifx\@vsifbang\@undefined\else
         \setcounter{storelineno}{\value{poemline}}
-    \fi
-    \if@poemscol
+      \fi
+      \if@poemscol
         \end{poem}
         \setcounter{storelineno}{\value{verselinenumber}}
         \setcounter{storeprintlineindex}{\value{printlineindex}}
-    \else
+      \else
         \end{verse}
-    \fi
-    \@drversefalse
-  \endlist
+      \fi
+      \@drversefalse
+      \endlist
 }
 \newenvironment{versedrama}[1][]{%
   \DR@setvalues{versedrama}%
@@ -838,7 +838,8 @@
       \labelsep=\DR@drama@labelsep%
       \labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax%
       \itemsep\DR@drama@speechskip%
-      \itemindent\DR@drama@speaksindent%
+%      \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
+      \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent-\leftmargini+\leftmarginii\relax%
       \parsep=\DR@drama@parsep%
       }{}{}
   \else
