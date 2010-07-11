@@ -1,13 +1,14 @@
-\documentclass[a5paper,11pt]{book}
+\documentclass[a5paper,11pt]{memoir}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{xjunicode}
-\usepackage{dramatist}
-\usepackage{fancyhdr}
-% \usepackage{verse}
-\usepackage{poemscol}
-\usepackage{geometry}
+\usepackage[style=classic]{dramatist}
+%\usepackage{fancyhdr}
+%\usepackage{verse}
+%\usepackage{poemscol}
+%\usepackage{geometry}
+
 
 \def\testodicontrollo{%
 Questo re di Sparta ebbe con voi comune la morte, per giudizio
@@ -41,7 +42,9 @@ tomba.
 
 \parindent=1em
 
-% \tracingpatches
+%\tracingpatches
+
+%\setlength\stanzaskip{0pt}
 
 \begin{document}
 
@@ -50,7 +53,7 @@ tomba.
 \noindent\rule{\leftmargini}{1pt}
 
 \begin{versedrama}
-  \speaker{anfar.}
+  \speaker{Anfar.}
   Pur, per quanto sia giusto in te lo sdegno,\\
   premilo in petto, se sbramarlo or vuoi.\\
   Io men di te non odio Agide altero;\\
@@ -58,7 +61,7 @@ tomba.
   finta in biasmo di noi. Sparta ridurre\\
   qual giá la fea Licurgo, è al par crudele,\\
   che ambizíosa stolidezza: è tale\\
-  \speaker{agid.}
+  \speaker{Agid.}
   Pur, per quanto sia giusto in te lo sdegno,\\
   premilo in petto, se sbramarlo or vuoi.\\
   Io men di te non odio Agide altero;\\

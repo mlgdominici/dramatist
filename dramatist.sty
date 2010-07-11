@@ -113,16 +113,16 @@
 %%----------------------------------------------------------------------
 \@ifundefined{if@openright}{\newif\if@openright}{}
 \newif\if@cglist
-\newif\if@drverse
-\newif\if@poemscol
-\newif\if@stagedir
+\newif\if@DRpoemscol
+\newif\if@DRverse
+\newif\if@DRmemoir
 \newif\if@firstdirection
 \def\DRroman#1{\expandafter\romannumeral\csname c@#1\endcsname}
 \def\DR@roman#1{\romannumeral #1}
 \newcommand\DR@linenumberwarning{}
 \newcommand\DR@setlinenumber{%
   \setcounter{storelineno}{0}%
-  \if@poemscol%
+  \if@DRpoemscol%
     \setcounter{storeprintlineindex}{0}%
   \else%
     \refstepcounter{storelineno}%
@@ -149,7 +149,7 @@
 \ProcessOptionsX
 \newcounter{storelineno}
 \setcounter{storelineno}{0}
-\if@poemscol\else
+\if@DRpoemscol\else
 \refstepcounter{storelineno}\fi
 \newcounter{storeprintlineindex}
 \newcounter{character}
@@ -209,31 +209,29 @@
     \rightmargin\DR@drama@rightmargin%
   }%
     \item\relax%
-    \@drversetrue%
-    \if@poemscol%
+    \if@DRpoemscol%
       \begin{poem}%
         \setcounter{verselinenumber}{\value{storelineno}}%
         \setcounter{printlineindex}{\value{storeprintlineindex}}%
     \else%
       \begin{verse}%
     \fi%
-    \ifx\@vsifbang\@undefined\else%
+    \if@DRverse\else%
         \setcounter{poemline}{\value{storelineno}}%
     \fi%
       \DR@drama@font%
       \vspace{-\dimexpr\parsep+\partopsep\relax}%
     }{%
-      \ifx\@vsifbang\@undefined\else
+      \if@DRverse\else
         \setcounter{storelineno}{\value{poemline}}
       \fi
-      \if@poemscol
+      \if@DRpoemscol
         \end{poem}
         \setcounter{storelineno}{\value{verselinenumber}}
         \setcounter{storeprintlineindex}{\value{printlineindex}}
       \else
         \end{verse}
       \fi
-      \@drversefalse
       \endlist
 }
 \newenvironment{versedrama}[1][]{%
@@ -830,25 +828,33 @@
      \PackageWarning{dramatist}{File \DR@stylefile.dst not found. Load default `modern' style}}
 }
 \AtBeginDocument{
-  \@ifpackageloaded{poemscol}{\@poemscoltrue}{\@poemscolfalse}
-  \if@poemscol
+  \@ifclassloaded{memoir}{\@DRmemoirtrue\@DRversetrue}{\@DRmemoirfalse}
+  \@ifpackageloaded{poemscol}{\@DRpoemscoltrue}{\@DRpoemscolfalse}
+  \@ifpackageloaded{verse}{\@DRversetrue}{\@DRversefalse}
+  \if@DRpoemscol
     \setlength\verse@leftmargin{1sp}
     \patchcmd{\pmclverse}{\item[]}{%
       \item[]%
       \labelsep=\DR@drama@labelsep%
       \labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax%
       \itemsep\DR@drama@speechskip%
-%      \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
       \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent-\leftmargini+\leftmarginii\relax%
       \parsep=\DR@drama@parsep%
       }{}{}
   \else
+    \if@DRverse%
+      \if@DRmemoir%
+        \setlength\verse@leftmargin{\vleftmargin}
+      \fi
+      \pretocmd{\verse}{%
+        \setlength\stanzaskip{\DR@drama@parsep}
+      }{}{}%
+    \fi
     \apptocmd{\verse}{%
       \labelsep=\DR@drama@labelsep%
       \labelwidth=\DR@drama@speakswidth%
       \itemsep\DR@drama@speechskip%
       \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
-      \parsep=\DR@drama@parsep%
     }{}{}%
   \fi%
   \setkeys+{dramatis,drama,sections,character,speaker,stage}{}
