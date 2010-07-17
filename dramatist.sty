@@ -216,13 +216,13 @@
     \else%
       \begin{verse}%
     \fi%
-    \if@DRverse\else%
+    \if@DRverse%\else%
         \setcounter{poemline}{\value{storelineno}}%
     \fi%
       \DR@drama@font%
       \vspace{-\dimexpr\parsep+\partopsep\relax}%
     }{%
-      \if@DRverse\else
+      \if@DRverse%\else
         \setcounter{storelineno}{\value{poemline}}
       \fi
       \if@DRpoemscol
