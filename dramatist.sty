@@ -128,6 +128,8 @@
     \refstepcounter{storelineno}%
   \fi%
 }
+\newlength\DR@saved@leftmargin
+\setlength\DR@saved@leftmargin{0pt}
 \def\actname{Act}
 \def\scenename{Scene}
 \def\drampername{Dramatis Person\ae}
@@ -192,8 +194,12 @@
       \itemsep\DR@drama@speechskip%
       \parsep\DR@drama@parsep%
       \labelsep\DR@drama@labelsep%
+      \topsep\DR@drama@topsep%
+      \partopsep\DR@drama@partopsep%
+      \setlength\DR@saved@leftmargin{\leftmargin}
     }%
     \DR@drama@font%
+    \item\relax
     }{\endlist}
 
 \newenvironment{drama}[1][]{%
@@ -220,8 +226,10 @@
   \labelwidth=\DR@drama@speakswidth%
   \itemsep\DR@drama@speechskip%
   \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
+  \setlength\DR@saved@leftmargin{\leftmargin}
 }
 \newenvironment{DR@drama@verse}{%
+  \@firstdirectiontrue
   \let\DR@pidefault\DR@drama@postitem%
   \let\@listi\DR@listi
   \def\@trivlist{\DR@appendparameters\DR@trivlist}
@@ -623,7 +631,7 @@
 \newenvironment{DR@stage@display}{%
   \let\@trivlist\DR@trivlist
   \list{}{%
-    \leftmargin\DR@stage@leftmargin%
+    \leftmargin\dimexpr-\DR@saved@leftmargin+\DR@stage@leftmargin\relax%
     \rightmargin\DR@stage@rightmargin%
     \topsep\DR@stage@topsep%
     \partopsep\DR@stage@partopsep%
@@ -670,10 +678,12 @@
   {%
     \DR@setvalues{direction}
     \setkeys{stage}{#1}
-    \if@firstdirection\item\relax\fi
+    \if@firstdirection
+      \vspace{-\DR@stage@topsep}%
+      \hspace{\DR@saved@leftmargin}%
+    \fi
     \DR@stage@display#2~%
     \endDR@stage@display
-    \if@firstdirection\par\vskip\DR@stage@topsep\fi
     \global\@firstdirectionfalse
   }%
 }

@@ -29,6 +29,7 @@
     font=\itshape,
     topsep=\baselineskip,
     partopsep=0pt,
+    leftmargin=1.5em
   }
   
   \DRSetup{settings}{stage}{
