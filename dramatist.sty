@@ -157,8 +157,6 @@
 \newcounter{scene}[act]
 \renewcommand{\theact}{\roman{act}}
 \renewcommand{\thescene}{\roman{scene}}
-\newlength\verse@leftmargin
-\setlength\verse@leftmargin{\leftmarginii}
 %%----------------------------------------------------------
 %% Drama
 \DR@define@key{l}{drama}{leftmargin}{0pt}
@@ -166,9 +164,10 @@
 \DR@define@key{l}{drama}{speakswidth}{0pt}
 \DR@define@key{l}{drama}{speaksindent}{0pt}
 \DR@define@key{l}{drama}{speechskip}{0pt}
+\DR@define@key{l}{drama}{topsep}{0pt}
 \DR@define@key{l}{drama}{parsep}{0pt}
+\DR@define@key{l}{drama}{partopsep}{0pt}
 \DR@define@key{l}{drama}{labelsep}{0pt}
-%\DR@define@key{C}{drama}{speakerlabel}{centered,long,short}{short}{%
 \define@choicekey+{drama}{speakerlabel}[\val\nr]{centered,long,short}[short]{%
   \ifcase\nr\relax
     \let\DR@speakerlabel\DR@speakerlabel@centered
@@ -202,37 +201,58 @@
   \setkeys{drama}{#1}
   \DR@drama@prose}{\endDR@drama@prose}
 
+\let\DR@trivlist\@trivlist
+\def\DR@listi{%
+  \topsep\DR@drama@topsep%
+  \partopsep\DR@drama@partopsep%
+  \parsep\DR@drama@parsep%
+  \if@DRpoemscol\else%
+    \leftmargin\DR@drama@leftmargin%
+  \fi
+}
+\def\DR@appendparameters{%
+  \if@DRpoemscol
+    \leftmargin\DR@drama@leftmargin%
+    \advance\leftmargin\runoverindentvalue%
+  \fi
+  \rightmargin\DR@drama@rightmargin%
+  \labelsep=\DR@drama@labelsep%
+  \labelwidth=\DR@drama@speakswidth%
+  \itemsep\DR@drama@speechskip%
+  \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
+}
 \newenvironment{DR@drama@verse}{%
   \let\DR@pidefault\DR@drama@postitem%
-  \list{}{%
-    \leftmargin=\dimexpr-\verse@leftmargin+\DR@drama@leftmargin\relax%
-    \rightmargin\DR@drama@rightmargin%
-  }%
-    \item\relax%
-    \if@DRpoemscol%
-      \begin{poem}%
-        \setcounter{verselinenumber}{\value{storelineno}}%
-        \setcounter{printlineindex}{\value{storeprintlineindex}}%
-    \else%
-      \begin{verse}%
-    \fi%
-    \if@DRverse%\else%
-        \setcounter{poemline}{\value{storelineno}}%
-    \fi%
-      \DR@drama@font%
-      \vspace{-\dimexpr\parsep+\partopsep\relax}%
-    }{%
-      \if@DRverse%\else
-        \setcounter{storelineno}{\value{poemline}}
-      \fi
-      \if@DRpoemscol
-        \end{poem}
-        \setcounter{storelineno}{\value{verselinenumber}}
-        \setcounter{storeprintlineindex}{\value{printlineindex}}
-      \else
-        \end{verse}
-      \fi
-      \endlist
+  \let\@listi\DR@listi
+  \def\@trivlist{\DR@appendparameters\DR@trivlist}
+  \if@DRpoemscol
+    \begin{poem}
+    \setcounter{verselinenumber}{\value{storelineno}}%
+    \setcounter{printlineindex}{\value{storeprintlineindex}}%
+  \else
+  \if@DRverse
+  \setcounter{poemline}{\value{storelineno}}%
+    \setlength{\stanzaskip}{\DR@drama@parsep}
+    \if@DRmemoir
+      \setlength{\vleftmargin}{\DR@drama@leftmargin}
+    \fi
+  \fi
+  \begin{verse}
+  \fi
+  \DR@drama@font%
+  \vspace{-\baselineskip}%
+}{%
+  \if@DRpoemscol
+    \end{poem}
+    \setcounter{storelineno}{\value{verselinenumber}}
+    \setcounter{storeprintlineindex}{\value{printlineindex}}
+  \else
+    \end{verse}
+    \if@DRverse
+      \setcounter{storelineno}{\value{poemline}}
+    \fi
+    \typeout{chiuso verse}
+  \fi
 }
 \newenvironment{versedrama}[1][]{%
   \DR@setvalues{versedrama}%
@@ -601,20 +621,21 @@
 \DR@define@key{c}{stage}{leftdelimiter}{}
 
 \newenvironment{DR@stage@display}{%
-      \list{}{%
-      \leftmargin\DR@stage@leftmargin%
-      \rightmargin\DR@stage@rightmargin%
-      \topsep\DR@stage@topsep%
-      \partopsep\DR@stage@partopsep%
-      \parsep\DR@stage@parsep%
-      \itemsep\DR@stage@itemsep%
-      }
-      \DR@stage@justification%
-      \DR@stage@font%
-      \item[]
-      \DR@stage@leftdelimiter}{%
-      \DR@stage@rightdelimiter%
-      \endlist
+  \let\@trivlist\DR@trivlist
+  \list{}{%
+    \leftmargin\DR@stage@leftmargin%
+    \rightmargin\DR@stage@rightmargin%
+    \topsep\DR@stage@topsep%
+    \partopsep\DR@stage@partopsep%
+    \parsep\DR@stage@parsep%
+    \itemsep\DR@stage@itemsep%
+  }
+  \DR@stage@justification%
+  \DR@stage@font%
+  \item[]
+  \DR@stage@leftdelimiter}{%
+  \DR@stage@rightdelimiter%
+  \endlist
 }
 \newcommand\DR@stage@inline[1]{%
   \DR@stage@leftdelimiter{\DR@stage@font#1}\DR@stage@rightdelimiter
@@ -769,15 +790,6 @@
   leftdelimiter,
 }{}
 
-
-
-% \DR@define@defaults{drama}{%
-%   \DR@drama@speaksindent=-\leftmargin%
-%   \DR@drama@speechskip\itemsep%
-%   \DR@drama@labelsep\labelsep%
-% }
-% \DR@define@defaults{versedrama}{%
-% }
 \DR@define@defaults{act}{%
   \def\DR@sections@namefont{\large\scshape}%
   \def\DR@sections@name{\actname}%
@@ -789,38 +801,6 @@
   \def\DR@sections@name{\scenename}%
   \def\DR@sections@afterskip{2\baselineskip}%
 }
-% \DR@define@defaults{character}{%
-%   \def\DR@character@font{\normalfont\scshape}% \normalfont because \bfseries+\scshape=\bfseries
-% }
-% \DR@define@defaults{speaker}{%
-%   \def\DR@speaker@labelwidth{\@tempdima}%
-%   \def\DR@speaker@font{\scshape}%
-%   \def\DR@speaker@del{:}%
-% }
-% \DR@define@defaults{dramatis}{%
-%   \def\DR@dramatis@rolefont{\scshape}%
-%   \DR@dramatis@leftmargin\z@%
-%   \DR@dramatis@rightmargin\z@%
-%   \def\DR@dramatis@titlename{Dramatis Person\ae}%
-%   \def\DR@dramatis@titlefont{\scshape\Large}%
-%   \def\DR@dramatis@dasep{\hfill}%
-% }
-% \DR@define@defaults{settings}{%
-%   \def\DR@stage@font{\itshape}%
-% }
-% \DR@define@defaults{direction}{%
-%   \DR@stage@topsep\topsep%
-%   \def\DR@stage@font{\itshape}%
-% }
-% \DR@define@defaults{delivery}{%
-%   \def\DR@stage@font{\itshape}%
-%   \def\DR@stage@leftdelimiter{(}%
-%   \def\DR@stage@rightdelimiter{)}%
-% }
-% \DR@define@defaults{set}{%
-%   \def\DR@stage@justification{\centering}%
-%   \def\DR@stage@font{\itshape}%
-% }
 \AtEndOfPackage{
   \InputIfFileExists{\DR@stylefile.dst}
     {\PackageInfo{dramatist}{Load `\DR@stylefile' style.dst}}
@@ -831,34 +811,9 @@
   \@ifclassloaded{memoir}{\@DRmemoirtrue\@DRversetrue}{\@DRmemoirfalse}
   \@ifpackageloaded{poemscol}{\@DRpoemscoltrue}{\@DRpoemscolfalse}
   \@ifpackageloaded{verse}{\@DRversetrue}{\@DRversefalse}
-  \if@DRpoemscol
-    \setlength\verse@leftmargin{1sp}
-    \patchcmd{\pmclverse}{\item[]}{%
-      \item[]%
-      \labelsep=\DR@drama@labelsep%
-      \labelwidth=\dimexpr\DR@drama@speakswidth-\leftmargini+\leftmarginii\relax%
-      \itemsep\DR@drama@speechskip%
-      \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent-\leftmargini+\leftmarginii\relax%
-      \parsep=\DR@drama@parsep%
-      }{}{}
-  \else
-    \if@DRverse%
-      \if@DRmemoir%
-        \setlength\verse@leftmargin{\vleftmargin}
-      \fi
-      \pretocmd{\verse}{%
-        \setlength\stanzaskip{\DR@drama@parsep}
-      }{}{}%
-    \fi
-    \apptocmd{\verse}{%
-      \labelsep=\DR@drama@labelsep%
-      \labelwidth=\DR@drama@speakswidth%
-      \itemsep\DR@drama@speechskip%
-      \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
-    }{}{}%
-  \fi%
   \setkeys+{dramatis,drama,sections,character,speaker,stage}{}
 }
+
 
 %%-------------------------------------------------------------------------------
 %% Errors and Warnings

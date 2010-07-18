@@ -1,14 +1,13 @@
-\documentclass[a5paper,11pt]{memoir}
+\documentclass[a5paper,11pt]{book}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{xjunicode}
 \usepackage[style=classic]{dramatist}
-%\usepackage{fancyhdr}
-%\usepackage{verse}
+\usepackage{fancyhdr}
+\usepackage{verse}
 %\usepackage{poemscol}
-%\usepackage{geometry}
-
+\usepackage{geometry}
 
 \def\testodicontrollo{%
 Questo re di Sparta ebbe con voi comune la morte, per giudizio
@@ -23,8 +22,8 @@ voi; e la sola inutile altrui compassione vi accompagnò nella
 tomba.
 }
 
-% \DRSetup{versedrama}{drama}{leftmargin=2em,
-%   speakswidth=2em,labelsep=0pt,
+% \DRSetup{versedrama}{drama}{
+%   rightmargin=2em,speechskip=2ex
 % }
 
 % \makeatletter
@@ -46,6 +45,8 @@ tomba.
 
 %\setlength\stanzaskip{0pt}
 
+% \poemlines{10}
+
 \begin{document}
 
 \testodicontrollo
@@ -54,13 +55,13 @@ tomba.
 
 \begin{versedrama}
   \speaker{Anfar.}
-  Pur, per quanto sia giusto in te lo sdegno,\\
-  premilo in petto, se sbramarlo or vuoi.\\
-  Io men di te non odio Agide altero;\\
-  e la sua pompa di virtudi antiche,\\
-  finta in biasmo di noi. Sparta ridurre\\
-  qual giá la fea Licurgo, è al par crudele,\\
-  che ambizíosa stolidezza: è tale\\
+  Pur, per quanto sia giusto in te lo sdegno, Pur, per quanto sia giusto in te lo sdegno,\\
+  premilo in petto, se sbramarlo or vuoi.\hspace{\stretch{1}}uè\\
+  Io men di te non odio Agide altero;\hspace{\stretch{1}}uè\\
+  e la sua pompa di virtudi antiche,\hspace{\stretch{1}}uè\\
+  finta in biasmo di noi. Sparta ridurre\hspace{\stretch{1}}uè\\
+  qual giá la fea Licurgo, è al par crudele,\hspace{\stretch{1}}uè\\
+  che ambizíosa stolidezza: è tale\hspace{0pt plus 1filll} uè\\
   \speaker{Agid.}
   Pur, per quanto sia giusto in te lo sdegno,\\
   premilo in petto, se sbramarlo or vuoi.\\
