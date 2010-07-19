@@ -61,7 +61,7 @@
     titlefont=\scshape\Large,
     rolecase=\MakeLowercase,
     rolefont=\scshape,
-    leftmargin=1.5em,
+    leftmargin=0pt,
     indent=-\DR@dramatis@leftmargin,
     topsep=2\baselineskip,
   }
