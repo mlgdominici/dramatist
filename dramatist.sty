@@ -354,7 +354,7 @@
 % \newcommand{\printscenenum}{\DR@sections@numfont \theact\DR@sections@sep\thescene}
 \newcommand{\printscenenum}{\DR@sections@numfont \thescene}
 \newcommand{\printscenetitle}[1]{\DR@sections@titlefont\ #1}
-\def\sceneheadstart{\vspace*{\DR@sections@beforeskip}}
+\def\sceneheadstart{\vspace{\DR@sections@beforeskip}}
 \def\afterscene{\par\nobreak\vskip\DR@sections@afterskip}
 \newcommand\@openscene{%
     \stepcounter{scene}
@@ -407,6 +407,7 @@
 \DR@define@key{c}{character}{desc}{}
 \DR@define@key{c}{character}{actor}{}
 \DR@define@key{c}{character}{rdsep}{}
+\DR@define@key{c}{character}{dasep}{}
 \DR@define@key{c}{character}{speaksadd}{speaks}
 \DR@define@key{b}{character}{entry}{true}
 \DR@define@key{c}{character}{namefont}{}
@@ -562,7 +563,6 @@
 \DR@define@key{c}{dramatis}{descfont}{}
 \DR@define@key{c}{dramatis}{actorfont}{}
 \DR@define@key{c}{dramatis}{headfont}{}
-\DR@define@key{c}{dramatis}{dasep}{}
 \DR@define@key{c}{dramatis}{titlefont}{}
 \DR@define@key{c}{dramatis}{titlename}{}
 \DR@define@key{c}{dramatis}{pagestyle}{empty}
@@ -573,7 +573,7 @@
   {\noexpand\DR@dramatis@rolefont\noexpand\DR@dramatis@rolecase{\DR@character@role}}%
   \ifx\DR@character@desc\relax\else\DR@character@rdsep\fi%
   {\noexpand\DR@dramatis@descfont\DR@character@desc}%
-  \noexpand\DR@dramatis@dasep%
+  \DR@character@dasep%
   {\noexpand\DR@dramatis@actorfont\DR@character@actor}}
 
 \newcommand\drampermark[1]{}
@@ -682,6 +682,7 @@
       \vspace{-\DR@stage@topsep}%
       \hspace{\DR@saved@leftmargin}%
     \fi
+    \goodbreak
     \DR@stage@display#2~%
     \endDR@stage@display
     \global\@firstdirectionfalse
@@ -751,6 +752,7 @@
   desc,
   actor,
   rdsep,
+  dasep,
   speaksadd,
   entry,
   namefont,
@@ -780,7 +782,6 @@
   descfont,
   actorfont,
   headfont,
-  dasep,
   titlefont,
   titlename=\drampername,
   pagestyle,
@@ -803,13 +804,13 @@
 \DR@define@defaults{act}{%
   \def\DR@sections@namefont{\large\scshape}%
   \def\DR@sections@name{\actname}%
-  \def\DR@sections@beforeskip{\baselineskip}%
-  \def\DR@sections@afterskip{\baselineskip}%
+  \setlength\DR@sections@beforeskip{\baselineskip}%
+  \setlength\DR@sections@afterskip{\baselineskip}%
 }
 \DR@define@defaults{scene}{%
   \def\DR@sections@namefont{\scshape}%
   \def\DR@sections@name{\scenename}%
-  \def\DR@sections@afterskip{2\baselineskip}%
+  \setlength\DR@sections@afterskip{2\baselineskip}%
 }
 \AtEndOfPackage{
   \InputIfFileExists{\DR@stylefile.dst}

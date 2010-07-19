@@ -50,6 +50,7 @@
   
   \DRSetup{character}{character}{
     rdsep={,\ },
+    dasep=\hfill,
     namefont=\scshape,
     namecase=\MakeLowercase,
   }
@@ -62,7 +63,6 @@
     leftmargin=1.5em,
     indent=-\DR@dramatis@leftmargin,
     topsep=2\baselineskip,
-    dasep=\hfill
   }
 }
 \ApplyStyle{modern}
