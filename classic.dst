@@ -22,6 +22,7 @@
 
   \DRSetup{speaker}{speaker}{
     font=\itshape,
+    del=.
   }
 
   \DRSetup{direction}{stage}{
