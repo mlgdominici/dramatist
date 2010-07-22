@@ -35,6 +35,7 @@
   \DRSetup{settings}{stage}{
     font=\itshape,
     justification=\centering,
+    topsep=\baselineskip,
   }
   
   \DRSetup{delivery}{stage}{
@@ -54,13 +55,11 @@
     rdsep={,\ },
     dasep=\hfill,
     namefont=\scshape,
-    namecase=\MakeLowercase,
   }
   
   \DRSetup{dramatis}{dramatis}{
     titlename=\drampername,
     titlefont=\scshape\Large,
-    rolecase=\MakeLowercase,
     rolefont=\scshape,
     leftmargin=0pt,
     indent=-\DR@dramatis@leftmargin,

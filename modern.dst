@@ -33,6 +33,7 @@
   }
   
   \DRSetup{settings}{stage}{
+    topsep=\baselineskip,
     font=\itshape,
   }
   
