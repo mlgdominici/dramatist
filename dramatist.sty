@@ -273,7 +273,9 @@
 \expandafter\def\csname enddrama*\endcsname{\endversedrama}
 
 %% Funzioni per le `label'
-\newcommand\DR@speakerlabel@centered{}
+\newcommand\DR@speakerlabel@centered[2]{%
+  \item[\hb@xt@\textwidth{\hss\DR@speaker{#1}\@ifmtarg{#2}{}{\ #2}\hss}]\DR@drama@postitem%
+}
 \newcommand\DR@speakerlabel@long[2]{%
   \item[\DR@speaker{#1}]\@ifmtarg{#2}{}{\hskip-\DR@drama@labelsep\hskip 0pt plus 4pt\ #2\hskip\DR@drama@labelsep}\DR@drama@postitem
 }

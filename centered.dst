@@ -1,28 +1,28 @@
 \ProvidesFileSVN{$Id$}[v0.1][`centered' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
+    speakerlabel=centered,
     leftmargin=0pt,
     speaksindent=0pt,
     labelsep=0pt,
-    speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
-    speechskip=\baselineskip,
+    speechskip={.75\baselineskip plus 4pt minus 2pt},
     parsep=0pt,
-    postitem=\\,
+    postitem=\leavevmode\vadjust{\nobreak}\vskip.25\baselineskip,
   }
 
   \DRSetup{versedrama}{drama}{
+    speakerlabel=centered,
     leftmargin=0pt,
     speaksindent=0pt,
     labelsep=0pt,
-    speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
-    speechskip=\baselineskip,
+    speechskip={.75\baselineskip plus 4pt minus 2pt},
     parsep=0pt,
-    postitem=\\,
+    postitem=\leavevmode\vadjust{\nobreak}\vskip.25\baselineskip,
   }
 
   \DRSetup{speaker}{speaker}{
-    font=\itshape,
-    del=.
+    case=\MakeLowercase,
+    font=\scshape,
   }
 
   \DRSetup{direction}{stage}{
@@ -35,7 +35,6 @@
   \DRSetup{settings}{stage}{
     font=\itshape,
     justification=\centering,
-    topsep=\baselineskip,
   }
   
   \DRSetup{delivery}{stage}{
@@ -55,6 +54,7 @@
     rdsep={,\ },
     dasep=\hfill,
     namefont=\scshape,
+    namecase=\MakeLowercase,
   }
   
   \DRSetup{dramatis}{dramatis}{
