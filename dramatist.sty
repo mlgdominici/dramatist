@@ -77,7 +77,7 @@
 }
 \newcommand\DR@define@glengthkey[3]{%
   \expandafter\newlength\csname DR@#1@#2\endcsname%
-  \define@cmdkey{#1}[DR@#1@]{#2}[#3]{%
+  \define@key{#1}{#2}[#3]{%
     \global\expandafter\setlength\csname DR@#1@#2\endcsname{##1}%
   }%
 }
@@ -221,6 +221,11 @@
   \if@DRpoemscol
     \leftmargin\DR@drama@leftmargin%
     \advance\leftmargin\runoverindentvalue%
+    \setcounter{verselinenumber}{\value{storelineno}}%
+    \setcounter{printlineindex}{\value{storeprintlineindex}}%
+  \fi
+  \if@DRverse
+    \setcounter{poemline}{\value{storelineno}}%
   \fi
   \rightmargin\DR@drama@rightmargin%
   \labelsep=\DR@drama@labelsep%
@@ -236,11 +241,8 @@
   \def\@trivlist{\DR@appendparameters\DR@trivlist}
   \if@DRpoemscol
     \begin{poem}
-    \setcounter{verselinenumber}{\value{storelineno}}%
-    \setcounter{printlineindex}{\value{storeprintlineindex}}%
   \else
   \if@DRverse
-  \setcounter{poemline}{\value{storelineno}}%
     \setlength{\stanzaskip}{\DR@drama@parsep}
     \if@DRmemoir
       \setlength{\vleftmargin}{\DR@drama@leftmargin}
@@ -260,7 +262,6 @@
     \if@DRverse
       \setcounter{storelineno}{\value{poemline}}
     \fi
-    \typeout{chiuso verse}
   \fi
 }
 \newenvironment{versedrama}[1][]{%
@@ -274,7 +275,7 @@
 
 %% Funzioni per le `label'
 \newcommand\DR@speakerlabel@centered[2]{%
-  \item[\hb@xt@\textwidth{\hss\DR@speaker{#1}\@ifmtarg{#2}{}{\ #2}\hss}]\DR@drama@postitem%
+  \item[\hb@xt@\textwidth{\hss\DR@speaker{#1}\@ifmtarg{#2}{}{#2}\hss}]\DR@drama@postitem%
 }
 \newcommand\DR@speakerlabel@long[2]{%
   \item[\DR@speaker{#1}]\@ifmtarg{#2}{}{\hskip-\DR@drama@labelsep\hskip 0pt plus 4pt\ #2\hskip\DR@drama@labelsep}\DR@drama@postitem
@@ -425,7 +426,8 @@
 \newcommand\dramaphantom[2][0pt]{%
   \settowidth{\@tempdimb}{#2}%
   \addtolength{\@tempdimb}{\dimexpr-\DR@speaker@labelwidth+\labelwidth-#1\relax}
-  \hskip\@tempdimb}
+  \hskip\@tempdimb
+}
 \newcommand\phantomspeaker[1]{{\DR@speaker{#1}}\hskip-\labelwidth}
 
 \newcommand\DR@character@label{%
@@ -687,7 +689,7 @@
       \hspace{\DR@saved@leftmargin}%
     \fi
     \goodbreak
-    \DR@stage@display#2~%
+    \DR@stage@display#2\nobreak%
     \endDR@stage@display
     \global\@firstdirectionfalse
   }%

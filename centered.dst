@@ -23,6 +23,7 @@
   \DRSetup{speaker}{speaker}{
     case=\MakeLowercase,
     font=\scshape,
+    labelwidth=0pt,
   }
 
   \DRSetup{direction}{stage}{
@@ -30,6 +31,8 @@
     topsep=\baselineskip,
     partopsep=0pt,
     justification=\centering,
+    leftdelimiter=(,
+    rightdelimiter=),
   }
   
   \DRSetup{settings}{stage}{
@@ -39,8 +42,8 @@
   
   \DRSetup{delivery}{stage}{
     font=\itshape,
-    leftdelimiter=[,
-    rightdelimiter=],
+    leftdelimiter=,
+    rightdelimiter=,
   }
   
   \DRSetup{set}{stage}{
