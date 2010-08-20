@@ -52,7 +52,7 @@
   \DRSetup{character}{character}{
     rdsep={,\ },
     dasep=\hfill,
-    namefont=\scshape,
+    namefont=\normalfont\scshape,
     namecase=\MakeLowercase,
   }
   

@@ -54,7 +54,7 @@
     dirname=\DR@character@role,
     rdsep={,\ },
     dasep=\hfill,
-    namefont=\scshape,
+    namefont=\normalfont\scshape,
   }
   
   \DRSetup{dramatis}{dramatis}{
