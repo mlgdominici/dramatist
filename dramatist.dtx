@@ -84,11 +84,17 @@ and the derived files           dramatist.ins,
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{libertine}
+\usepackage{inconsolata}
+\usepackage{xkvview}
 \usepackage{\jobname}
 \usepackage[numbered]{hypdoc}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
+\MakeShortVerb{\|}
+\newcommand*\pkgname{\textsf}
+\newcommand*\envname{\textsf}
+\newcommand*\optname{\textsf}
 \begin{document}
   \DocInput{\jobname.dtx}
 \end{document}
@@ -130,15 +136,45 @@ and the derived files           dramatist.ins,
 %  \PrintIndex
 %}
 %
-%\section{Implementation}
+%  \section{Implementation}
 %    \begin{macrocode}
 %<*package>
 %    \end{macrocode}
+% \subsection{Loading auxiliary packages}
+% We need to load some auxiliary package in order to simplify our
+% job. We load \pkgname{xkeyval}, particularly, to have a nice
+% interface for ``key = value'' definitions.
 %    \begin{macrocode}
 \RequirePackage{xspace}
 \RequirePackage{xkeyval}
 \RequirePackage{ifmtarg}
 \RequirePackage{etoolbox}
+%    \end{macrocode}
+% \subsection{Private tools}
+% A series of tools making ``key = value'' definitions simpler, follows here.
+%
+% \begin{macro}{\DR@define@key}
+% This is a general dispatcher for more focused macros. It takes four arguments:
+% \begin{enumerate}
+% \item An \texttt{id}, dispatching to the needed type of low level
+%   definition's macro, borrowed from \pkgname{xkeyval}. Five values
+%   are accepted:
+%   \begin{description}
+%   \item[c] used for commands, calls |\define@cmdkey| via
+%     |\DR@define|;
+%   \item[l] used for lengths, calls the generic |\define@key| macro,
+%     after defining the new length;
+%   \item[L] same use, but for lengths which need to be defined
+%     globally;
+%   \item[b] used for booleans, calls |\define@boolkey|;
+%   \item[C] used for restricted choice ``key = value'' macros, calls
+%     |\define@choicekey|;
+%   \end{description}
+% \item the \texttt{family} the key to be defined belongs to;
+% \item the \texttt{key} to be defined;
+% \item the \texttt{default} value of the key to be defined.   
+% \end{enumerate}
+%    \begin{macrocode}
 \newcommand\DR@define@key[4]{% <id><fam><key><default>
   \ifx#1c%
     \DR@define{command}{#2}{#3}{#4}%
@@ -160,60 +196,141 @@ and the derived files           dramatist.ins,
     \fi%
   \fi%
 }
+%    \end{macrocode}
+% \end{macro}
+% The following macros do the actual work. |\DR@define| is the actual
+% dispatcher, while the |\DR@define@<spec>| macros invoke the
+% respective macros from \pkgname{xkeyval}.
+% \begin{macro}{\DR@define}
+%    \begin{macrocode}
 \newcommand\DR@define[1]{\csname DR@define@#1key\endcsname}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@define@commandkey}
+%    \begin{macrocode}
 \newcommand\DR@define@commandkey[3]{%
   \define@cmdkey{#1}[DR@#1@]{#2}[#3]{}%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@define@lengthkey}
+%    \begin{macrocode}
 \newcommand\DR@define@lengthkey[3]{%
   \expandafter\newlength\csname DR@#1@#2\endcsname%
   \define@key{#1}{#2}[#3]{%
     \expandafter\setlength\csname DR@#1@#2\endcsname{##1}%
   }%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@define@glengthkey}
+%    \begin{macrocode}
 \newcommand\DR@define@glengthkey[3]{%
   \expandafter\newlength\csname DR@#1@#2\endcsname%
   \define@key{#1}{#2}[#3]{%
     \global\expandafter\setlength\csname DR@#1@#2\endcsname{##1}%
   }%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@define@boolkey}
+%    \begin{macrocode}
 \newcommand\DR@define@boolkey[3]{%
   \define@boolkey+{#1}[DR@#1@]{#2}[#3]{}{%
     \PackageWarning{dramatist}{Invalid input for key `#2' in family `#1'}}%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@define@choicekey}
+%    \begin{macrocode}
 \newcommand\DR@define@choicekey[5]{%
   \define@choicekey+{#1}{#2}[\val\nr]{#3}[#4]{#5}{%
     \PackageWarning{dramatist}{Invalid input for key `#2' in family `#1'}}%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@define@defaults}
+%   This macro sets default values (\texttt{arg \#2}) for keys
+%   belonging to a specific family (\texttt{arg \#1}). Do I really
+%   nead this one anymore? It's used now only for acts and scenes, and
+%   I'm planning to either remove or deeply rework them.
+%    \begin{macrocode}
 \newcommand\DR@define@defaults[2]{%
   \expandafter\def\csname default@#1\endcsname{#2}%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@setvalues}
+%   |\DR@setvalues{<id>}| is called at the beginning of a specific
+%   user macro or environment and sets the default values collected
+%   both via |\DR@define@defaults| and |\presetkeys| from
+%   \pkgname{xkeyval}.
+%    \begin{macrocode}
 \newcommand\DR@setvalues[1]{%
   \csname default@#1\endcsname%
   \csname setup@#1\endcsname%
 }
-%%----------------------------------------------------------------------
-%% Public Tools
+%    \end{macrocode}
+% \end{macro}
+% \subsection{Styles}
+% The macros described in this section will be used for changing, in a
+% consistent way, the key values from the default ones.
+%
+% \begin{macro}{\DRSetup}
+%   |\DRSetup| makes global changes to the customizable elements of a
+%   macro or environment. It appends the new values (collected in
+%   |\presetkeys|) to |\setup@<id>|, where |<id>|, supplied through
+%   |arg #1|, is the name of the macro or environment to be
+%   modified. We must ensure that |\setkeys| will be called in order
+%   to have the changes applied. (Should I move this in
+%   |\DR@setvalues|, thus reducing calls?)
+%    \begin{macrocode}
 \newcommand\DRSetup[3]{% <name><fam><spec>
   \expandafter\appto\csname setup@#1\endcsname{%
     \presetkeys{#2}{#3}{}%
     \setkeys{#2}{}%
     }%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\NewStyle}
+%   This macro will create a new style. We simply construct from |arg #1| 
+%   an internal macro which holds the code specified in |arg #2|. Usually 
+%   we will have several |\DRSetup| macros in the second argument.
+%    \begin{macrocode}
 \newcommand\NewStyle[2]{% <name><code>
   \expandafter\def\csname DR@style@#1\endcsname{#2}
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\ApplyStyle}
+%   |\ApplyStyle{<id>}| calls the code held in |\NewStyle{<id>}| and
+%   so it applies a style.
+%    \begin{macrocode}
 \newcommand\ApplyStyle[1]{%
   \csname DR@style@#1\endcsname
 }
-%%----------------------------------------------------------------------
+%    \end{macrocode}
+% \end{macro}
+% \subsection{Auxiliary macros}
+% We need a bunch of new conditionals.
+%    \begin{macrocode}
 \@ifundefined{if@openright}{\newif\if@openright}{}
 \newif\if@cglist
 \newif\if@DRpoemscol
 \newif\if@DRverse
 \newif\if@DRmemoir
 \newif\if@firstdirection
+%    \end{macrocode}
+% We also need to save the original meaning of |\@roman| and |\roman|
+% since \pkgname{spanish.ldf} fiddles with it.
+%    \begin{macrocode}
 \def\DRroman#1{\expandafter\romannumeral\csname c@#1\endcsname}
 \def\DR@roman#1{\romannumeral #1}
+%    \end{macrocode}
+% We will have to deal with different packages implementing the
+% numbering of verse lines. So we need an abstraction layer.
+%    \begin{macrocode}
 \newcommand\DR@linenumberwarning{}
 \newcommand\DR@setlinenumber{%
   \setcounter{storelineno}{0}%
@@ -223,11 +340,36 @@ and the derived files           dramatist.ins,
     \refstepcounter{storelineno}%
   \fi%
 }
+%    \end{macrocode}
+% An useful length for later use.
+%    \begin{macrocode}
 \newlength\DR@saved@leftmargin
 \setlength\DR@saved@leftmargin{0pt}
+%    \end{macrocode}
+% Default names for the main document divisions related to
+% drama. These will be set later language-wise, but we need something
+% to be used when \pkgname{babel} is not loaded.
+%    \begin{macrocode}
 \def\actname{Act}
 \def\scenename{Scene}
 \def\drampername{Dramatis Person\ae}
+%    \end{macrocode}
+% Some useful counters.
+%    \begin{macrocode}
+\newcounter{storelineno}
+\setcounter{storelineno}{0}
+\if@DRpoemscol\else\refstepcounter{storelineno}\fi
+\newcounter{storeprintlineindex}
+\newcounter{character}
+\newcounter{act}
+\newcounter{scene}[act]
+\renewcommand{\theact}{\roman{act}}
+\renewcommand{\thescene}{\roman{scene}}
+%    \end{macrocode}
+% \subsection{Options}
+% Currently \pkgname{\jobname} offers only two package options:
+% different line numberings for verse drama and style loading.
+%    \begin{macrocode}
 \def\DR@lnpa{}
 \def\DR@lnps{}
 \define@choicekey+{dramatist.sty}{numbering}[\val\nr]{document,act,scene}{%
@@ -244,18 +386,10 @@ and the derived files           dramatist.ins,
 }
 \ExecuteOptionsX{style}
 \ProcessOptionsX
-\newcounter{storelineno}
-\setcounter{storelineno}{0}
-\if@DRpoemscol\else
-\refstepcounter{storelineno}\fi
-\newcounter{storeprintlineindex}
-\newcounter{character}
-\newcounter{act}
-\newcounter{scene}[act]
-\renewcommand{\theact}{\roman{act}}
-\renewcommand{\thescene}{\roman{scene}}
-%%----------------------------------------------------------
-%% Drama
+%    \end{macrocode}
+% \subsection{Environments for dialogues}
+% We start defining the customizable elements for the dialogues.
+%    \begin{macrocode}
 \DR@define@key{l}{drama}{leftmargin}{0pt}
 \DR@define@key{l}{drama}{rightmargin}{0pt}
 \DR@define@key{l}{drama}{speakswidth}{0pt}
@@ -276,7 +410,17 @@ and the derived files           dramatist.ins,
 }{\PackageWarning{dramatist}{Invalid input for key `drama' in family `speakerlabel'}}
 \DR@define@key{c}{drama}{font}{}
 \DR@define@key{c}{drama}{postitem}{}
-
+%    \end{macrocode}
+% \begin{macro}{DR@drama@prose}
+%   This environment is the internal version of \envname{drama},
+%   \emph{i.~e.} the environment for dialogues in prose. So, no need
+%   for complex stuff, only a list with convenient parameters, and an
+%   hook for font setting. We also need to initialize |\DR@pidefault|
+%   to |\DR@drama@postitem| and warn the user in case he chose to
+%   attach numbers to the paragraph lines via the \optname{numbering}
+%   option. Thi task should be performed instead by a dedicated
+%   package like \pkgname{lineno}.
+%    \begin{macrocode}
 \newenvironment{DR@drama@prose}{%
   \@firstdirectiontrue
   \let\DR@pidefault\DR@drama@postitem
@@ -297,12 +441,21 @@ and the derived files           dramatist.ins,
     \vspace{-\baselineskip}%
     \item\relax
     }{\endlist}
-
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{drama}
+%   The user environment for dialogues in prose. Before calling
+%   |DR@drama@prose| we set the global parameters
+%   (|\DR@setvalues{drama}|) and, if specified through the optional
+%   argument, local ones.
+%    \begin{macrocode}
 \newenvironment{drama}[1][]{%
   \DR@setvalues{drama}
   \setkeys{drama}{#1}
   \DR@drama@prose}{\endDR@drama@prose}
-
+%    \end{macrocode}
+% \end{macro}
+%%    \begin{macrocode}
 \let\DR@trivlist\@trivlist
 \def\DR@listi{%
   \topsep\DR@drama@topsep%
