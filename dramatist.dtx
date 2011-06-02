@@ -86,12 +86,14 @@ and the derived files           dramatist.ins,
 \usepackage{libertine}
 \usepackage{inconsolata}
 \usepackage{xkvview}
+\usepackage{paralist}
 \usepackage{\jobname}
 \usepackage[numbered]{hypdoc}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
 \MakeShortVerb{\|}
+\newcommand*\clsname{\textsf}
 \newcommand*\pkgname{\textsf}
 \newcommand*\envname{\textsf}
 \newcommand*\optname{\textsf}
@@ -101,7 +103,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1253}
+% \CheckSum{1243}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -130,13 +132,15 @@ and the derived files           dramatist.ins,
 %
 %\maketitle
 %
+%\tableofcontents
+%
 %\changes{v2.0}{2011/06/02}{First public release}
 %\StopEventually{^^A
-%  \PrintChanges
-%  \PrintIndex
-%}
+% \PrintChanges
+% \PrintIndex
+% }
 %
-%  \section{Implementation}
+%   \section{Implementation}
 %    \begin{macrocode}
 %<*package>
 %    \end{macrocode}
@@ -455,8 +459,37 @@ and the derived files           dramatist.ins,
   \DR@drama@prose}{\endDR@drama@prose}
 %    \end{macrocode}
 % \end{macro}
-%%    \begin{macrocode}
+% Working with dialogues in verse is more complex, since we don't want
+% to provide a dedicated verse environment, rather we want to be able
+% to use transparently the environment provided by the class or by a
+% dedicated package. So we need to support
+% \begin{inparaenum}
+% \item the standard class \envname{verse} environment;
+% \item the \envname{verse} environment from \pkgname{verse} package
+%   or \clsname{memoir} class;
+% \item the \envname{poem} environment from \pkgname{poemscol}
+%   package.
+% \end{inparaenum}
+% These are the different \envname{verse} environments I'm aware
+% of. Alternative classes contain, usually, a clone of the standard
+% \envname{verse} environment.
+%
+% The user needs not to call the environment himself, the
+% \envname{versedrama} environment selects automatically the right
+% one.
+%
+% \begin{macro}{\DR@trivlist}
+% Redefining such environments (and keeping them in sync with the
+% original) would be a cumbersome burden. Instead, the package
+% installs the convenient patches in suitable places. To do so, we
+% need to save the original version of |\@trivlist| 
+%    \begin{macrocode}
 \let\DR@trivlist\@trivlist
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@listi}
+%   and use a modified version of |\@listi|.
+%    \begin{macrocode}
 \def\DR@listi{%
   \topsep\DR@drama@topsep%
   \partopsep\DR@drama@partopsep%
@@ -465,6 +498,12 @@ and the derived files           dramatist.ins,
     \leftmargin\DR@drama@leftmargin%
   \fi
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@appendparameters}
+%   The patches are installed through |\DR@appendparameters| and
+%   depend by the chosen \envname{verse} environment.
+%    \begin{macrocode}
 \def\DR@appendparameters{%
   \if@DRpoemscol
     \leftmargin\DR@drama@leftmargin%
@@ -482,6 +521,15 @@ and the derived files           dramatist.ins,
   \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
   \setlength\DR@saved@leftmargin{\leftmargin}
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{DR@drama@verse}
+%   This is the internal version of the \envname{versedrama}
+%   environment. We ensure that patches are loaded and then we start
+%   the needed \envname{verse} environment. In the final argument we
+%   close said environment and reset suitably the verse number
+%   counter.
+%    \begin{macrocode}
 \newenvironment{DR@drama@verse}{%
   \@firstdirectiontrue
   \let\DR@pidefault\DR@drama@postitem%
@@ -489,13 +537,9 @@ and the derived files           dramatist.ins,
   \def\@trivlist{\DR@appendparameters\DR@trivlist}
   \if@DRpoemscol
     \begin{poem}
-  \else
-  \if@DRverse
-    \setlength{\stanzaskip}{\DR@drama@parsep}
-    \if@DRmemoir
-      \setlength{\vleftmargin}{\DR@drama@leftmargin}
-    \fi
-  \fi
+      \else \if@DRverse \setlength{\stanzaskip}{\DR@drama@parsep}
+      \if@DRmemoir \setlength{\vleftmargin}{\DR@drama@leftmargin} \fi
+      \fi
   \begin{verse}
   \fi
   \DR@drama@font%
@@ -512,28 +556,51 @@ and the derived files           dramatist.ins,
     \fi
   \fi
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{versedrama}
+%   As for \envname{drama}, \envname{versedrama} is a simple wrapper
+%   for its internal version. Before we load, of course, the values
+%   for each parameter, both global and local ones.
+%    \begin{macrocode}
 \newenvironment{versedrama}[1][]{%
   \DR@setvalues{versedrama}%
   \setkeys{drama}{#1}%
   \DR@drama@verse}{\endDR@drama@verse}
-
-%% Un tentativo di compatibilità con le versioni precedenti? Mi pare poco...
-\expandafter\def\csname drama*\endcsname{\versedrama}
-\expandafter\def\csname enddrama*\endcsname{\endversedrama}
-
-%% Funzioni per le `label'
+%    \end{macrocode}
+% \end{macro}
+% Our environments for the dialogues are, after all, lists; so it's
+% convenient to typeset the speaker name and, when possible, an
+% initial direction, in the item label. But item labels are not
+% flexible enough to be formatted \emph{ad libitum} from
+% inside. \emph{E.~g.} long directions spanning multiple lines should
+% go outside the item label, but we need them inside when typesetting
+% the name of the speaker centered. So we provide three different kind
+% of labels.
+% \begin{macro}{\DR@speakerlabel@centered}
+%    \begin{macrocode}
 \newcommand\DR@speakerlabel@centered[2]{%
   \item[\hb@xt@\textwidth{\hss\DR@speaker{#1}\@ifmtarg{#2}{}{#2}\hss}]\DR@drama@postitem%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@speakerlabel@long}
+%    \begin{macrocode}
 \newcommand\DR@speakerlabel@long[2]{%
   \item[\DR@speaker{#1}]\@ifmtarg{#2}{}{\hskip-\DR@drama@labelsep\hskip 0pt plus 4pt\ #2\hskip\DR@drama@labelsep}\DR@drama@postitem
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@speakerlabel@short}
+%    \begin{macrocode}
 \newcommand\DR@speakerlabel@short[2]{%
   \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}\@ifmtarg{#2}{}{\ #2}}]\DR@drama@postitem
 }
+%    \end{macrocode}
+% \end{macro}
 
-%%------------------------------------------------------------------------
-%% Document divisions
+% \subsection{Document divisions}
+%    \begin{macrocode}
 \DR@define@key{c}{sections}{namefont}{}
 \DR@define@key{c}{sections}{numfont}{\DR@sections@namefont}
 \DR@define@key{c}{sections}{titlefont}{}
