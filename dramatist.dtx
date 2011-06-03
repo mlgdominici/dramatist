@@ -48,13 +48,18 @@ Massimiliano Dominici.
 
 This work consists of the file  dramatist.dtx
 and the derived files           dramatist.ins,
-                                dramatist.pdf and
-                                dramatist.sty.
-
+                                dramatist.pdf,
+                                dramatist.sty,
+                                modern.dst,
+                                classic.dst and
+                                centered.dst
 \endpostamble
 \usedir{tex/latex/dramatist}
 \generate{
   \file{\jobname.sty}{\from{\jobname.dtx}{package}}
+  \file{modern.dst}{\from{\jobname.dtx}{modern}}
+  \file{classic.dst}{\from{\jobname.dtx}{classic}}
+  \file{centered.dst}{\from{\jobname.dtx}{centered}}
 }
 %</install>
 %<install>\endbatchfile
@@ -103,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1175}
+% \CheckSum{1310}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -1322,9 +1327,217 @@ and the derived files           dramatist.ins,
 *******************************************^^J%
 }}
 \InputIfFileExists{\jobname.cfg}{\@foundfile}{\DR@inputfilewarning}
-\endinput
 %    \end{macrocode}
 %    \begin{macrocode}
 %</package>
+%<*modern>
+%    \end{macrocode}
+%    \begin{macrocode}
+\ProvidesFileSVN{$Id$}[v0.1][`modern' style for `dramatist' package]
+\NewStyle{modern}{%
+  \DRSetup{drama}{drama}{
+    leftmargin=1.5em,
+    speaksindent=0pt,
+    labelsep=1em,
+    speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
+    speechskip=0pt,
+    parsep=0pt,
+    postitem=\hskip 0pt plus 4pt minus 4pt,
+  }
+  \DRSetup{versedrama}{drama}{
+    leftmargin=1.5em,
+    speaksindent=0pt,
+    labelsep=1em,
+    speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
+    speechskip=0pt,
+    parsep=0pt,
+    postitem=\hskip 0pt plus 4pt minus 4pt,
+  }
+  \DRSetup{speaker}{speaker}{
+    case=\MakeLowercase,
+    font=\scshape,
+  }
+  \DRSetup{direction}{stage}{
+    font=\itshape,
+    topsep=\baselineskip,
+    partopsep=0pt,
+    leftmargin=1.5em
+  }  
+  \DRSetup{settings}{stage}{
+    topsep=\baselineskip,
+    font=\itshape,
+  }  
+  \DRSetup{delivery}{stage}{
+    font=\itshape,
+    leftdelimiter=(,
+    rightdelimiter=),
+  }  
+  \DRSetup{set}{stage}{
+    topsep=\baselineskip,
+    font=\itshape,
+    justification=\centering,
+  }  
+  \DRSetup{character}{character}{
+    rdsep={,\ },
+    dasep=\hfill,
+    namefont=\normalfont\scshape,
+    namecase=\MakeLowercase,
+  }  
+  \DRSetup{dramatis}{dramatis}{
+    titlename=\drampername,
+    titlefont=\scshape\Large,
+    rolecase=\MakeLowercase,
+    rolefont=\scshape,
+    leftmargin=1.5em,
+    indent=-\DR@dramatis@leftmargin,
+    topsep=2\baselineskip,
+  }
+}
+\ApplyStyle{modern}
+%    \end{macrocode}
+%    \begin{macrocode}
+%</modern>
+%<*classic>
+%    \end{macrocode}
+%    \begin{macrocode}
+\ProvidesFileSVN{$Id$}[v0.1][`classic' style for `dramatist' package]
+\NewStyle{classic}{%
+  \DRSetup{drama}{drama}{
+    leftmargin=0pt,
+    speaksindent=1em,
+    labelsep=.5em,
+    speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
+    speechskip=0pt,
+    parsep=0pt,
+    postitem=\hskip 0pt plus 4pt minus 4pt,
+  }
+  \DRSetup{versedrama}{drama}{
+    leftmargin=0pt,
+    speaksindent=1em,
+    labelsep=.5em,
+    speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
+    speechskip=0pt,
+    parsep=0pt,
+    postitem=\hskip 0pt plus 4pt minus 4pt,
+  }
+  \DRSetup{speaker}{speaker}{
+    font=\itshape,
+    del=.
+  }
+  \DRSetup{direction}{stage}{
+    font=\itshape,
+    topsep=\baselineskip,
+    partopsep=0pt,
+    justification=\centering,
+  }  
+  \DRSetup{settings}{stage}{
+    font=\itshape,
+    justification=\centering,
+    topsep=\baselineskip,
+  }  
+  \DRSetup{delivery}{stage}{
+    font=\itshape,
+    leftdelimiter=[,
+    rightdelimiter=],
+  }  
+  \DRSetup{set}{stage}{
+    topsep=\baselineskip,
+    font=\itshape,
+    justification=\centering,
+  }  
+  \DRSetup{character}{character}{
+    dirname=\DR@character@role,
+    rdsep={,\ },
+    dasep=\hfill,
+    namefont=\normalfont\scshape,
+  }  
+  \DRSetup{dramatis}{dramatis}{
+    titlename=\drampername,
+    titlefont=\scshape\Large,
+    rolefont=\scshape,
+    leftmargin=0pt,
+    indent=-\DR@dramatis@leftmargin,
+    topsep=2\baselineskip,
+  }
+}
+\ApplyStyle{classic}
+%    \end{macrocode}
+%    \begin{macrocode}
+%</classic>
+%    \end{macrocode}
+%    \begin{macrocode}
+%<*centered>
+%    \end{macrocode}
+%    \begin{macrocode}
+\ProvidesFileSVN{$Id$}[v0.1][`centered' style for `dramatist' package]
+\NewStyle{centered}{%
+  \DRSetup{drama}{drama}{
+    speakerlabel=centered,
+    leftmargin=0pt,
+    speaksindent=0pt,
+    labelsep=0pt,
+    speechskip={.75\baselineskip plus 4pt minus 2pt},
+    parsep=0pt,
+    postitem=\leavevmode\vadjust{\nobreak}\vskip.25\baselineskip,
+  }
+  \DRSetup{versedrama}{drama}{
+    speakerlabel=centered,
+    leftmargin=0pt,
+    speaksindent=0pt,
+    labelsep=0pt,
+    speechskip={.75\baselineskip plus 4pt minus 2pt},
+    parsep=0pt,
+    postitem=\leavevmode\vadjust{\nobreak}\vskip.25\baselineskip,
+  }
+  \DRSetup{speaker}{speaker}{
+    case=\MakeLowercase,
+    font=\scshape,
+    labelwidth=0pt,
+  }
+  \DRSetup{direction}{stage}{
+    font=\itshape,
+    topsep=\baselineskip,
+    partopsep=0pt,
+    justification=\centering,
+    leftdelimiter=(,
+    rightdelimiter=),
+  }  
+  \DRSetup{settings}{stage}{
+    font=\itshape,
+    justification=\centering,
+  }  
+  \DRSetup{delivery}{stage}{
+    font=\itshape,
+    leftdelimiter=,
+    rightdelimiter=,
+  }  
+  \DRSetup{set}{stage}{
+    topsep=\baselineskip,
+    font=\itshape,
+    justification=\centering,
+  }  
+  \DRSetup{character}{character}{
+    dirname=\DR@character@role,
+    rdsep={,\ },
+    dasep=\hfill,
+    namefont=\normalfont\scshape,
+    namecase=\MakeLowercase,
+  }  
+  \DRSetup{dramatis}{dramatis}{
+    titlename=\drampername,
+    titlefont=\scshape\Large,
+    rolefont=\scshape,
+    leftmargin=0pt,
+    indent=-\DR@dramatis@leftmargin,
+    topsep=2\baselineskip,
+  }
+}
+\ApplyStyle{centered}
+%    \end{macrocode}
+%    \begin{macrocode}
+%</centered>
+%    \end{macrocode}
+%    \begin{macrocode}
+%<package|modern|classic|centered>\endinput
 %    \end{macrocode}
 %\Finale
