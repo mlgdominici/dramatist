@@ -1160,8 +1160,10 @@ and the derived files           dramatist.ins,
 }
 %    \end{macrocode}
 % \end{macro}
-%%-------------------------------------------------------------------------------
-%% Languages
+% \subsection{Localization}
+% This code is loaded only whith \pkgname{babel}. Otherwise the user
+% is left on her own. I should collect more language settings and
+% support \pkgname{polyglossia} too.
 %    \begin{macrocode}
 \@ifpackageloaded{babel}{
   \addto\captionsitalian{%
@@ -1185,9 +1187,11 @@ and the derived files           dramatist.ins,
     \def\drampername{Personajes}
   }
 }{}
-
-%%-------------------------------------------------------------------------------
-%% Configuration
+%    \end{macrocode}
+% \subsection{Default settings}
+% These are mostly dummy defaults. Most values will be overwritten by
+% the chosen style. Default one is \optname{modern}.
+%    \begin{macrocode}
 \presetkeys{drama}{
   leftmargin,
   rightmargin,
@@ -1265,7 +1269,10 @@ and the derived files           dramatist.ins,
   rightdelimiter,
   leftdelimiter,
 }{}
-
+%    \end{macrocode}
+% Again, this should be rewritten; the interface for document division
+% should be either removed or conformed to the rest.
+%    \begin{macrocode}
 \DR@define@defaults{act}{%
   \def\DR@sections@namefont{\large\scshape}%
   \def\DR@sections@name{\actname}%
@@ -1277,22 +1284,30 @@ and the derived files           dramatist.ins,
   \def\DR@sections@name{\scenename}%
   \setlength\DR@sections@afterskip{2\baselineskip}%
 }
+%    \end{macrocode}
+% The chosen style is loaded at the end of the package in order to
+% ensure that (dummy) defaults will be overwritten.
+%    \begin{macrocode}
 \AtEndOfPackage{
   \InputIfFileExists{\DR@stylefile.dst}
     {\PackageInfo{dramatist}{Load `\DR@stylefile' style.dst}}
     {\input{modern.dst}
      \PackageWarning{dramatist}{File \DR@stylefile.dst not found. Load default `modern' style}}
 }
+%    \end{macrocode}
+% Finally, at the beginning of the document we check which
+% \envname{verse} environment we ought to deal with and activate
+% values for each key.
+%    \begin{macrocode}
 \AtBeginDocument{
   \@ifclassloaded{memoir}{\@DRmemoirtrue\@DRversetrue}{\@DRmemoirfalse}
   \@ifpackageloaded{poemscol}{\@DRpoemscoltrue}{\@DRpoemscolfalse}
   \@ifpackageloaded{verse}{\@DRversetrue}{\@DRversefalse}
   \setkeys+{dramatis,drama,sections,character,speaker,stage}{}
 }
-
-
-%%-------------------------------------------------------------------------------
-%% Errors and Warnings
+%    \end{macrocode}
+% \subsection{Errors and Warnings}
+%    \begin{macrocode}
 \newcommand\DR@lnpwarning{The option `numbering' is meaningless outside the%
                             `versedrama' environment}
 \newcommand\DR@checkcgwwarning{Dimension too large}
