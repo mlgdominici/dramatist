@@ -961,6 +961,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \end{macro}
 % \subsection{Dramatis personae}
+% Here are the definitions of the customizable elements.
 %    \begin{macrocode}
 \DR@define@key{l}{dramatis}{leftmargin}{0pt}
 \DR@define@key{l}{dramatis}{rightmargin}{0pt}
@@ -982,14 +983,20 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{dramatis}{pagestyle}{empty}
 \DR@define@key{l}{dramatis}{beforeskip}{0pt}
 \DR@define@key{l}{dramatis}{afterskip}{0pt}
-
+%    \end{macrocode}
+% \begin{macro}{\DR@dramper@entry}
+%   This is how an entry in the character list is typeset.
+%    \begin{macrocode}
 \newcommand\DR@dramper@entry{%
   {\noexpand\DR@dramatis@rolefont\noexpand\DR@dramatis@rolecase{\DR@character@role}}%
   \ifx\DR@character@desc\relax\else\DR@character@rdsep\fi%
   {\noexpand\DR@dramatis@descfont\DR@character@desc}%
   \DR@character@dasep%
   {\noexpand\DR@dramatis@actorfont\DR@character@actor}}
-
+%    \end{macrocode}
+% \end{macro}
+% The same remarks made for document divisions hold here.
+%    \begin{macrocode}
 \newcommand\drampermark[1]{}
 \newcommand{\printcasttitle}{\centering\DR@dramatis@titlefont \DR@dramatis@titlename}
 \def\castheadstart{\vspace*{\DR@dramatis@beforeskip}}
@@ -1023,6 +1030,10 @@ and the derived files           dramatist.ins,
   \dodramperlist
   \end{list}
 }
+%    \end{macrocode}
+% \begin{macro}{\dodramperlist}
+%   A simple loop that typesets all the entries.
+%    \begin{macrocode}
 \newcommand{\dodramperlist}{%
   \@tempcnta\z@
   \@whilenum\c@character >\@tempcnta\do{%
@@ -1030,8 +1041,11 @@ and the derived files           dramatist.ins,
   \item\@nameuse{persona\DR@roman{\@tempcnta}}\strut%
   }%
 }
-%%-----------------------------------------------------------------
-%% Stage
+%    \end{macrocode}
+% \end{macro}
+% \subsection{Stage}
+% As usual: definitions of customizable elements.
+%    \begin{macrocode}
 \DR@define@key{l}{stage}{leftmargin}{0pt}
 \DR@define@key{l}{stage}{rightmargin}{0pt}
 \DR@define@key{l}{stage}{topsep}{0pt}
@@ -1042,7 +1056,11 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{stage}{justification}{}
 \DR@define@key{c}{stage}{rightdelimiter}{}
 \DR@define@key{c}{stage}{leftdelimiter}{}
-
+%    \end{macrocode}
+% \begin{macro}{DR@stage@display}
+%   This is the environment used internally to build display stage
+%   directions. It's a list environment as everything, quite, here.
+%    \begin{macrocode}
 \newenvironment{DR@stage@display}{%
   \let\@trivlist\DR@trivlist
   \list{}{%
@@ -1060,10 +1078,21 @@ and the derived files           dramatist.ins,
   \DR@stage@rightdelimiter%
   \endlist
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{DR@stage@inline}
+%   This is the environment used internally to build inline stage
+%   directions. Very simple, indeed.
+%    \begin{macrocode}
 \newcommand\DR@stage@inline[1]{%
   \DR@stage@leftdelimiter{\DR@stage@font#1}\DR@stage@rightdelimiter
 }
-
+%    \end{macrocode}
+% \end{macro}
+% And now, the user environments and macros, starting with:
+% \begin{macro}{Settings}
+%   For scene settings. Display.
+%    \begin{macrocode}
 \newenvironment{Settings}[1][]{%
     \DR@setvalues{settings}
     \setkeys{stage}{#1}
@@ -1071,6 +1100,11 @@ and the derived files           dramatist.ins,
   }{%
     \endDR@stage@display
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\settings}
+%   Its macro counterpart, convenient when the description is short.
+%    \begin{macrocode}
 \newcommand\settings[2][]{%
   {
     \DR@setvalues{settings}
@@ -1079,7 +1113,12 @@ and the derived files           dramatist.ins,
     \endDR@stage@display
   }
 }
-
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\set}
+%   A general description of the location, to be put before the play
+%   starts. Display.
+%    \begin{macrocode}
 \newcommand\set[2][]{%
   {
     \DR@setvalues{set}
@@ -1088,7 +1127,11 @@ and the derived files           dramatist.ins,
     \endDR@stage@display
   }
 }
-
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\direction}
+%   A long description inside dialogues. Display.
+%    \begin{macrocode}
 \newcommand\direction[2][]{%
   {%
     \DR@setvalues{direction}
@@ -1103,7 +1146,11 @@ and the derived files           dramatist.ins,
     \global\@firstdirectionfalse
   }%
 }
-
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\delivery}
+%   Short notes inside a single speech. Inline (the only one so far).
+%    \begin{macrocode}
 \newcommand\delivery[2][]{%
   {%
     \DR@setvalues{delivery}%
@@ -1111,8 +1158,11 @@ and the derived files           dramatist.ins,
     \DR@stage@inline{#2}%
   }%
 }
+%    \end{macrocode}
+% \end{macro}
 %%-------------------------------------------------------------------------------
 %% Languages
+%    \begin{macrocode}
 \@ifpackageloaded{babel}{
   \addto\captionsitalian{%
     \def\actname{Atto}
