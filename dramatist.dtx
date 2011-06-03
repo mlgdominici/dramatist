@@ -103,7 +103,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1243}
+% \CheckSum{1175}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -600,6 +600,7 @@ and the derived files           dramatist.ins,
 % \end{macro}
 
 % \subsection{Document divisions}
+% I'm not documenting them, yet, because they need deep reworking.
 %    \begin{macrocode}
 \DR@define@key{c}{sections}{namefont}{}
 \DR@define@key{c}{sections}{numfont}{\DR@sections@namefont}
@@ -718,8 +719,10 @@ and the derived files           dramatist.ins,
     \printscenetitle{#1}
     \afterscene
 }
-%%----------------------------------------------------------------------------------
-%% Characters
+%    \end{macrocode}
+% \subsection{Characters}
+% As usual we start defining the customizable elements.
+%    \begin{macrocode}
 \DR@define@key{c}{character}{dirname}{\DR@character@speakername}
 \DR@define@key{c}{character}{speakername}{}
 \DR@define@key{c}{character}{role}{\DR@character@speakername}
@@ -737,52 +740,87 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{speaker}{prelabel}{}
 \DR@define@key{c}{speaker}{postlabel}{}
 \DR@define@key{L}{speaker}{labelwidth}{\@tempdima}
-
+%    \end{macrocode}
+% The following macros insert a blank space at the beginning of a
+% verse line broken across two speeches.
+%\begin{macro}{\dramaphantom}
+%  |\dramaphantom| produces a blank space equivalemt to the length of
+%  text contained in the mandatory argument. An optional argument (a
+%  length) can be supplied for corrections.
+%    \begin{macrocode}
 \newcommand\dramaphantom[2][0pt]{%
   \settowidth{\@tempdimb}{#2}%
   \addtolength{\@tempdimb}{\dimexpr-\DR@speaker@labelwidth+\labelwidth-#1\relax}
   \hskip\@tempdimb
 }
+%    \end{macrocode}
+% \end{macro}
+%\begin{macro}{\phantomspeaker}
+%  |\phantomspeaker| should be used inside |\dramaphantom| when part
+%  of the text is a character label.
+%    \begin{macrocode}
 \newcommand\phantomspeaker[1]{{\DR@speaker{#1}}\hskip-\labelwidth}
-
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@character@label}
+%   |\DR@character@label| formats a character name for use inside
+%   directions, scene settings and the like.
+%    \begin{macrocode}
 \newcommand\DR@character@label{%
   \noexpand\DR@setvalues{character}%
   {\noexpand\DR@character@namefont \noexpand\DR@character@namecase{\DR@character@dirname}}\noexpand\xspace
 }
-
-
-%% Ho temporaneamente modificato \@speaker e \DR@speaker, in modo che eventuali 'direzioni' che seguono
-%% immediatamente il parlante siano composte *fuori* da \item[]. Questo è assolutamente necssario per
-%% mantenere il contenuto di \item[] su una sola riga. Tuttavia, a parte l'ineleganza della soluzione,
-%% il problema opposto si riproporrà non appena vorrò passare allo stile 'centrato'.
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@speaker}
+%   |\DR@speaker| formats a character name for use in introducing
+%   speeches.
+%    \begin{macrocode}
 \newcommand\DR@speaker[1]{%
   \DR@setvalues{speaker}%
   \DR@speaker@prelabel%
   \DR@speaker@font\DR@speaker@case{#1}\DR@speaker@del
- % \settowidth{\@tempdimb}{\strut\DR@speaker@font\DR@speaker@case{#1}\DR@speaker@del\@ifmtarg{#2}{}{\ #2}\strut}%
- % \ifdim\@tempdimb>\dimexpr\textwidth-\leftmargin-\rightmargin+\labelwidth+\labelsep\relax
- %   \setlength{\@tempdimb}{\dimexpr\textwidth-\leftmargin-\rightmargin+\labelwidth+\labelsep\relax}
- % \fi
- %  \parbox{\@tempdimb}{\strut\DR@speaker@font\DR@speaker@case{#1}\DR@speaker@del\@ifmtarg{#2}{}{\ #2}\strut}%
-%   \DR@speaker@font\DR@speaker@case{#1}\DR@speaker@del%\@ifmtarg{#2}{}{\unskip\relax\ #2\hskip\DR@drama@labelsep}
   \DR@speaker@postlabel
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\@speaker}
+%   The internal version of macros introducing a speech. It calls
+%   |\DR@speakerlabel|, after having set default values for
+%   customizable elements. The optional argument is for directions.
+%    \begin{macrocode}
 \def\@speaker#1[#2]{%
   \settowidth{\@tempdima}{\DR@speaker{#1}{#2}}%
   \DR@setvalues{speaker}%
   \DR@speakerlabel{#1}{#2}%
-%   \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}{#2}}]\DR@drama@postitem
-  % \item[\DR@speaker{#1}]\@ifmtarg{#2}{}{\hskip-\DR@drama@labelsep\hskip 0pt plus 4pt\ #2\hskip\DR@drama@labelsep}\DR@drama@postitem
 }
-
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@character}
+%   This is the macro for building individual characters macros. It
+%   takes two arguments: the |<name>| of the character (\emph{i. e.}
+%   what should appear introducing her speeches) and an |<id>|. Taking
+%   |<id>| as basis, the macro builds two user commands: |\<id>| will
+%   be used inside directions, scene settings and the like;
+%   |\<id>speaks| will be used to introduce a speech.
+%    \begin{macrocode}
 \newcommand\DR@character[2]{%
   \def\DR@character@speakername{#1}
-    \global\expandafter\edef\csname#2\endcsname{% \global is needed for CharacterGroup
-      \DR@character@label}%                     % \edef because expansion must be at declaration time
+%    \end{macrocode}
+% |\global| is needed for CharacterGroup, |\edef| because expansion
+% must be at declaration time.
+%    \begin{macrocode}
+    \global\expandafter\edef\csname#2\endcsname{%
+      \DR@character@label}%
     \global\expandafter\def\csname#2\DR@character@speaksadd\endcsname{%
-      \def\DR@drama@postitem{\DR@pidefault}% here, because otherwise it shields \@speaker{#1}...
+      \def\DR@drama@postitem{\DR@pidefault}%
       \@ifstar{\def\DR@drama@postitem{}\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}%
         {\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}}%
+%    \end{macrocode}
+% If an entry should be present in the character list, it's built
+% here, taking into account wether the character is grouped with other
+% ones or not.
+%    \begin{macrocode}
   \ifDR@character@entry
     \if@cglist
       \stepcounter{g\DRroman{character}}
@@ -795,6 +833,15 @@ and the derived files           dramatist.ins,
     \fi
   \fi
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\Character}
+%   And this is the user version of |\DR@character|. A ``key = value''
+%   interface is provided to set values for each parameter. By default
+%   the macro will not build an entry for the character list, but, as
+%   soon as the user specifies values for elements belonging to the
+%   latter, the behaviour is reversed.
+%    \begin{macrocode}
 \newcommand\Character[3][entry=false]{%
   {
     \DR@setvalues{character}
@@ -802,7 +849,14 @@ and the derived files           dramatist.ins,
     \DR@character{#2}{#3}
   }
 }
-
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{CharacterGroup}
+%   Characters group are built as a single entry in the character
+%   list. Their definition must be enclosed inside the
+%   \envname{CharacterGroup} environment. The mandatory argument is
+%   the role's description.
+%    \begin{macrocode}
 \newenvironment{CharacterGroup}[1]{%
   \@cglisttrue
   \stepcounter{character}
@@ -810,6 +864,14 @@ and the derived files           dramatist.ins,
   \grouplist{#1}
 }{\@cglistfalse}
 \newsavebox{\tbox}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\grouplist}
+%   It assembles three blocks: the characters names, a delimiter, and
+%   a description of the role. This worked quite well in the first
+%   version of dramatist, with a character list scarcely flexible. Now
+%   it should be deeply revised.
+%    \begin{macrocode}
 \newcommand\grouplist[1]{%
     \global\expandafter\def\csname persona\DRroman{character}\endcsname{%
     \settowidth{\DR@dramatis@castwidth}{\DR@dramatis@descfont #1}
@@ -831,6 +893,13 @@ and the derived files           dramatist.ins,
     \global\setlength{\DR@dramatis@charwidth}{\z@}
   }
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@checkwidth}
+%   It performs a check on the length of the entry. In case the amount
+%   is greater than |\textwidth|, it reduces |\DR@dramatis@castwidth|
+%   accordingly. (Is this correct?)
+%    \begin{macrocode}
 \newcommand\DR@checkwidth{
   \@tempcntb\z@
   \@whilenum\value{g\DR@roman{\@tempcnta}}>\@tempcntb\do{%
@@ -848,6 +917,11 @@ and the derived files           dramatist.ins,
       \DR@dramatis@rightmargin-\DR@dramatis@leftmargin-5pt\relax
   \fi
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\dogrouplist}
+%   It builds the internal list of characters inside a group.
+%    \begin{macrocode}
 \newcommand{\dogrouplist}{%
   \@tempcntb\z@
   \@whilenum\value{g\DR@roman{\@tempcnta}}>\@tempcntb\do{%
@@ -855,19 +929,39 @@ and the derived files           dramatist.ins,
     \item\@nameuse{gpersona\@Roman{\@tempcnta}\DR@roman{\@tempcntb}}\strut%
   }%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\speaker}
+%   |\speaker| is a generic macro to be used for cases in which we
+%   don't need to be consistent (a speaker speaking once and not
+%   present in directions or in the character list) or we need to
+%   deviate from uniformity (a speaker called once with a different
+%   name, two speakers speaking at once).
+%    \begin{macrocode}
 \newcommand*\speaker{%
   \def\DR@drama@postitem{\DR@pidefault}%
   \@ifstar{\def\DR@drama@postitem{}\@xspeaker}{\@xspeaker}%
 }
+%    \end{macrocode}
+% But frankly speaking, I don't remember why I would need a starred
+% version that sets |\DR@drama@postitem| to the empty value.
+%    \begin{macrocode}
 \newcommand*\@xspeaker[2][]{%
   \@speaker{#2}[#1]%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\character}
+%   This is the same than |\speaker|, but for directions and the like.
+%    \begin{macrocode}
 \newcommand*\character[1]{%
   \DR@setvalues{character}%
   {\DR@character@namefont\DR@character@namecase{#1}}\xspace%
 }
-%%---------------------------------------------------------------------------------
-%% Dramatis personae
+%    \end{macrocode}
+% \end{macro}
+% \subsection{Dramatis personae}
+%    \begin{macrocode}
 \DR@define@key{l}{dramatis}{leftmargin}{0pt}
 \DR@define@key{l}{dramatis}{rightmargin}{0pt}
 \DR@define@key{l}{dramatis}{indent}{0pt}
