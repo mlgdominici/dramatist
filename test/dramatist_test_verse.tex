@@ -5,9 +5,10 @@
 \usepackage{xjunicode}
 \usepackage[style=classic]{dramatist}
 \usepackage{fancyhdr}
-\usepackage{verse}
+%\usepackage{verse}
 %\usepackage{poemscol}
 \usepackage{geometry}
+\usepackage{zref-savepos}
 
 \def\testodicontrollo{%
 Questo re di Sparta ebbe con voi comune la morte, per giudizio
@@ -80,13 +81,13 @@ tomba.
   e, sconvolta pur anco, in risse e affanni\\
   egra ella sta. Ma, van cangiando i tempi:\\
   quei traditori, efori allor, che schiavi\\
-  eran d'Agesiláo, piú a lui venduti\\
+  eran d'Agesiláo, piú a lui venduti\\>
   che ad Agide, con esso ora sbanditi\\
   son tutti, o spenti: e sta in noi soli Sparta.\\
   Ma il popol rio, mendico, e ognor di nuove\\
   cose voglioso, Agide ancora elegge\\
   mezzo a sue mire ingiuste. A schietta forza,\\
-  mal frenare il potremmo; ogni novello\\
+  mal frenare il potremmo; ogni novello\\>
   governo erra adoprandola. Deluso,\\
   pria che sforzato, il popol sia. Tal cura,\\
   che a cor mi sta non men che a te, mi lascia.\\
@@ -119,6 +120,59 @@ above.
 \item[\scshape endymion] My love is placed neither under the moon nor
 above.
 \end{drama}
+
+\Character[role=FILIPPO,]{FILIPPO}{filippo}
+\Character[role=ISABELLA,]{ISABELLA}{isabella}
+\Character[role=CARLO,]{CARLO}{carlo}
+\Character[role=GOMEZ,]{GOMEZ}{gomez}
+\Character[role=PEREZ,]{PEREZ}{perez}
+\Character[role=LEONARDO,]{LEONARDO}{leonardo}
+\Character[role=Consiglieri,]{Consiglieri}{consiglieri}
+\Character[role=Guardie,]{Guardie}{guardie}
+
+\begin{versedrama}
+\speaker{Qualcuno}
+crederò che nemica anima alberghi\\
+tu di pietade?\\> %% Parte Iniziale
+\isabellaspeaks
+\dramaphantom{tu di pietade?}Il sai, qual vita io tragga,\\ %% Parte Finale
+in queste soglie: di una corte austera\\
+\end{versedrama}
+
+\makeatletter
+%% Patch per l'ambiente `verse'
+\renewcommand{\@vscentercr}{%
+  \ifhmode \unskip\else \@nolnerr\fi
+  \@vsifgt{\verselinebreak}{%
+    \@vstypelinenum%
+    \incr@vsline
+    \par\@ifstar{\nobreak\@vsxcentercr}{%
+      \@vsifbang{\@ifnextchar[ {\@vsicentercr}{}}{\@vsxcentercr}}}}
+\renewcommand{\verselinebreak}[1][\z@]{\par\hspace*{#1}\ignorespaces}
+\def\dramaphantomx#1#2{%
+  \ifnum\zposx{#2}>\zposx{#1}\hskip\dimexpr\zposx{#2}sp-\zposx{#1}sp\relax\fi
+}
+\newcounter{lafava}
+\setcounter{lafava}{0}
+\makeatother
+
+\begin{versedrama}
+\speaker{Qualcuno}
+crederò che nemica anima alberghi\\
+\let\origbreak\\
+\def\\{\stepcounter{lafava}\zsavepos{prova:\roman{vslineno}:\roman{lafava}}\origbreak}
+tu di pietade? E poi la mi' fava\\> %% Parte Iniziale
+\isabellaspeaks\zsavepos{provadue:\roman{vslineno}}
+\dramaphantomx{provadue:\roman{vslineno}}{prova:\roman{vslineno}:\roman{lafava}}Il sai, qual vita io tragga,\\> %% Parte Finale
+in queste soglie: di una corte austera\\
+\end{versedrama}
+
+\begin{verse}
+verso\\
+riverso\newline
+converso\newline
+\item diverso
+\end{verse}
 
 \end{document}
 
