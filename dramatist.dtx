@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1403}
+% \CheckSum{1420}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -304,7 +304,8 @@ and the derived files           dramatist.ins,
 % \begin{macro}{\NewStyle}
 %   This macro will create a new style. We simply construct from |arg #1| 
 %   an internal macro which holds the code specified in |arg #2|. Usually 
-%   we will have several |\DRSetup| macros in the second argument.
+%   we will have several |\DRSetup| macros in the second argument. (See 
+%   section~\ref{sec:styles} for some examples.)
 %    \begin{macrocode}
 \newcommand\NewStyle[2]{% <name><code>
   \expandafter\def\csname DR@style@#1\endcsname{#2}
@@ -427,7 +428,7 @@ and the derived files           dramatist.ins,
 %   hook for font setting. We also need to initialize |\DR@pidefault|
 %   to |\DR@drama@postitem| and warn the user in case he chose to
 %   attach numbers to the paragraph lines via the \optname{numbering}
-%   option. Thi task should be performed instead by a dedicated
+%   option. This task should be performed instead by a dedicated
 %   package like \pkgname{lineno}.
 %    \begin{macrocode}
 \newenvironment{DR@drama@prose}{%
@@ -487,7 +488,7 @@ and the derived files           dramatist.ins,
 % Redefining such environments (and keeping them in sync with the
 % original) would be a cumbersome burden. Instead, the package
 % installs the convenient patches in suitable places. To do so, we
-% need to save the original version of |\@trivlist| 
+% need to save the original version of |\@trivlist|
 %    \begin{macrocode}
 \let\DR@trivlist\@trivlist
 %    \end{macrocode}
@@ -813,7 +814,7 @@ and the derived files           dramatist.ins,
   \def\DR@character@speakername{#1}
 %    \end{macrocode}
 % |\global| is needed for CharacterGroup, |\edef| because expansion
-% must be at declaration time.
+% must occur at declaration time.
 %    \begin{macrocode}
   \global\expandafter\edef\csname#2\endcsname{%
     \DR@character@label}%
@@ -859,7 +860,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{CharacterGroup}
-%   Characters group are built as a single entry in the character
+%   Characters groups are built as a single entry in the character
 %   list. Their definition must be enclosed inside the
 %   \envname{CharacterGroup} environment. The mandatory argument is
 %   the role's description.
@@ -1039,22 +1040,6 @@ and the derived files           dramatist.ins,
   \end{list}
 }
 %    \end{macrocode}
-% \begin{macro}{dramper}
-%   Free form list of characters.
-%    \begin{macrocode}
-\newenvironment{dramper}[1][]{%
-  \DR@setvalues{dramatis}%
-  \DR@begin@dramperhead{#1}}{\DR@end@dramperhead}
-%    \end{macrocode}
-% \end{macro}
-% \begin{macro}{\dramperentry}
-%   Free form entry in the list of characters. Unlike |\DramPer|, it
-%   does not start a new page, nor makes an entry for the table of
-%   contents. The user is on her own, here.
-%    \begin{macrocode}
-\newcommand\dramperentry[1]{\item #1}
-%    \end{macrocode}
-% \end{macro}
 % \begin{macro}{\dodramperlist}
 %   A simple loop that typesets all the entries.
 %    \begin{macrocode}
@@ -1065,6 +1050,57 @@ and the derived files           dramatist.ins,
   \item\@nameuse{persona\DR@roman{\@tempcnta}}\strut%
   }%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{dramper}
+%   Free form list of characters. Unlike |\DramPer|, it does not start
+%   a new page, nor makes an entry for the table of contents. The user
+%   is on her own, here.
+%    \begin{macrocode}
+\newenvironment{dramper}[1][]{%
+  \DR@setvalues{dramatis}%
+  \DR@begin@dramperhead{#1}}{\DR@end@dramperhead}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\dramperentry}
+%   Free form entry in the list of characters. 
+%    \begin{macrocode}
+\newcommand\dramperentry[1]{\item #1}
+%    \end{macrocode}
+% \end{macro}
+% The following macros should be used inside a |dramper| environment.
+% \begin{macro}{\roleentry}
+%   This macro typesets the name of the character (role) following the
+%   formatting instructions of the current style.
+%    \begin{macrocode}
+\newcommand\roleentry[1]{{\DR@dramatis@rolefont\DR@dramatis@rolecase{#1}}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\rdsep}
+%   This macro typesets the separation between the role and its description.
+%    \begin{macrocode}
+\newcommand\rdsep{\DR@setvalues{character}\DR@character@rdsep}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\descentry}
+%   This macro typesets the name of the description of the role
+%   following the formatting instructions of the current style.
+%    \begin{macrocode}
+\newcommand\descentry[1]{{\DR@dramatis@descfont #1}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\rdsep}
+%   This macro typesets the separation between description (if
+%   present) and actor's name.
+%    \begin{macrocode}
+\newcommand\dasep{\DR@setvalues{character}\DR@character@dasep}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\actorentry}
+%   This macro typesets the name of the actor playing the role
+%   following the formatting instructions of the current style.
+%    \begin{macrocode}
+\newcommand\actorentry[1]{{\DR@dramatis@actorfont #1}}
 %    \end{macrocode}
 % \end{macro}
 % \subsection{Stage}
@@ -1083,7 +1119,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \begin{macro}{DR@stage@display}
 %   This is the environment used internally to build display stage
-%   directions. It's a list environment as everything, quite, here.
+%   directions. It's a list environment as almost everything, here.
 %    \begin{macrocode}
 \newenvironment{DR@stage@display}{%
   \let\@trivlist\DR@trivlist
@@ -1193,8 +1229,9 @@ and the derived files           dramatist.ins,
 %   |[gloss-]<arg#1>| has been loaded. We rely on file name rather
 %   than option name in order to avoid redundance. For \pkgname{babel}
 %   we have to take into account that for historical reasons the
-%   respective file names take an additional ``b'' at the end. The
-%   code need optimization.
+%   respective file names of the \optname{german}, \optname{ngerman}
+%   and \optname{french} languages, take an additional ``b'' at the
+%   end. The code need optimization.
 %    \begin{macrocode}
 \def\@ifldfl@aded#1{%
   \edef\@tempa{#1}
@@ -1405,7 +1442,9 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 %</package>
-% \subsection{Ready-made styles}
+%    \end{macrocode}
+% \subsection{Ready-made styles}\label{sec:styles}
+%    \begin{macrocode}
 %<*modern>
 %    \end{macrocode}
 %    \begin{macrocode}
