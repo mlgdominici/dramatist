@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1420}
+% \CheckSum{1470}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -157,6 +157,7 @@ and the derived files           dramatist.ins,
 \RequirePackage{xkeyval}
 \RequirePackage{ifmtarg}
 \RequirePackage{etoolbox}
+\RequirePackage{zref-savepos}
 %    \end{macrocode}
 % \subsection{Private tools}
 % A series of tools making ``key = value'' definitions simpler, follows here.
@@ -329,6 +330,7 @@ and the derived files           dramatist.ins,
 \newif\if@DRpoemscol
 \newif\if@DRverse
 \newif\if@DRmemoir
+\newif\if@DR@broken@verse
 \newif\if@firstdirection
 %    \end{macrocode}
 % We also need to save the original meaning of |\@roman| and |\roman|
@@ -366,6 +368,8 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % Some useful counters.
 %    \begin{macrocode}
+\newcounter{brokenverse}
+\setcounter{brokenverse}{0}
 \newcounter{storelineno}
 \setcounter{storelineno}{0}
 \if@DRpoemscol\else\refstepcounter{storelineno}\fi
@@ -543,10 +547,15 @@ and the derived files           dramatist.ins,
   \def\@trivlist{\DR@appendparameters\DR@trivlist}
   \if@DRpoemscol
     \begin{poem}
-      \else \if@DRverse \setlength{\stanzaskip}{\DR@drama@parsep}
+  \else 
+    \if@DRverse 
+      \let\DR@orig@vscentercr\@vscentercr%
+      \let\@vscentercr\DR@vscentercr%
+      \def\newline{\@DR@broken@versetrue}%
+      \setlength{\stanzaskip}{\DR@drama@parsep}%
       \if@DRmemoir \setlength{\vleftmargin}{\DR@drama@leftmargin} \fi
-      \fi
-  \begin{verse}
+    \fi
+    \begin{verse}
   \fi
   \DR@drama@font%
   \vspace{-\baselineskip}%
@@ -558,9 +567,17 @@ and the derived files           dramatist.ins,
   \else
     \end{verse}
     \if@DRverse
+      \let\@vscentercr\DR@orig@vscentercr%
       \setcounter{storelineno}{\value{poemline}}
     \fi
   \fi
+}
+\newcommand\DR@vscentercr{%
+  \futurelet\DRnext\DR@@vscentercr%
+}
+\newcommand\DR@@vscentercr{%
+  \ifx\DRnext>\stepcounter{brokenverse}\zsavepos{DR@bv:\DRroman{vslineno}:\DRroman{brokenverse}}\fi%
+  \DR@orig@vscentercr%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -600,7 +617,14 @@ and the derived files           dramatist.ins,
 % \begin{macro}{\DR@speakerlabel@short}
 %    \begin{macrocode}
 \newcommand\DR@speakerlabel@short[2]{%
-  \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}\@ifmtarg{#2}{}{\ #2}}]\DR@drama@postitem
+  \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}\@ifmtarg{#2}{}{\ #2}}]\DR@drama@postitem\DR@continued@verse%
+}
+\newcommand\DR@continued@verse{%
+  \if@DR@broken@verse%
+  \zsavepos{DR@el:\DRroman{vslineno}:\DRroman{brokenverse}}%
+    \hskip\dimexpr\zposx{DR@bv:\DRroman{vslineno}:\DRroman{brokenverse}}sp-\zposx{DR@el:\DRroman{vslineno}:\DRroman{brokenverse}}sp\relax%
+  \fi%
+  \@DR@broken@versefalse%
 }
 %    \end{macrocode}
 % \end{macro}

@@ -142,36 +142,18 @@ above.
 crederò che nemica anima alberghi\\
 tu di pietade?\\> %% Parte Iniziale
 \isabellaspeaks
-\dramaphantom{tu di pietade?}Il sai, qual vita io tragga,\\ %% Parte Finale
+Il sai, qual vita io tragga,\\ %% Parte Finale
 in queste soglie: di una corte austera\\
-\end{versedrama}
-
-\makeatletter
-%% Patch per l'ambiente `verse'
-\renewcommand{\@vscentercr}{%
-  \ifhmode \unskip\else \@nolnerr\fi
-  \@vsifgt{\verselinebreak}{%
-    \@vstypelinenum%
-    \incr@vsline
-    \par\@ifstar{\nobreak\@vsxcentercr}{%
-      \@vsifbang{\@ifnextchar[ {\@vsicentercr}{}}{\@vsxcentercr}}}}
-\renewcommand{\verselinebreak}[1][\z@]{\par\hspace*{#1}\ignorespaces}
-\def\dramaphantomx#1#2{%
-  \ifnum\zposx{#2}>\zposx{#1}\hskip\dimexpr\zposx{#2}sp-\zposx{#1}sp\relax\fi
-}
-\newcounter{lafava}
-\setcounter{lafava}{0}
-\makeatother
-
-\begin{versedrama}
 \speaker{Qualcuno}
 crederò che nemica anima alberghi\\
-\let\origbreak\\
-\def\\{\stepcounter{lafava}\zsavepos{prova:\roman{vslineno}:\roman{lafava}}\origbreak}
-tu di pietade? E poi la mi' fava\\> %% Parte Iniziale
-\isabellaspeaks\zsavepos{provadue:\roman{vslineno}}
-\dramaphantomx{provadue:\roman{vslineno}}{prova:\roman{vslineno}:\roman{lafava}}Il sai, qual vita io tragga,\\> %% Parte Finale
+tu di pietade?\\> %% Parte Iniziale
+\speaker{Uno che passa}
+Sì, e poi la mi' fava\\> %% Parte Mediana
+\isabellaspeaks
+Il sai, qual vita io tragga,\\ %% Parte Finale
 in queste soglie: di una corte austera\\
+\speaker{Coso}
+A Nando...
 \end{versedrama}
 
 \begin{verse}
@@ -203,6 +185,10 @@ converso\newline
 \actname
 \selectlanguage{spanish}
 \actname
+
+\def\test{\prova rmando}
+\def\riprova{\futurelet\prova\test}
+\riprova a
 
 \end{document}
 
