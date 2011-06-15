@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1394}
+% \CheckSum{1403}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -815,12 +815,12 @@ and the derived files           dramatist.ins,
 % |\global| is needed for CharacterGroup, |\edef| because expansion
 % must be at declaration time.
 %    \begin{macrocode}
-    \global\expandafter\edef\csname#2\endcsname{%
-      \DR@character@label}%
-    \global\expandafter\def\csname#2\DR@character@speaksadd\endcsname{%
-      \def\DR@drama@postitem{\DR@pidefault}%
-      \@ifstar{\def\DR@drama@postitem{}\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}%
-        {\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}}%
+  \global\expandafter\edef\csname#2\endcsname{%
+    \DR@character@label}%
+  \global\expandafter\def\csname#2\DR@character@speaksadd\endcsname{%
+    \def\DR@drama@postitem{\DR@pidefault}%
+    \@ifstar{\def\DR@drama@postitem{}\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}%
+    {\@ifnextchar[{\@speaker{#1}}{\@speaker{#1}[]}}}%
 %    \end{macrocode}
 % If an entry should be present in the character list, it's built
 % here, taking into account wether the character is grouped with other
@@ -836,6 +836,8 @@ and the derived files           dramatist.ins,
       \global\expandafter\edef\csname persona\DRroman{character}\endcsname{%
         \DR@dramper@entry}
     \fi
+    \global\expandafter\edef\csname#2dpentry\endcsname{%
+      \noexpand\item\DR@dramper@entry}
   \fi
 }
 %    \end{macrocode}
@@ -1041,11 +1043,14 @@ and the derived files           dramatist.ins,
 %   Free form list of characters.
 %    \begin{macrocode}
 \newenvironment{dramper}[1][]{%
+  \DR@setvalues{dramatis}%
   \DR@begin@dramperhead{#1}}{\DR@end@dramperhead}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\dramperentry}
-%   Free form entry in the list of characters.
+%   Free form entry in the list of characters. Unlike |\DramPer|, it
+%   does not start a new page, nor makes an entry for the table of
+%   contents. The user is on her own, here.
 %    \begin{macrocode}
 \newcommand\dramperentry[1]{\item #1}
 %    \end{macrocode}
