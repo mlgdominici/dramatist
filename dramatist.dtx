@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1383}
+% \CheckSum{1394}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -1015,10 +1015,10 @@ and the derived files           dramatist.ins,
   \phantomsection
   \addcontentsline{toc}{chapter}{\DR@dramatis@titlename}
   \drampermark{\DR@dramatis@titlename}
-  \DR@dramperhead{#1}}
+  \DR@begin@dramperhead{#1}\dodramperlist\DR@end@dramperhead}
 \newcommand\DR@sdramper[1][]{%
-  \DR@dramperhead{#1}}
-\newcommand\DR@dramperhead[1]{
+  \DR@begin@dramperhead{#1}\dodramperlist\DR@end@dramperhead}
+\newcommand\DR@begin@dramperhead[1]{
   \thispagestyle{\DR@dramatis@pagestyle}
   \castheadstart
   {\printcasttitle #1
@@ -1032,10 +1032,24 @@ and the derived files           dramatist.ins,
     \parsep\DR@dramatis@parsep%
     \itemindent\DR@dramatis@indent%
     }
-  \dodramperlist
+}
+\newcommand\DR@end@dramperhead{%
   \end{list}
 }
 %    \end{macrocode}
+% \begin{macro}{dramper}
+%   Free form list of characters.
+%    \begin{macrocode}
+\newenvironment{dramper}[1][]{%
+  \DR@begin@dramperhead{#1}}{\DR@end@dramperhead}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\dramperentry}
+%   Free form entry in the list of characters.
+%    \begin{macrocode}
+\newcommand\dramperentry[1]{\item #1}
+%    \end{macrocode}
+% \end{macro}
 % \begin{macro}{\dodramperlist}
 %   A simple loop that typesets all the entries.
 %    \begin{macrocode}
