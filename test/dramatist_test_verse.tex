@@ -1,11 +1,12 @@
 \documentclass[a5paper,11pt]{book}
 
-\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,german,ngerman,canadian,canadien,acadian,italian,francais,english,british,austrian,]{babel}
 \usepackage{xjunicode}
-\usepackage[style=classic]{dramatist}
+\usepackage{dramatist}
 \usepackage{fancyhdr}
-%\usepackage{verse}
+\usepackage{verse}
 %\usepackage{poemscol}
 \usepackage{geometry}
 \usepackage{zref-savepos}
@@ -49,6 +50,9 @@ tomba.
 % \poemlines{10}
 
 \begin{document}
+
+\shorthandoff{>}
+\actname
 
 \testodicontrollo
 
@@ -121,6 +125,9 @@ above.
 above.
 \end{drama}
 
+\selectlanguage{italian}
+\actname
+
 \Character[role=FILIPPO,]{FILIPPO}{filippo}
 \Character[role=ISABELLA,]{ISABELLA}{isabella}
 \Character[role=CARLO,]{CARLO}{carlo}
@@ -173,6 +180,29 @@ riverso\newline
 converso\newline
 \item diverso
 \end{verse}
+
+\selectlanguage{english}
+\actname
+\selectlanguage{francais}
+\actname
+\selectlanguage{german}
+\actname
+\selectlanguage{canadien}
+\actname
+\selectlanguage{canadian}
+\actname
+\selectlanguage{ngerman}
+\actname
+\selectlanguage{acadian}
+\actname
+\selectlanguage{italian}
+\actname
+\selectlanguage{british}
+\actname
+\selectlanguage{austrian}
+\actname
+\selectlanguage{spanish}
+\actname
 
 \end{document}
 

@@ -1268,7 +1268,7 @@ and the derived files           dramatist.ins,
     \typeout{Now actname is: \actname}
   }{\typeout{Not passed italian}}
   \@ifldfl@aded{english}{
-    \addto\captionsitalian{%
+    \addto\captionsenglish{%
       \def\actname{Act}
       \def\scenename{Scene}
       \def\drampername{Dramatis Person\ae}
@@ -1296,7 +1296,7 @@ and the derived files           dramatist.ins,
       \def\drampername{Personnages}
     }
   }{\typeout{Not passed french}}
-  \@ifldfl@aded{spanish}{
+  \@ifldfl@aded{spanish.ldf}{
     \addto\captionsspanish{%
       \def\actname{Acto}
       \def\scenename{Escena}
