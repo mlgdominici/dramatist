@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1311}
+% \CheckSum{1383}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -1171,17 +1171,38 @@ and the derived files           dramatist.ins,
 % should collect more language settings.
 % \begin{macro}{\@ifldfl@aded}
 %   This is an helper macro. It checks if a file of name
-%   |[gloss-]<arg#1>| has been loaded.
+%   |[gloss-]<arg#1>| has been loaded. We rely on file name rather
+%   than option name in order to avoid redundance. For \pkgname{babel}
+%   we have to take into account that for historical reasons the
+%   respective file names take an additional ``b'' at the end. The
+%   code need optimization.
 %    \begin{macrocode}
 \def\@ifldfl@aded#1{%
-  \@ifl@aded{ldf}{\@ifpackageloaded{polyglossia}{gloss-}{}#1}
+  \edef\@tempa{#1}
+  \edef\@tempb{}
+  \edef\DR@french@test{french}
+  \edef\DR@german@test{german}
+  \edef\DR@ngerman@test{ngerman}
+  \ifx\@tempa\DR@french@test
+    \edef\@tempb{b}
+  \else
+    \ifx\@tempa\DR@german@test
+      \edef\@tempb{b}
+    \else
+      \ifx\@tempa\DR@ngerman@test
+        \edef\@tempb{b}
+      \fi
+    \fi
+  \fi
+  \@ifl@aded{ldf}{\@ifpackageloaded{polyglossia}{gloss-\@tempa}{\@tempa\@tempb}}
 }
 %    \end{macrocode}
 % \end{macro}
-% Captions are added at the beginning of the document, when we are
-% sure that localization files have been actually loaded.
+% Captions are added at the end of the preamble, when we are sure that
+% localization files have been actually loaded, but no language has
+% been yet selected. More language settings should be added.
 %    \begin{macrocode}
-\AtBeginDocument{%
+\AtEndPreamble{%
   \@ifldfl@aded{italian}{
     \addto\captionsitalian{%
       \def\actname{Atto}
@@ -1190,8 +1211,23 @@ and the derived files           dramatist.ins,
     }
     \typeout{Now actname is: \actname}
   }{\typeout{Not passed italian}}
+  \@ifldfl@aded{english}{
+    \addto\captionsitalian{%
+      \def\actname{Act}
+      \def\scenename{Scene}
+      \def\drampername{Dramatis Person\ae}
+    }
+    \typeout{Now actname is: \actname}
+  }{\typeout{Not passed english}}
   \@ifldfl@aded{german}{
     \addto\captionsgerman{%
+      \def\actname{Akt}
+      \def\scenename{Szene}
+      \def\drampername{Personen}
+    }
+  }{\typeout{Not passed german}}
+  \@ifldfl@aded{ngerman}{
+    \addto\captionsngerman{%
       \def\actname{Akt}
       \def\scenename{Szene}
       \def\drampername{Personen}
