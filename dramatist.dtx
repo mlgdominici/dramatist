@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1470}
+% \CheckSum{1522}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -157,7 +157,7 @@ and the derived files           dramatist.ins,
 \RequirePackage{xkeyval}
 \RequirePackage{ifmtarg}
 \RequirePackage{etoolbox}
-\RequirePackage{zref-savepos}
+\RequirePackage{zref-base}
 %    \end{macrocode}
 % \subsection{Private tools}
 % A series of tools making ``key = value'' definitions simpler, follows here.
@@ -511,8 +511,8 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\DR@appendparameters}
-%   The patches are installed through |\DR@appendparameters| and
-%   depend by the chosen \envname{verse} environment.
+%   The patches are mostly installed through |\DR@appendparameters|
+%   and depend by the chosen \envname{verse} environment.
 %    \begin{macrocode}
 \def\DR@appendparameters{%
   \if@DRpoemscol
@@ -531,6 +531,13 @@ and the derived files           dramatist.ins,
   \itemindent=\dimexpr\DR@drama@speaksindent+\itemindent\relax%
   \setlength\DR@saved@leftmargin{\leftmargin}
 }
+\newcommand\DR@vscentercr{%
+  \futurelet\DRnext\DR@@vscentercr%
+}
+\newcommand\DR@@vscentercr{%
+  \ifx\DRnext>\stepcounter{brokenverse}\DR@zsavepos{DR@bv:\DRroman{brokenverse}}\fi%
+  \DR@orig@vscentercr%
+}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{DR@drama@verse}
@@ -546,12 +553,15 @@ and the derived files           dramatist.ins,
   \let\@listi\DR@listi
   \def\@trivlist{\DR@appendparameters\DR@trivlist}
   \if@DRpoemscol
+    \let\DR@orig@brokenline\brokenline
+    \def\brokenline{%
+      \stepcounter{brokenverse}\DR@zsavepos{DR@bv:\DRroman{brokenverse}}\global\@DR@broken@versetrue\DR@orig@brokenline}
     \begin{poem}
   \else 
     \if@DRverse 
       \let\DR@orig@vscentercr\@vscentercr%
       \let\@vscentercr\DR@vscentercr%
-      \def\newline{\@DR@broken@versetrue}%
+      \def\newline{\global\@DR@broken@versetrue}%
       \setlength{\stanzaskip}{\DR@drama@parsep}%
       \if@DRmemoir \setlength{\vleftmargin}{\DR@drama@leftmargin} \fi
     \fi
@@ -564,6 +574,7 @@ and the derived files           dramatist.ins,
     \end{poem}
     \setcounter{storelineno}{\value{verselinenumber}}
     \setcounter{storeprintlineindex}{\value{printlineindex}}
+    \let\brokenline\DR@orig@brokenline
   \else
     \end{verse}
     \if@DRverse
@@ -571,13 +582,6 @@ and the derived files           dramatist.ins,
       \setcounter{storelineno}{\value{poemline}}
     \fi
   \fi
-}
-\newcommand\DR@vscentercr{%
-  \futurelet\DRnext\DR@@vscentercr%
-}
-\newcommand\DR@@vscentercr{%
-  \ifx\DRnext>\stepcounter{brokenverse}\zsavepos{DR@bv:\DRroman{vslineno}:\DRroman{brokenverse}}\fi%
-  \DR@orig@vscentercr%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -619,16 +623,66 @@ and the derived files           dramatist.ins,
 \newcommand\DR@speakerlabel@short[2]{%
   \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}\@ifmtarg{#2}{}{\ #2}}]\DR@drama@postitem\DR@continued@verse%
 }
+%    \end{macrocode}
+% \end{macro}
+% The following code implements automatic alignment for lines broken
+% across different characters. We register in the aux file the
+% position of the end of the first hemistich, then the position of the
+% end of the subsequent character label; finally we compute the
+% difference and skip the resulting amount from the end of the
+% chraracter label. We might have used the \pkgname{zref-savepos}
+% package, but, unfortunately we need to register the distance from
+% the (possibly asimmetric) margin rather than the absolute position,
+% because the line may break across pages. So the following is an
+% adaptation of the aforementioned package. You may need several runs
+% before the alignment is correct.
+%    \begin{macrocode}
+\zref@newlist{DR@savepos}
+\zref@newprop*{posx}[0]{\dimexpr\the\pdflastxpos sp\ifodd\c@page\the\evensidemargin\else\the\oddsidemargin\fi}
+\zref@newprop*{posy}[0]{\the\pdflastypos}
+\zref@addprops{DR@savepos}{posx,posy}
+\def\zref@DR@savepos{%
+  \if@filesw
+    \pdfsavepos
+  \fi
+}
+\ZREF@IfDefinable\DR@zsavepos\def{%
+  #1{%
+    \@bsphack
+    \if@filesw
+      \zref@DR@savepos
+      \zref@labelbylist{#1}{DR@savepos}%
+    \fi
+    \@esphack
+  }%
+}
+\newcommand*{\DR@zposx}[1]{%
+  \zref@extract{#1}{posx}%
+}%
+\newcommand*{\DR@zposy}[1]{%
+  \zref@extract{#1}{posy}%
+}%
+\let\ZREF@DR@savepos@ok=Y
+%    \end{macrocode}
+% \begin{macro}{\DR@continued@verse}
+%   This is the macro that performs the alignment. The expressions
+%   retrieved by |\DR@zposx| are already dimensions, but they don't
+%   exist during the first run, so that |\hskip| would not be followed
+%   by a legal expression. We use a trick: first we convert the
+%   |dimen| to a |number| through |\numexpr|, then we add a final unit
+%   of measure (|sp|), thus ensuring that the expression will be
+%   always legal.
+%    \begin{macrocode}
 \newcommand\DR@continued@verse{%
   \if@DR@broken@verse%
-  \zsavepos{DR@el:\DRroman{vslineno}:\DRroman{brokenverse}}%
-    \hskip\dimexpr\zposx{DR@bv:\DRroman{vslineno}:\DRroman{brokenverse}}sp-\zposx{DR@el:\DRroman{vslineno}:\DRroman{brokenverse}}sp\relax%
+    \DR@zsavepos{DR@el:\DRroman{brokenverse}}%
+    \hskip\numexpr\DR@zposx{DR@bv:\DRroman{brokenverse}}-\DR@zposx{DR@el:\DRroman{brokenverse}}\relax sp
+    \relax%
   \fi%
-  \@DR@broken@versefalse%
+  \global\@DR@broken@versefalse%
 }
 %    \end{macrocode}
 % \end{macro}
-
 % \subsection{Document divisions}
 % I'm not documenting them, yet, because they need deep reworking.
 %    \begin{macrocode}
@@ -776,7 +830,7 @@ and the derived files           dramatist.ins,
 %\begin{macro}{\dramaphantom}
 %  |\dramaphantom| produces a blank space equivalemt to the length of
 %  text contained in the mandatory argument. An optional argument (a
-%  length) can be supplied for corrections.
+%  length) can be supplied for corrections. (To be suppressed?)
 %    \begin{macrocode}
 \newcommand\dramaphantom[2][0pt]{%
   \settowidth{\@tempdimb}{#2}%
@@ -787,7 +841,7 @@ and the derived files           dramatist.ins,
 % \end{macro}
 %\begin{macro}{\phantomspeaker}
 %  |\phantomspeaker| should be used inside |\dramaphantom| when part
-%  of the text is a character label.
+%  of the text is a character label. (To be suppressed?)
 %    \begin{macrocode}
 \newcommand\phantomspeaker[1]{{\DR@speaker{#1}}\hskip-\labelwidth}
 %    \end{macrocode}
