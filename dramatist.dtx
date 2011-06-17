@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1522}
+% \CheckSum{1526}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -413,6 +413,8 @@ and the derived files           dramatist.ins,
 \DR@define@key{l}{drama}{parsep}{0pt}
 \DR@define@key{l}{drama}{partopsep}{0pt}
 \DR@define@key{l}{drama}{labelsep}{0pt}
+\DR@define@key{l}{drama}{bvsep}{0pt}
+\DR@define@key{b}{drama}{alignbv}{false}
 \define@choicekey+{drama}{speakerlabel}[\val\nr]{centered,long,short}[short]{%
   \ifcase\nr\relax
     \let\DR@speakerlabel\DR@speakerlabel@centered
@@ -553,15 +555,22 @@ and the derived files           dramatist.ins,
   \let\@listi\DR@listi
   \def\@trivlist{\DR@appendparameters\DR@trivlist}
   \if@DRpoemscol
-    \let\DR@orig@brokenline\brokenline
-    \def\brokenline{%
-      \stepcounter{brokenverse}\DR@zsavepos{DR@bv:\DRroman{brokenverse}}\global\@DR@broken@versetrue\DR@orig@brokenline}
     \begin{poem}
+    \ifDR@drama@alignbv
+      \let\DR@orig@brokenline\brokenline
+      \def\brokenline{%
+        \stepcounter{brokenverse}%
+        \DR@zsavepos{DR@bv:\DRroman{brokenverse}}%
+        \global\@DR@broken@versetrue\DR@orig@brokenline%
+      }
+    \fi
   \else 
     \if@DRverse 
-      \let\DR@orig@vscentercr\@vscentercr%
-      \let\@vscentercr\DR@vscentercr%
-      \def\newline{\global\@DR@broken@versetrue}%
+      \ifDR@drama@alignbv
+        \let\DR@orig@vscentercr\@vscentercr%
+        \let\@vscentercr\DR@vscentercr%
+        \def\newline{\global\@DR@broken@versetrue}%
+      \fi
       \setlength{\stanzaskip}{\DR@drama@parsep}%
       \if@DRmemoir \setlength{\vleftmargin}{\DR@drama@leftmargin} \fi
     \fi
@@ -574,11 +583,15 @@ and the derived files           dramatist.ins,
     \end{poem}
     \setcounter{storelineno}{\value{verselinenumber}}
     \setcounter{storeprintlineindex}{\value{printlineindex}}
-    \let\brokenline\DR@orig@brokenline
+    \ifDR@drama@alignbv
+      \let\brokenline\DR@orig@brokenline
+    \fi
   \else
     \end{verse}
     \if@DRverse
-      \let\@vscentercr\DR@orig@vscentercr%
+      \ifDR@drama@alignbv
+        \let\@vscentercr\DR@orig@vscentercr%
+      \fi
       \setcounter{storelineno}{\value{poemline}}
     \fi
   \fi
@@ -607,21 +620,26 @@ and the derived files           dramatist.ins,
 % \begin{macro}{\DR@speakerlabel@centered}
 %    \begin{macrocode}
 \newcommand\DR@speakerlabel@centered[2]{%
-  \item[\hb@xt@\textwidth{\hss\DR@speaker{#1}\@ifmtarg{#2}{}{#2}\hss}]\DR@drama@postitem%
+  \item[\hb@xt@\textwidth{\hss\DR@speaker{#1}\@ifmtarg{#2}{}{#2}\hss}]%
+    \DR@drama@postitem\DR@continued@verse%
 }
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\DR@speakerlabel@long}
 %    \begin{macrocode}
 \newcommand\DR@speakerlabel@long[2]{%
-  \item[\DR@speaker{#1}]\@ifmtarg{#2}{}{\hskip-\DR@drama@labelsep\hskip 0pt plus 4pt\ #2\hskip\DR@drama@labelsep}\DR@drama@postitem
+  \item[\DR@speaker{#1}]%
+    \@ifmtarg{#2}{}{%
+      \hskip-\DR@drama@labelsep\hskip 0pt plus 4pt\ #2\hskip\DR@drama@labelsep
+    }\DR@drama@postitem
 }
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\DR@speakerlabel@short}
 %    \begin{macrocode}
 \newcommand\DR@speakerlabel@short[2]{%
-  \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}\@ifmtarg{#2}{}{\ #2}}]\DR@drama@postitem\DR@continued@verse%
+  \item[\hb@xt@\DR@speaker@labelwidth{\DR@speaker{#1}\@ifmtarg{#2}{}{\ #2}}]%
+    \DR@drama@postitem\DR@continued@verse%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -638,7 +656,9 @@ and the derived files           dramatist.ins,
 % before the alignment is correct.
 %    \begin{macrocode}
 \zref@newlist{DR@savepos}
-\zref@newprop*{posx}[0]{\dimexpr\the\pdflastxpos sp\ifodd\c@page\the\evensidemargin\else\the\oddsidemargin\fi}
+\zref@newprop*{posx}[0]{%
+  \dimexpr\the\pdflastxpos sp\ifodd\c@page\the\evensidemargin\else\the\oddsidemargin\fi
+}
 \zref@newprop*{posy}[0]{\the\pdflastypos}
 \zref@addprops{DR@savepos}{posx,posy}
 \def\zref@DR@savepos{%
@@ -674,12 +694,15 @@ and the derived files           dramatist.ins,
 %   always legal.
 %    \begin{macrocode}
 \newcommand\DR@continued@verse{%
-  \if@DR@broken@verse%
-    \DR@zsavepos{DR@el:\DRroman{brokenverse}}%
-    \hskip\numexpr\DR@zposx{DR@bv:\DRroman{brokenverse}}-\DR@zposx{DR@el:\DRroman{brokenverse}}\relax sp
-    \relax%
+  \ifDR@drama@alignbv
+    \if@DR@broken@verse%
+      \DR@zsavepos{DR@el:\DRroman{brokenverse}}%
+      \hskip\numexpr\DR@zposx{DR@bv:\DRroman{brokenverse}}-%
+                    \DR@zposx{DR@el:\DRroman{brokenverse}}\relax sp%
+      \hskip\DR@drama@bvsep%
+    \fi%
+    \global\@DR@broken@versefalse%
   \fi%
-  \global\@DR@broken@versefalse%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -852,7 +875,9 @@ and the derived files           dramatist.ins,
 %    \begin{macrocode}
 \newcommand\DR@character@label{%
   \noexpand\DR@setvalues{character}%
-  {\noexpand\DR@character@namefont \noexpand\DR@character@namecase{\DR@character@dirname}}\noexpand\xspace
+  {\noexpand\DR@character@namefont 
+    \noexpand\DR@character@namecase{\DR@character@dirname}
+  }\noexpand\xspace
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1343,44 +1368,42 @@ and the derived files           dramatist.ins,
       \def\scenename{Scena}
       \def\drampername{Personaggi}
     }
-    \typeout{Now actname is: \actname}
-  }{\typeout{Not passed italian}}
+  }{}
   \@ifldfl@aded{english}{
     \addto\captionsenglish{%
       \def\actname{Act}
       \def\scenename{Scene}
       \def\drampername{Dramatis Person\ae}
     }
-    \typeout{Now actname is: \actname}
-  }{\typeout{Not passed english}}
+  }{}
   \@ifldfl@aded{german}{
     \addto\captionsgerman{%
       \def\actname{Akt}
       \def\scenename{Szene}
       \def\drampername{Personen}
     }
-  }{\typeout{Not passed german}}
+  }{}
   \@ifldfl@aded{ngerman}{
     \addto\captionsngerman{%
       \def\actname{Akt}
       \def\scenename{Szene}
       \def\drampername{Personen}
     }
-  }{\typeout{Not passed german}}
+  }{}
   \@ifldfl@aded{french}{
     \addto\captionsfrench{%
       \def\actname{Acte}
       \def\scenename{Scene}
       \def\drampername{Personnages}
     }
-  }{\typeout{Not passed french}}
+  }{}
   \@ifldfl@aded{spanish.ldf}{
     \addto\captionsspanish{%
       \def\actname{Acto}
       \def\scenename{Escena}
       \def\drampername{Personajes}
     }
-  }{\typeout{Not passed spanish}}
+  }{}
 }
 %    \end{macrocode}
 % \subsection{Default settings}
@@ -1395,6 +1418,8 @@ and the derived files           dramatist.ins,
   speechskip,
   parsep,
   labelsep,
+  bvsep,
+  alignbv,
   speakerlabel,
   font,
   postitem,
@@ -1526,7 +1551,8 @@ and the derived files           dramatist.ins,
 %<*modern>
 %    \end{macrocode}
 %    \begin{macrocode}
-\ProvidesFileSVN{$Id$}[v0.1][`modern' style for `dramatist' package]
+\ProvidesFileSVN{$Id$}
+                [v0.1][`modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1593,7 +1619,8 @@ and the derived files           dramatist.ins,
 %<*classic>
 %    \end{macrocode}
 %    \begin{macrocode}
-\ProvidesFileSVN{$Id$}[v0.1][`classic' style for `dramatist' package]
+\ProvidesFileSVN{$Id$}
+                [v0.1][`classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     leftmargin=0pt,
@@ -1662,7 +1689,8 @@ and the derived files           dramatist.ins,
 %<*centered>
 %    \end{macrocode}
 %    \begin{macrocode}
-\ProvidesFileSVN{$Id$}[v0.1][`centered' style for `dramatist' package]
+\ProvidesFileSVN{$Id$}
+                [v0.1][`centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
