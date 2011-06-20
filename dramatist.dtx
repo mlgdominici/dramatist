@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1529}
+% \CheckSum{1591}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -290,11 +290,10 @@ and the derived files           dramatist.ins,
 % \begin{macro}{\DR@setvalues}
 %   |\DR@setvalues{<id>}| is called at the beginning of a specific
 %   user macro or environment and sets the default values collected
-%   both via |\DR@define@defaults| and |\presetkeys| from
+%   both via |\DRresetdefaults| and |\presetkeys| from
 %   \pkgname{xkeyval}.
 %    \begin{macrocode}
 \newcommand\DR@setvalues[1]{%
-  % \csname default@#1\endcsname%
   \csname setup@#1\endcsname%
 }
 %    \end{macrocode}
@@ -1545,21 +1544,6 @@ and the derived files           dramatist.ins,
 \DR@dramatis@defaults
 \DR@stage@defaults
 %    \end{macrocode}
-% Again, this should be rewritten; the interface for document division
-% should be either removed or conformed to the rest.
-%    \begin{macrocode}
-% \DR@define@defaults{act}{%
-%   \def\DR@sections@namefont{\large\scshape}%
-%   \def\DR@sections@name{\actname}%
-%   \setlength\DR@sections@beforeskip{\baselineskip}%
-%   \setlength\DR@sections@afterskip{\baselineskip}%
-% }
-% \DR@define@defaults{scene}{%
-%   \def\DR@sections@namefont{\scshape}%
-%   \def\DR@sections@name{\scenename}%
-%   \setlength\DR@sections@afterskip{2\baselineskip}%
-% }
-%    \end{macrocode}
 % The chosen style is loaded at the end of the package in order to
 % ensure that (dummy) defaults will be overwritten.
 %    \begin{macrocode}
@@ -1579,7 +1563,6 @@ and the derived files           dramatist.ins,
   \@ifclassloaded{memoir}{\@DRmemoirtrue\@DRversetrue}{\@DRmemoirfalse}
   \@ifpackageloaded{poemscol}{\@DRpoemscoltrue}{\@DRpoemscolfalse}
   \@ifpackageloaded{verse}{\@DRversetrue}{\@DRversefalse}
-  % \setkeys+{dramatis,drama,sections,character,speaker,stage}{}
 }
 %    \end{macrocode}
 % \subsection{Errors and Warnings}
@@ -1629,6 +1612,15 @@ and the derived files           dramatist.ins,
     labelsep=1em,
     speakerlabel=short,
     postitem=\hskip 0pt plus 4pt minus 4pt,
+  }
+  \DRSetup{act}{sections}{
+    namefont=\large\scshape,
+    beforeskip=\baselineskip,
+    afterskip=\baselineskip
+  }
+  \DRSetup{scene}{sections}{
+    namefont=\scshape,
+    afterskip=\baselineskip
   }
   \DRSetup{character}{character}{
     rdsep={,\ },
@@ -1699,6 +1691,15 @@ and the derived files           dramatist.ins,
     parsep=0pt,
     postitem=\hskip 0pt plus 4pt minus 4pt,
   }
+  \DRSetup{act}{sections}{
+    namefont=\large\scshape,
+    beforeskip=\baselineskip,
+    afterskip=\baselineskip
+  }
+  \DRSetup{scene}{sections}{
+    namefont=\scshape,
+    afterskip=\baselineskip
+  }
   \DRSetup{character}{character}{
     dirname=\DR@character@role,
     rdsep={,\ },
@@ -1768,6 +1769,15 @@ and the derived files           dramatist.ins,
     speechskip={.75\baselineskip plus 4pt minus 2pt},
     parsep=0pt,
     postitem=\leavevmode\vadjust{\nobreak}\vskip.25\baselineskip,
+  }
+  \DRSetup{act}{sections}{
+    namefont=\large\scshape,
+    beforeskip=\baselineskip,
+    afterskip=\baselineskip
+  }
+  \DRSetup{scene}{sections}{
+    namefont=\scshape,
+    afterskip=\baselineskip
   }
   \DRSetup{character}{character}{
     dirname=\DR@character@role,
