@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1526}
+% \CheckSum{1529}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -138,6 +138,24 @@ and the derived files           dramatist.ins,
 %\maketitle
 %
 %\tableofcontents
+%
+%\section{User guide}
+%
+%\subsection{Options}
+%
+%\xkvview{family=dramatist.sty}
+%
+%\xkvview{family=sections}
+%
+%\xkvview{family=drama}
+%
+%\xkvview{family=speaker}
+%
+%\xkvview{family=character}
+%
+%\xkvview{family=stage}
+%
+%\xkvview{family=dramatis}
 %
 %\StopEventually{^^A
 % \PrintChanges
@@ -276,7 +294,7 @@ and the derived files           dramatist.ins,
 %   \pkgname{xkeyval}.
 %    \begin{macrocode}
 \newcommand\DR@setvalues[1]{%
-  \csname default@#1\endcsname%
+  % \csname default@#1\endcsname%
   \csname setup@#1\endcsname%
 }
 %    \end{macrocode}
@@ -309,7 +327,10 @@ and the derived files           dramatist.ins,
 %   section~\ref{sec:styles} for some examples.)
 %    \begin{macrocode}
 \newcommand\NewStyle[2]{% <name><code>
-  \expandafter\def\csname DR@style@#1\endcsname{#2}
+  \expandafter\def\csname DR@style@#1\endcsname{%
+    \DRresetdefaults
+    #2
+  }
 }
 %    \end{macrocode}
 % \end{macro}
@@ -319,6 +340,14 @@ and the derived files           dramatist.ins,
 %    \begin{macrocode}
 \newcommand\ApplyStyle[1]{%
   \csname DR@style@#1\endcsname
+}
+\newcommand\LoadStyle[1]{%
+  \makeatletter
+  \InputIfFileExists{#1.dst}
+    {\PackageInfo{dramatist}{Load `#1' style}}
+    {\PackageWarning{dramatist}{File #1.dst not found.}}
+    \ApplyStyle{#1}
+  \makeatother
 }
 %    \end{macrocode}
 % \end{macro}
@@ -570,6 +599,8 @@ and the derived files           dramatist.ins,
         \let\DR@orig@vscentercr\@vscentercr%
         \let\@vscentercr\DR@vscentercr%
         \def\newline{\global\@DR@broken@versetrue}%
+      \else
+        \def\newline{}%
       \fi
       \setlength{\stanzaskip}{\DR@drama@parsep}%
       \if@DRmemoir \setlength{\vleftmargin}{\DR@drama@leftmargin} \fi
@@ -712,7 +743,7 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{sections}{namefont}{}
 \DR@define@key{c}{sections}{numfont}{\DR@sections@namefont}
 \DR@define@key{c}{sections}{titlefont}{}
-\DR@define@key{c}{sections}{name}{}
+\DR@define@key{c}{sections}{name}{\DR@current@sectionname}
 \DR@define@key{c}{sections}{sep}{ -- }
 \DR@define@key{c}{sections}{pagestyle}{empty}
 \DR@define@key{l}{sections}{beforeskip}{0pt}
@@ -727,54 +758,55 @@ and the derived files           dramatist.ins,
 \def\actheadstart{\vspace*{\DR@sections@beforeskip}}
 \def\afteract{\par\nobreak\vskip\DR@sections@afterskip}
 \newcommand\@openact{%
-    \@ifundefined{if@openright}{\clearpage}{%
-        \if@openright
-            \clearpage{\thispagestyle{empty}\cleardoublepage}
-        \else
-            \clearpage
-        \fi}
-    \thispagestyle{\DR@sections@pagestyle}
-    \refstepcounter{act}
-    \DR@lnpa
+  \@ifundefined{if@openright}{\clearpage}{%
+    \if@openright
+      \clearpage{\thispagestyle{empty}\cleardoublepage}
+    \else
+      \clearpage
+    \fi}
+  \thispagestyle{\DR@sections@pagestyle}
+  \def\DR@current@sectionname{Act}
+  \DR@setvalues{act}%
+  \setkeys{sections}{}%
+  \refstepcounter{act}
+  \DR@lnpa
 }
 \newcommand\act{%
-    \@openact
-    \secdef\@act\@sact}
+  \@openact
+  \secdef\@act\@sact}
 \newcommand\@act[1][]{%
-    {\phantomsection
-    \DR@setvalues{act}
+  {\phantomsection
     \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact}
     \actmark{\DR@sections@name\ \theact}
     \m@ke@cthead{#1}
     \@afterindentfalse
     \@afterheading}}
 \newcommand\@sact[1][]{%
-    \m@ke@cthead{#1}
-    \@afterindentfalse
-    \@afterheading}
+  \m@ke@cthead{#1}
+  \@afterindentfalse
+  \@afterheading}
 \newcommand\Act{%
-    \@openact
-    \secdef\@Act\@sact}
+  \@openact
+  \secdef\@Act\@sact}
 \def\@Act[#1]#2{%
-    {\phantomsection
-    \DR@setvalues{act}
+  {\phantomsection
     \ifnum\c@secnumdepth>\m@ne
-        \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact\ #1}
+      \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact\ #1}
     \else
-        \addcontentsline{toc}{chapter}{#1}
+      \addcontentsline{toc}{chapter}{#1}
     \fi
     \actmark{\DR@sections@name\ \theact\ #1}
     \m@ke@cthead{#2}
     \@afterindentfalse
     \@afterheading}}
 \newcommand\m@ke@cthead[1]{%
-    \actheadstart
-    \parindent \z@
-    \ifnum\c@secnumdepth>\m@ne
-        \printactname \printsep \printactnum
-    \fi
-        \printacttitle{#1}
-    \afteract
+  \actheadstart
+  \parindent \z@
+  \ifnum\c@secnumdepth>\m@ne
+    \printactname \printsep \printactnum
+  \fi
+  \printacttitle{#1}
+  \afteract
 }
 \newcommand\scenemark[1]{}
 \newcommand{\printscenename}{\centering\DR@sections@namefont \DR@sections@name}
@@ -784,47 +816,48 @@ and the derived files           dramatist.ins,
 \def\sceneheadstart{\vspace{\DR@sections@beforeskip}}
 \def\afterscene{\par\nobreak\vskip\DR@sections@afterskip}
 \newcommand\@openscene{%
-    \stepcounter{scene}
-    \DR@lnps
+  \def\DR@current@sectionname{Act}
+  \DR@setvalues{scene}%
+  \setkeys{scene}{}%
+  \stepcounter{scene}
+  \DR@lnps
 }
 \newcommand\scene{%
-    \@openscene
-    \secdef\@scene\@sscene}
+  \@openscene
+  \secdef\@scene\@sscene}
 \newcommand\@scene[1][]{%
-    {\phantomsection
-    \DR@setvalues{scene}
+  {\phantomsection
     \addcontentsline{toc}{section}{\DR@sections@name\ \thescene}
     \scenemark{\DR@sections@name\ \thescene}
     \m@kescenehead{#1}
     \@afterindentfalse
     \@afterheading}}
 \newcommand\@sscene[1][]{%
-    \m@kescenehead{#1}
-    \@afterindentfalse
-    \@afterheading}
+  \m@kescenehead{#1}
+  \@afterindentfalse
+  \@afterheading}
 \newcommand\Scene{%
-    \@openscene
-    \secdef\@Scene\@sscene}
+  \@openscene
+  \secdef\@Scene\@sscene}
 \def\@Scene[#1]#2{%
-    {\phantomsection
-    \DR@setvalues{scene}
+  {\phantomsection
     \ifnum\c@secnumdepth>\z@
-        \addcontentsline{toc}{section}{\DR@sections@name\ \thescene\ #1}
+      \addcontentsline{toc}{section}{\DR@sections@name\ \thescene\ #1}
     \else
-        \addcontentsline{toc}{section}{#1}
+      \addcontentsline{toc}{section}{#1}
     \fi
     \scenemark{\DR@sections@name\ \thescene\ #1}
     \m@kescenehead{#2}
     \@afterindentfalse
     \@afterheading}}
 \newcommand\m@kescenehead[1]{%
-    \sceneheadstart
-    \parindent \z@
-    \ifnum\c@secnumdepth>\z@
-        \printscenename \printsep \printscenenum
-    \fi
-    \printscenetitle{#1}
-    \afterscene
+  \sceneheadstart
+  \parindent \z@
+  \ifnum\c@secnumdepth>\z@
+    \printscenename \printsep \printscenenum
+  \fi
+  \printscenetitle{#1}
+  \afterscene
 }
 %    \end{macrocode}
 % \subsection{Characters}
@@ -1410,7 +1443,10 @@ and the derived files           dramatist.ins,
 % These are mostly dummy defaults. Most values will be overwritten by
 % the chosen style. Default one is \optname{modern}.
 %    \begin{macrocode}
-\presetkeys{drama}{
+\newcommand\DR@setdefaults[2]{%
+  \expandafter\def\csname DR@#1@defaults\endcsname{\presetkeys{#1}{#2}{}\setkeys{#1}{}}
+}
+\DR@setdefaults{drama}{
   leftmargin,
   rightmargin,
   speakswidth,
@@ -1423,8 +1459,8 @@ and the derived files           dramatist.ins,
   speakerlabel,
   font,
   postitem,
-}{}
-\presetkeys{sections}{
+}
+\DR@setdefaults{sections}{
   namefont,
   numfont,
   titlefont,
@@ -1433,8 +1469,8 @@ and the derived files           dramatist.ins,
   pagestyle,
   beforeskip,
   afterskip,
-}{}
-\presetkeys{character}{
+}
+\DR@setdefaults{character}{
   dirname,
   speakername,
   role,
@@ -1446,16 +1482,16 @@ and the derived files           dramatist.ins,
   entry,
   namefont,
   namecase,
-}{}
-\presetkeys{speaker}{
+}
+\DR@setdefaults{speaker}{
   font,
   case,
   del,
   prelabel,
   postlabel,
   labelwidth,
-}{}
-\presetkeys{dramatis}{
+}
+\DR@setdefaults{dramatis}{
   leftmargin,
   rightmargin,
   indent,
@@ -1476,8 +1512,8 @@ and the derived files           dramatist.ins,
   pagestyle,
   beforeskip,
   afterskip,
-}{}
-\presetkeys{stage}{
+}
+\DR@setdefaults{stage}{
   leftmargin,
   rightmargin,
   topsep,
@@ -1488,31 +1524,51 @@ and the derived files           dramatist.ins,
   justification,
   rightdelimiter,
   leftdelimiter,
-}{}
+}
+\newcommand\DRresetdefaults{%
+  \def\setup@drama{\DR@drama@defaults}
+  \def\setup@versedrama{\DR@drama@defaults}
+  \def\setup@act{\DR@sections@defaults}
+  \def\setup@scene{\DR@sections@defaults}
+  \def\setup@character{\DR@character@defaults}
+  \def\setup@speaker{\DR@speaker@defaults}
+  \def\setup@dramatis{\DR@dramatis@defaults}
+  \def\setup@set{\DR@stage@defaults}
+  \def\setup@settings{\DR@stage@defaults}
+  \def\setup@direction{\DR@stage@defaults}
+  \def\setup@delivery{\DR@stage@defaults}
+}
+\DR@drama@defaults
+\DR@sections@defaults
+\DR@character@defaults
+\DR@speaker@defaults
+\DR@dramatis@defaults
+\DR@stage@defaults
 %    \end{macrocode}
 % Again, this should be rewritten; the interface for document division
 % should be either removed or conformed to the rest.
 %    \begin{macrocode}
-\DR@define@defaults{act}{%
-  \def\DR@sections@namefont{\large\scshape}%
-  \def\DR@sections@name{\actname}%
-  \setlength\DR@sections@beforeskip{\baselineskip}%
-  \setlength\DR@sections@afterskip{\baselineskip}%
-}
-\DR@define@defaults{scene}{%
-  \def\DR@sections@namefont{\scshape}%
-  \def\DR@sections@name{\scenename}%
-  \setlength\DR@sections@afterskip{2\baselineskip}%
-}
+% \DR@define@defaults{act}{%
+%   \def\DR@sections@namefont{\large\scshape}%
+%   \def\DR@sections@name{\actname}%
+%   \setlength\DR@sections@beforeskip{\baselineskip}%
+%   \setlength\DR@sections@afterskip{\baselineskip}%
+% }
+% \DR@define@defaults{scene}{%
+%   \def\DR@sections@namefont{\scshape}%
+%   \def\DR@sections@name{\scenename}%
+%   \setlength\DR@sections@afterskip{2\baselineskip}%
+% }
 %    \end{macrocode}
 % The chosen style is loaded at the end of the package in order to
 % ensure that (dummy) defaults will be overwritten.
 %    \begin{macrocode}
 \AtEndOfPackage{
   \InputIfFileExists{\DR@stylefile.dst}
-    {\PackageInfo{dramatist}{Load `\DR@stylefile' style.dst}}
-    {\input{modern.dst}
-     \PackageWarning{dramatist}{File \DR@stylefile.dst not found. Load default `modern' style}}
+    {\PackageInfo{dramatist}{Load `\DR@stylefile' style}}
+    {\def\DR@stylefile{modern}\input{\DR@stylefile.dst}
+      \PackageWarning{dramatist}{File \DR@stylefile.dst not found. Load default `modern' style}}
+  \ApplyStyle{\DR@stylefile}
 }
 %    \end{macrocode}
 % Finally, at the beginning of the document we check which
@@ -1523,7 +1579,7 @@ and the derived files           dramatist.ins,
   \@ifclassloaded{memoir}{\@DRmemoirtrue\@DRversetrue}{\@DRmemoirfalse}
   \@ifpackageloaded{poemscol}{\@DRpoemscoltrue}{\@DRpoemscolfalse}
   \@ifpackageloaded{verse}{\@DRversetrue}{\@DRversefalse}
-  \setkeys+{dramatis,drama,sections,character,speaker,stage}{}
+  % \setkeys+{dramatis,drama,sections,character,speaker,stage}{}
 }
 %    \end{macrocode}
 % \subsection{Errors and Warnings}
@@ -1556,34 +1612,56 @@ and the derived files           dramatist.ins,
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
-    speaksindent=0pt,
-    labelsep=1em,
     speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
     speechskip=0pt,
     parsep=0pt,
+    speaksindent=0pt,
+    labelsep=1em,
+    speakerlabel=short,
     postitem=\hskip 0pt plus 4pt minus 4pt,
   }
   \DRSetup{versedrama}{drama}{
     leftmargin=1.5em,
-    speaksindent=0pt,
-    labelsep=1em,
     speakswidth=\dimexpr\DR@drama@leftmargin-\DR@drama@labelsep\relax,
+    speaksindent=0pt,
     speechskip=0pt,
     parsep=0pt,
+    labelsep=1em,
+    speakerlabel=short,
     postitem=\hskip 0pt plus 4pt minus 4pt,
   }
+  \DRSetup{character}{character}{
+    rdsep={,\ },
+    dasep=\hfill,
+    namefont=\normalfont\scshape,
+    namecase=\MakeLowercase,
+  }  
   \DRSetup{speaker}{speaker}{
-    case=\MakeLowercase,
     font=\scshape,
+    case=\MakeLowercase,
   }
-  \DRSetup{direction}{stage}{
-    font=\itshape,
+  \DRSetup{dramatis}{dramatis}{
+    leftmargin=1.5em,
+    indent=-\DR@dramatis@leftmargin,
+    topsep=2\baselineskip,
+    rolecase=\MakeLowercase,
+    rolefont=\scshape,
+    titlefont=\scshape\Large,
+    titlename=\drampername,
+  }
+  \DRSetup{set}{stage}{
     topsep=\baselineskip,
-    partopsep=0pt,
-    leftmargin=1.5em
+    font=\itshape,
+    justification=\centering,
   }  
   \DRSetup{settings}{stage}{
     topsep=\baselineskip,
+    font=\itshape,
+  }  
+  \DRSetup{direction}{stage}{
+    leftmargin=1.5em,
+    topsep=\baselineskip,
+    partopsep=0pt,
     font=\itshape,
   }  
   \DRSetup{delivery}{stage}{
@@ -1591,28 +1669,7 @@ and the derived files           dramatist.ins,
     leftdelimiter=(,
     rightdelimiter=),
   }  
-  \DRSetup{set}{stage}{
-    topsep=\baselineskip,
-    font=\itshape,
-    justification=\centering,
-  }  
-  \DRSetup{character}{character}{
-    rdsep={,\ },
-    dasep=\hfill,
-    namefont=\normalfont\scshape,
-    namecase=\MakeLowercase,
-  }  
-  \DRSetup{dramatis}{dramatis}{
-    titlename=\drampername,
-    titlefont=\scshape\Large,
-    rolecase=\MakeLowercase,
-    rolefont=\scshape,
-    leftmargin=1.5em,
-    indent=-\DR@dramatis@leftmargin,
-    topsep=2\baselineskip,
-  }
 }
-\ApplyStyle{modern}
 %    \end{macrocode}
 %    \begin{macrocode}
 %</modern>
@@ -1623,6 +1680,7 @@ and the derived files           dramatist.ins,
                 [v0.1][`classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
+    speakerlabel=short,
     leftmargin=0pt,
     speaksindent=1em,
     labelsep=.5em,
@@ -1632,6 +1690,7 @@ and the derived files           dramatist.ins,
     postitem=\hskip 0pt plus 4pt minus 4pt,
   }
   \DRSetup{versedrama}{drama}{
+    speakerlabel=short,
     leftmargin=0pt,
     speaksindent=1em,
     labelsep=.5em,
@@ -1640,37 +1699,17 @@ and the derived files           dramatist.ins,
     parsep=0pt,
     postitem=\hskip 0pt plus 4pt minus 4pt,
   }
-  \DRSetup{speaker}{speaker}{
-    font=\itshape,
-    del=.
-  }
-  \DRSetup{direction}{stage}{
-    font=\itshape,
-    topsep=\baselineskip,
-    partopsep=0pt,
-    justification=\centering,
-  }  
-  \DRSetup{settings}{stage}{
-    font=\itshape,
-    justification=\centering,
-    topsep=\baselineskip,
-  }  
-  \DRSetup{delivery}{stage}{
-    font=\itshape,
-    leftdelimiter=[,
-    rightdelimiter=],
-  }  
-  \DRSetup{set}{stage}{
-    topsep=\baselineskip,
-    font=\itshape,
-    justification=\centering,
-  }  
   \DRSetup{character}{character}{
     dirname=\DR@character@role,
     rdsep={,\ },
     dasep=\hfill,
     namefont=\normalfont\scshape,
   }  
+  \DRSetup{speaker}{speaker}{
+    case=,
+    font=\itshape,
+    del=.
+  }
   \DRSetup{dramatis}{dramatis}{
     titlename=\drampername,
     titlefont=\scshape\Large,
@@ -1679,8 +1718,28 @@ and the derived files           dramatist.ins,
     indent=-\DR@dramatis@leftmargin,
     topsep=2\baselineskip,
   }
+  \DRSetup{set}{stage}{
+    topsep=\baselineskip,
+    font=\itshape,
+    justification=\centering,
+  }  
+  \DRSetup{settings}{stage}{
+    font=\itshape,
+    justification=\centering,
+    topsep=\baselineskip,
+  }  
+  \DRSetup{direction}{stage}{
+    font=\itshape,
+    topsep=\baselineskip,
+    partopsep=0pt,
+    justification=\centering,
+  }  
+  \DRSetup{delivery}{stage}{
+    font=\itshape,
+    leftdelimiter=[,
+    rightdelimiter=],
+  }  
 }
-\ApplyStyle{classic}
 %    \end{macrocode}
 %    \begin{macrocode}
 %</classic>
@@ -1710,33 +1769,6 @@ and the derived files           dramatist.ins,
     parsep=0pt,
     postitem=\leavevmode\vadjust{\nobreak}\vskip.25\baselineskip,
   }
-  \DRSetup{speaker}{speaker}{
-    case=\MakeLowercase,
-    font=\scshape,
-    labelwidth=0pt,
-  }
-  \DRSetup{direction}{stage}{
-    font=\itshape,
-    topsep=\baselineskip,
-    partopsep=0pt,
-    justification=\centering,
-    leftdelimiter=(,
-    rightdelimiter=),
-  }  
-  \DRSetup{settings}{stage}{
-    font=\itshape,
-    justification=\centering,
-  }  
-  \DRSetup{delivery}{stage}{
-    font=\itshape,
-    leftdelimiter=,
-    rightdelimiter=,
-  }  
-  \DRSetup{set}{stage}{
-    topsep=\baselineskip,
-    font=\itshape,
-    justification=\centering,
-  }  
   \DRSetup{character}{character}{
     dirname=\DR@character@role,
     rdsep={,\ },
@@ -1744,6 +1776,11 @@ and the derived files           dramatist.ins,
     namefont=\normalfont\scshape,
     namecase=\MakeLowercase,
   }  
+  \DRSetup{speaker}{speaker}{
+    case=\MakeLowercase,
+    font=\scshape,
+    labelwidth=0pt,
+  }
   \DRSetup{dramatis}{dramatis}{
     titlename=\drampername,
     titlefont=\scshape\Large,
@@ -1752,8 +1789,29 @@ and the derived files           dramatist.ins,
     indent=-\DR@dramatis@leftmargin,
     topsep=2\baselineskip,
   }
+  \DRSetup{set}{stage}{
+    topsep=\baselineskip,
+    font=\itshape,
+    justification=\centering,
+  }  
+  \DRSetup{settings}{stage}{
+    font=\itshape,
+    justification=\centering,
+  }  
+  \DRSetup{direction}{stage}{
+    font=\itshape,
+    topsep=\baselineskip,
+    partopsep=0pt,
+    justification=\centering,
+    leftdelimiter=(,
+    rightdelimiter=),
+  }  
+  \DRSetup{delivery}{stage}{
+    font=\itshape,
+    leftdelimiter=,
+    rightdelimiter=,
+  }  
 }
-\ApplyStyle{centered}
 %    \end{macrocode}
 %    \begin{macrocode}
 %</centered>
