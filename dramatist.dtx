@@ -4,7 +4,7 @@
 %</internal>
 %<*readme>
 ----------------------------------------------------------------
-dramatist --- description text
+dramatist --- typesetting drama with LaTeX
 E-mail: mlgdominici@interfree.it
 Released under the LaTeX Project Public License v1.3c or later
 See http://www.latex-project.org/lppl.txt
@@ -25,7 +25,7 @@ Some text about the package: probably the same as the abstract.
 \askforoverwritefalse
 \preamble
 ----------------------------------------------------------------
-dramatist --- description text
+dramatist --- typesetting drama with LaTeX
 E-mail: mlgdominici@interfree.it
 Released under the LaTeX Project Public License v1.3c or later
 See http://www.latex-project.org/lppl.txt
@@ -108,7 +108,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1593}
+% \CheckSum{1587}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -126,7 +126,7 @@ and the derived files           dramatist.ins,
 %\GetFileInfo{\jobname.sty}
 %
 %\title{^^A
-%  \textsf{dramatist} --- description text\thanks{^^A
+%  \textsf{dramatist} --- typesetting drama with \LaTeX\thanks{^^A
 %    This file describes version \fileversion, last revised \filedate.^^A
 %  }^^A
 %}
@@ -178,7 +178,7 @@ and the derived files           dramatist.ins,
 \RequirePackage{zref-base}
 %    \end{macrocode}
 % \subsection{Private tools}
-% A series of tools making ``key = value'' definitions simpler, follows here.
+% A series of tools making ``key = value'' definitions simpler follows here.
 %
 % \begin{macro}{\DR@define@key}
 % This is a general dispatcher for more focused macros. It takes four arguments:
@@ -216,6 +216,10 @@ and the derived files           dramatist.ins,
           \DR@define{glength}{#2}{#3}{#4}%
         \else%
           \ifx#1C%
+%    \end{macrocode}
+% (But this rule doesn't match the definition of
+% |\DR@define@choicekey| below.
+%    \begin{macrocode}
             \DR@define{choice}{#2}{#3}{#4}%
           \fi%
         \fi%
@@ -226,8 +230,8 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \end{macro}
 % The following macros do the actual work. |\DR@define| is the actual
-% dispatcher, while the |\DR@define@<spec>| macros invoke the
-% respective macros from \pkgname{xkeyval}.
+% dispatcher, while the |\DR@define@<spec>| macros call the respective
+% macros from \pkgname{xkeyval}.
 % \begin{macro}{\DR@define}
 %    \begin{macrocode}
 \newcommand\DR@define[1]{\csname DR@define@#1key\endcsname}
@@ -276,17 +280,6 @@ and the derived files           dramatist.ins,
 }
 %    \end{macrocode}
 % \end{macro}
-% \begin{macro}{\DR@define@defaults}
-%   This macro sets default values (\texttt{arg \#2}) for keys
-%   belonging to a specific family (\texttt{arg \#1}). Do I really
-%   nead this one anymore? It's used now only for acts and scenes, and
-%   I'm planning to either remove or deeply rework them.
-%    \begin{macrocode}
-\newcommand\DR@define@defaults[2]{%
-  \expandafter\def\csname default@#1\endcsname{#2}%
-}
-%    \end{macrocode}
-% \end{macro}
 % \begin{macro}{\DR@setvalues}
 %   |\DR@setvalues{<id>}| is called at the beginning of a specific
 %   user macro or environment and sets the default values collected
@@ -323,7 +316,8 @@ and the derived files           dramatist.ins,
 %   This macro will create a new style. We simply construct from |arg #1| 
 %   an internal macro which holds the code specified in |arg #2|. Usually 
 %   we will have several |\DRSetup| macros in the second argument. (See 
-%   section~\ref{sec:styles} for some examples.)
+%   section~\ref{sec:styles} for some examples.) |\DRresetdefaults| makes 
+%   sure that every previous customization will be overwritten.
 %    \begin{macrocode}
 \newcommand\NewStyle[2]{% <name><code>
   \expandafter\def\csname DR@style@#1\endcsname{%
@@ -340,6 +334,12 @@ and the derived files           dramatist.ins,
 \newcommand\ApplyStyle[1]{%
   \csname DR@style@#1\endcsname
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\LoadStyle}
+%   |\LoadStyle{<id>}| loads a file containing a single style with the
+%   same name and applies it.
+%    \begin{macrocode}
 \newcommand\LoadStyle[1]{%
   \makeatletter
   \InputIfFileExists{#1.dst}
@@ -362,7 +362,7 @@ and the derived files           dramatist.ins,
 \newif\if@firstdirection
 %    \end{macrocode}
 % We also need to save the original meaning of |\@roman| and |\roman|
-% since \pkgname{spanish.ldf} fiddles with it.
+% since \pkgname{spanish.ldf} fiddles with it. (Really?)
 %    \begin{macrocode}
 \def\DRroman#1{\expandafter\romannumeral\csname c@#1\endcsname}
 \def\DR@roman#1{\romannumeral #1}
@@ -630,8 +630,8 @@ and the derived files           dramatist.ins,
 % \end{macro}
 % \begin{macro}{versedrama}
 %   As for \envname{drama}, \envname{versedrama} is a simple wrapper
-%   for its internal version. Before we load, of course, the values
-%   for each parameter, both global and local ones.
+%   for its internal version. First we load, of course, the values for
+%   each parameter, both global and local ones.
 %    \begin{macrocode}
 \newenvironment{versedrama}[1][]{%
   \DR@setvalues{versedrama}%
@@ -687,7 +687,7 @@ and the derived files           dramatist.ins,
 %    \begin{macrocode}
 \zref@newlist{DR@savepos}
 \zref@newprop*{posx}[0]{%
-  \dimexpr\the\pdflastxpos sp\ifodd\c@page\the\evensidemargin\else\the\oddsidemargin\fi
+  \dimexpr\the\pdflastxpos sp-1in+\ifodd\c@page\the\evensidemargin\else\the\oddsidemargin\fi
 }
 \zref@newprop*{posy}[0]{\the\pdflastypos}
 \zref@addprops{DR@savepos}{posx,posy}
@@ -758,17 +758,17 @@ and the derived files           dramatist.ins,
 \def\afteract{\par\nobreak\vskip\DR@sections@afterskip}
 \newcommand\@openact{%
   \@ifundefined{if@openright}{\clearpage}{%
-    \if@openright
-      \clearpage{\thispagestyle{empty}\cleardoublepage}
-    \else
-      \clearpage
+    \if@openright%
+      \clearpage{\thispagestyle{empty}\cleardoublepage}%
+    \else%
+      \clearpage%
     \fi}
   \thispagestyle{\DR@sections@pagestyle}
-  \def\DR@current@sectionname{\actname}
+  \def\DR@current@sectionname{\actname}%
   \DR@setvalues{act}%
   \setkeys{sections}{}%
-  \refstepcounter{act}
-  \DR@lnpa
+  \refstepcounter{act}%
+  \DR@lnpa%
 }
 \newcommand\act{%
   \@openact
@@ -815,7 +815,7 @@ and the derived files           dramatist.ins,
 \def\sceneheadstart{\vspace{\DR@sections@beforeskip}}
 \def\afterscene{\par\nobreak\vskip\DR@sections@afterskip}
 \newcommand\@openscene{%
-  \def\DR@current@sectionname{\sectionname}
+  \def\DR@current@sectionname{\scenename}
   \DR@setvalues{scene}%
   \setkeys{scene}{}%
   \stepcounter{scene}
