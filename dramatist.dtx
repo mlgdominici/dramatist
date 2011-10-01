@@ -755,7 +755,7 @@ and the derived files           dramatist.ins,
 \newcommand{\printacttitle}[1]{\DR@sections@titlefont\ #1}
 \newcommand{\printsep}{\ }
 \def\actheadstart{\vspace*{\DR@sections@beforeskip}}
-\def\afteract{\par\nobreak\vskip\DR@sections@afterskip}
+\def\afteract{\par\nobreak\addvspace{\DR@sections@afterskip}}
 \newcommand\@openact{%
   \@ifundefined{if@openright}{\clearpage}{%
     \if@openright%
@@ -812,7 +812,7 @@ and the derived files           dramatist.ins,
 % \newcommand{\printscenenum}{\DR@sections@numfont \theact\DR@sections@sep\thescene}
 \newcommand{\printscenenum}{\DR@sections@numfont \thescene}
 \newcommand{\printscenetitle}[1]{\DR@sections@titlefont\ #1}
-\def\sceneheadstart{\vspace{\DR@sections@beforeskip}}
+\def\sceneheadstart{\addvspace{\DR@sections@beforeskip}}
 \def\afterscene{\par\nobreak\vskip\DR@sections@afterskip}
 \newcommand\@openscene{%
   \def\DR@current@sectionname{\scenename}
@@ -1620,6 +1620,7 @@ and the derived files           dramatist.ins,
   }
   \DRSetup{scene}{sections}{
     namefont=\scshape,
+    beforeskip=\baselineskip,
     afterskip=\baselineskip
   }
   \DRSetup{character}{character}{
@@ -1698,6 +1699,7 @@ and the derived files           dramatist.ins,
   }
   \DRSetup{scene}{sections}{
     namefont=\scshape,
+    beforeskip=\baselineskip,
     afterskip=\baselineskip
   }
   \DRSetup{character}{character}{
@@ -1777,6 +1779,7 @@ and the derived files           dramatist.ins,
   }
   \DRSetup{scene}{sections}{
     namefont=\scshape,
+    beforeskip=\baselineskip,
     afterskip=\baselineskip
   }
   \DRSetup{character}{character}{
