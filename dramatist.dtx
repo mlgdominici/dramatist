@@ -1251,12 +1251,15 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{stage}{justification}{}
 \DR@define@key{c}{stage}{rightdelimiter}{}
 \DR@define@key{c}{stage}{leftdelimiter}{}
+\DR@define@key{c}{stage}{prehook}{}
+\DR@define@key{c}{stage}{posthook}{}
 %    \end{macrocode}
 % \begin{macro}{DR@stage@display}
 %   This is the environment used internally to build display stage
 %   directions. It's a list environment as almost everything, here.
 %    \begin{macrocode}
 \newenvironment{DR@stage@display}{%
+  \DR@stage@prehook
   \let\@trivlist\DR@trivlist
   \list{}{%
     \leftmargin\dimexpr-\DR@saved@leftmargin+\DR@stage@leftmargin\relax%
@@ -1272,6 +1275,7 @@ and the derived files           dramatist.ins,
   \DR@stage@leftdelimiter}{%
   \DR@stage@rightdelimiter%
   \endlist
+  \DR@stage@posthook
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1280,7 +1284,9 @@ and the derived files           dramatist.ins,
 %   directions. Very simple, indeed.
 %    \begin{macrocode}
 \newcommand\DR@stage@inline[1]{%
-  \DR@stage@leftdelimiter{\DR@stage@font#1}\DR@stage@rightdelimiter
+  \DR@stage@prehook%
+  \DR@stage@leftdelimiter{\DR@stage@font#1}\DR@stage@rightdelimiter%
+  \DR@stage@posthook%
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1523,6 +1529,8 @@ and the derived files           dramatist.ins,
   justification,
   rightdelimiter,
   leftdelimiter,
+  prehook,
+  posthook,
 }
 \newcommand\DRresetdefaults{%
   \def\setup@drama{\DR@drama@defaults}
