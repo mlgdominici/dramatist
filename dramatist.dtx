@@ -81,8 +81,8 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\RequirePackage{svn-prov}
-\ProvidesPackageSVN{$Id$}[v1.99][Package for typesetting drama]
+\RequirePackage{gitinfo}
+\ProvidesPackage{dramatist}[\gitAuthorDate v1.99 Revision: \gitHash. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -1598,8 +1598,8 @@ and the derived files           dramatist.ins,
 %<*modern>
 %    \end{macrocode}
 %    \begin{macrocode}
-\ProvidesFileSVN{$Id$}
-                [v0.1][`modern' style for `dramatist' package]
+\ProvidesFileSVN{modern.dst}
+                [\gitAuthorDate v0.1 Revision: \gitHash. `modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1677,8 +1677,8 @@ and the derived files           dramatist.ins,
 %<*classic>
 %    \end{macrocode}
 %    \begin{macrocode}
-\ProvidesFileSVN{$Id$}
-                [v0.1][`classic' style for `dramatist' package]
+\ProvidesFile{classic.dst}
+                [\gitAuthorDate v0.1 Revision: \gitHash. `classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     speakerlabel=short,
@@ -1759,8 +1759,8 @@ and the derived files           dramatist.ins,
 %<*centered>
 %    \end{macrocode}
 %    \begin{macrocode}
-\ProvidesFileSVN{$Id$}
-                [v0.1][`centered' style for `dramatist' package]
+\ProvidesFile{centered.dst}
+                [\gitAuthorDate v0.1 Revision: \gitHash. `centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
