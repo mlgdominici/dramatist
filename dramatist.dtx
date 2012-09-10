@@ -107,7 +107,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1596}
+% \CheckSum{1515}
 %% \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %%   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -178,7 +178,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \subsection{Private tools}
 % A series of tools making ``key = value'' definitions simpler follows here.
-%
+% 
 % \begin{macro}{\DR@define@key}
 % This is a general dispatcher for more focused macros. It takes four arguments:
 % \begin{enumerate}
@@ -352,7 +352,6 @@ and the derived files           dramatist.ins,
 % \subsection{Auxiliary macros}
 % We need a bunch of new conditionals.
 %    \begin{macrocode}
-\@ifundefined{if@openright}{\newif\if@openright}{}
 \newif\if@cglist
 \newif\if@DRpoemscol
 \newif\if@DRverse
@@ -402,10 +401,6 @@ and the derived files           dramatist.ins,
 \if@DRpoemscol\else\refstepcounter{storelineno}\fi
 \newcounter{storeprintlineindex}
 \newcounter{character}
-\newcounter{act}
-\newcounter{scene}[act]
-\renewcommand{\theact}{\roman{act}}
-\renewcommand{\thescene}{\roman{scene}}
 %    \end{macrocode}
 % \subsection{Options}
 % Currently \pkgname{\jobname} offers only two package options:
@@ -450,19 +445,19 @@ and the derived files           dramatist.ins,
   \or
     \let\DR@speakerlabel\DR@speakerlabel@short
   \fi  
-}{\PackageWarning{dramatist}{Invalid input for key `drama' in family `speakerlabel'}}
+}{\PackageWarning{dramatist}{Invalid input for key `speakerlabel' in family `drama'}}
 \DR@define@key{c}{drama}{font}{}
 \DR@define@key{c}{drama}{postitem}{}
 %    \end{macrocode}
 % \begin{macro}{DR@drama@prose}
 %   This environment is the internal version of \envname{drama},
 %   \emph{i.~e.} the environment for dialogues in prose. So, no need
-%   for complex stuff, only a list with convenient parameters, and an
-%   hook for font setting. We also need to initialize |\DR@pidefault|
-%   to |\DR@drama@postitem| and warn the user in case he chose to
-%   attach numbers to the paragraph lines via the \optname{numbering}
-%   option. This task should be performed instead by a dedicated
-%   package like \pkgname{lineno}.
+%   for complex stuff here, only a list with convenient parameters,
+%   and an hook for font setting. We also need to initialize
+%   |\DR@pidefault| to |\DR@drama@postitem| and warn the user in case
+%   he chose to attach numbers to the paragraph lines via the
+%   \optname{numbering} option. This task should be performed instead
+%   by a dedicated package like \pkgname{lineno}.
 %    \begin{macrocode}
 \newenvironment{DR@drama@prose}{%
   \@firstdirectiontrue
@@ -736,127 +731,183 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \end{macro}
 % \subsection{Document divisions}
-% I'm not documenting them, yet, because they need deep reworking.
+% Again, we start with the customizable parameters.
 %    \begin{macrocode}
-\DR@define@key{c}{sections}{namefont}{}
-\DR@define@key{c}{sections}{numfont}{\DR@sections@namefont}
-\DR@define@key{c}{sections}{titlefont}{}
 \DR@define@key{c}{sections}{name}{\DR@current@sectionname}
-\DR@define@key{c}{sections}{sep}{ -- }
-\DR@define@key{c}{sections}{pagestyle}{empty}
+\DR@define@key{c}{sections}{namefont}{}
+\DR@define@key{c}{sections}{namecase}{}
+\DR@define@key{c}{sections}{numfont}{\DR@sections@namefont}
+\DR@define@key{c}{sections}{numcase}{\DR@sections@namecase}
+\DR@define@key{c}{sections}{title}{}
+\DR@define@key{c}{sections}{titlefont}{}
+\DR@define@key{c}{sections}{titlecase}{}
+\DR@define@key{c}{sections}{namenumbersep}{\ }
+\DR@define@key{c}{sections}{numbertitlesep}{\endgraf}
+\DR@define@key{c}{sections}{level}{\@ifundefined{chapter}{section}{chapter}}
+\DR@define@key{c}{sections}{contentsline}{\DR@sections@name\ \csname the\DR@counter@sectionname\endcsname}
+\DR@define@key{c}{sections}{markline}{\DR@sections@name\ \csname the\DR@counter@sectionname\endcsname}
+\define@choicekey+{sections}{mark}[\val\nr]{none,left,right,both}[none]{%
+  \ifcase\nr\relax
+    \let\DR@sections@mark\@gobble
+  \or
+    \renewcommand\DR@sections@mark[1]{\markboth{##1}{}}
+  \or
+    \renewcommand\DR@sections@mark[1]{\markright{##1}}
+  \or
+    \renewcommand\DR@sections@mark[1]{\markboth{##1}{##1}}
+  \fi  
+}{\PackageWarning{dramatist}{Invalid input for key `mark' in family `sections'}}
+\DR@define@key{c}{sections}{pagestyle}{}
+\DR@define@key{c}{sections}{pagebreak}{}
+\DR@define@key{c}{sections}{justification}{}
+\DR@define@key{c}{sections}{counterformat}{\arabic}
 \DR@define@key{l}{sections}{beforeskip}{0pt}
 \DR@define@key{l}{sections}{afterskip}{0pt}
+%    \end{macrocode}
+% \begin{macro}{\DR@div@header}
+%   This is the generic macro for document headers. Actual headers will
+%   be built on top of it.
+%    \begin{macrocode}
+\newcommand\DR@div@header[1][]{
+  \refstepcounter{\DR@counter@sectionname}
+  \setkeys*{sections}{#1}
+  \DR@sections@pagebreak
+  \DR@sections@pagestyle
+  \DR@sections@before
+  \DR@sections@auxinfo
+  {
+    \DR@sections@justification
+    \DR@sections@printname%
+    \DR@sections@namenumbersep%
+    \DR@sections@printnumber
+    \DR@sections@numbertitlesep
+    \DR@sections@printtitle
+    \par
+  }
+  \DR@sections@after
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@sections@before}
+%   This is the code to be executed at the beginning of a new
+%   header. We make sure that consecutive spaces from other
+%   headers/environments collapse gently. But we also have to ensure
+%   that headers which start a new page on their own, preserve the
+%   space at the beginning. We subtract the |\topskip| length, so that
+%   the value of this space is the \emph{actual} length specified in
+%   the specs.
+%    \begin{macrocode}
+\def\DR@sections@before{
+  \addvspace{\DR@sections@beforeskip}
+  \ifx\DR@sections@pagebreak\@empty
+  \else
+    \vspace*{\dimexpr\DR@sections@beforeskip-\topskip\relax}
+  \fi
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@sections@auxinfo}
+%   Now, the auxiliary infos for table of contents and marks for
+%   headings. The content of the toc entry is sent according to the
+%   level specified for the header. Default is |chapter/section| for
+%   acts and |section/subsection| for scene, depending on wether the
+%   command |\chapter| is defined or not.
+%
+%   Marking is done via a dedicated macro: |\DR@sections@mark|. The
+%   user can choose to make it equivalent to |\@gobble| (no marks),
+%   |\markright| or |\markboth| (for setting both |\leftmark| and
+%   |\rightmark| or |\leftmark| only) through the key setting
+%   \verb+mark=none|right|both|left+.
+%    \begin{macrocode}
+\newcommand\DR@sections@mark{}
 
-%\providecommand\phantomsection{}
-\newcommand\actmark[1]{}
-\newcommand{\printactname}{\centering\DR@sections@namefont \DR@sections@name}
-\newcommand{\printactnum}{\DR@sections@numfont \theact}
-\newcommand{\printacttitle}[1]{\DR@sections@titlefont\ #1}
-\newcommand{\printsep}{\ }
-\def\actheadstart{\vspace*{\DR@sections@beforeskip}}
-\def\afteract{\par\nobreak\addvspace{\DR@sections@afterskip}}
-\newcommand\@openact{%
-  \@ifundefined{if@openright}{\clearpage}{%
-    \if@openright%
-      \clearpage{\thispagestyle{empty}\cleardoublepage}%
-    \else%
-      \clearpage%
-    \fi}
-  \thispagestyle{\DR@sections@pagestyle}
-  \def\DR@current@sectionname{\actname}%
-  \DR@setvalues{act}%
-  \setkeys{sections}{}%
-  \refstepcounter{act}%
-  \DR@lnpa%
+\def\DR@sections@auxinfo{
+  \addcontentsline{toc}{\DR@sections@level}{\DR@sections@contentsline}
+  \DR@sections@mark{\DR@sections@markline}
 }
-\newcommand\act{%
-  \@openact
-  \secdef\@act\@sact}
-\newcommand\@act[1][]{%
-  {\phantomsection
-    \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact}
-    \actmark{\DR@sections@name\ \theact}
-    \m@ke@cthead{#1}
-    \@afterindentfalse
-    \@afterheading}}
-\newcommand\@sact[1][]{%
-  \m@ke@cthead{#1}
-  \@afterindentfalse
-  \@afterheading}
-\newcommand\Act{%
-  \@openact
-  \secdef\@Act\@sact}
-\def\@Act[#1]#2{%
-  {\phantomsection
-    \ifnum\c@secnumdepth>\m@ne
-      \addcontentsline{toc}{chapter}{\DR@sections@name\ \theact\ #1}
-    \else
-      \addcontentsline{toc}{chapter}{#1}
-    \fi
-    \actmark{\DR@sections@name\ \theact\ #1}
-    \m@ke@cthead{#2}
-    \@afterindentfalse
-    \@afterheading}}
-\newcommand\m@ke@cthead[1]{%
-  \actheadstart
-  \parindent \z@
-  \ifnum\c@secnumdepth>\m@ne
-    \printactname \printsep \printactnum
-  \fi
-  \printacttitle{#1}
-  \afteract
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@sections@printname}
+%   The following macros do the actual typesetting of the
+%   header. Distinct macros are provided for the different elements of
+%   the header: |\DR@sections@printname| is by default equivalent to
+%   |\actname| or |\scenename| or |\drampername| or wathever specified
+%   when defining a new header (see below).
+%    \begin{macrocode}
+\def\DR@sections@printname{%
+  {\DR@sections@namefont\DR@sections@namecase{\DR@sections@name}}%
 }
-\newcommand\scenemark[1]{}
-\newcommand{\printscenename}{\centering\DR@sections@namefont \DR@sections@name}
-% \newcommand{\printscenenum}{\DR@sections@numfont \theact\DR@sections@sep\thescene}
-\newcommand{\printscenenum}{\DR@sections@numfont \thescene}
-\newcommand{\printscenetitle}[1]{\DR@sections@titlefont\ #1}
-\def\sceneheadstart{\addvspace{\DR@sections@beforeskip}}
-\def\afterscene{\par\nobreak\vskip\DR@sections@afterskip}
-\newcommand\@openscene{%
-  \def\DR@current@sectionname{\scenename}
-  \DR@setvalues{scene}%
-  \setkeys{scene}{}%
-  \stepcounter{scene}
-  \DR@lnps
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@sections@printnumber}
+%   This is the formatting macro for the counter. The name is slightly
+%   misleading, since we could have a word (\emph{First},
+%   \emph{Second}, etc.) instead of an actual number.
+%    \begin{macrocode}
+\def\DR@sections@printnumber{%
+  {\DR@sections@numfont\csname the\DR@counter@sectionname\endcsname}%
 }
-\newcommand\scene{%
-  \@openscene
-  \secdef\@scene\@sscene}
-\newcommand\@scene[1][]{%
-  {\phantomsection
-    \addcontentsline{toc}{section}{\DR@sections@name\ \thescene}
-    \scenemark{\DR@sections@name\ \thescene}
-    \m@kescenehead{#1}
-    \@afterindentfalse
-    \@afterheading}}
-\newcommand\@sscene[1][]{%
-  \m@kescenehead{#1}
-  \@afterindentfalse
-  \@afterheading}
-\newcommand\Scene{%
-  \@openscene
-  \secdef\@Scene\@sscene}
-\def\@Scene[#1]#2{%
-  {\phantomsection
-    \ifnum\c@secnumdepth>\z@
-      \addcontentsline{toc}{section}{\DR@sections@name\ \thescene\ #1}
-    \else
-      \addcontentsline{toc}{section}{#1}
-    \fi
-    \scenemark{\DR@sections@name\ \thescene\ #1}
-    \m@kescenehead{#2}
-    \@afterindentfalse
-    \@afterheading}}
-\newcommand\m@kescenehead[1]{%
-  \sceneheadstart
-  \parindent \z@
-  \ifnum\c@secnumdepth>\z@
-    \printscenename \printsep \printscenenum
-  \fi
-  \printscenetitle{#1}
-  \afterscene
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@sections@printtitle}
+%   An useful macro, should we need a title for our headers.
+%    \begin{macrocode}
+\def\DR@sections@printtitle{%
+  {\DR@sections@titlefont\DR@sections@titlecase{\DR@sections@title}}%
 }
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@sections@after}
+%   This is the closing macro of the header. It adds proper space.
+%    \begin{macrocode}
+\def\DR@sections@after{
+  \addvspace{\DR@sections@afterskip}
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\SuppressNumber}
+%   Not all headers need a counter, we can suppress it using
+%   |\SuppressNumber| as value for the key |counterformat|. (Other
+%   meaningful values are: |\roman|, |\Roman|, |\alph|, |\Alph|,
+%   |\arabic|.)
+%    \begin{macrocode}
+\let\SuppressNumber\@gobble
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DefineNewHead}
+%   This macro defines new macros for headers. The first argument
+%   yields the name for the command and the associated counter. For
+%   each type of header a counter is defined and set to 0, its
+%   formatting is committed to the generic macro
+%   |\DR@sections@counterformat|, whose actual meaning is defined
+%   through the key |counterformat|.
+%
+%   The second argument is the string that will be typeset in the header.
+%    \begin{macrocode}
+\newcommand\DefineNewHead[2]{%
+  \newcounter{#1}
+  \expandafter\renewcommand\csname the#1\endcsname{%
+    \DR@sections@counterformat{#1}
+  }
+  \setcounter{#1}{0}
+  \expandafter\newcommand\csname #1\endcsname{%
+    \def\DR@counter@sectionname{#1}
+    \def\DR@current@sectionname{#2}
+    \DR@setvalues{#1}
+    \DR@div@header
+  }  
+}
+%    \end{macrocode}
+% \end{macro}
+% Finally we define the three default types of headers:
+% |\act|\DescribeMacro{\act}, |\scene|\DescribeMacro{\scene}\ and
+% |\dramperhead|\DescribeMacro{\dramperhead}. We use generic names
+% (macros) in the second argument, so that we are able to change the
+% actual string depending on the language in use.
+%    \begin{macrocode}
+\DefineNewHead{act}{\actname}
+\DefineNewHead{scene}{\scenename}
+\DefineNewHead{dramperhead}{\drampername}
 %    \end{macrocode}
 % \subsection{Characters}
 % As usual we start defining the customizable elements.
@@ -1119,15 +1170,9 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{dramatis}{rolefont}{}
 \DR@define@key{c}{dramatis}{descfont}{}
 \DR@define@key{c}{dramatis}{actorfont}{}
-\DR@define@key{c}{dramatis}{headfont}{}
-\DR@define@key{c}{dramatis}{titlefont}{}
-\DR@define@key{c}{dramatis}{titlename}{}
-\DR@define@key{c}{dramatis}{pagestyle}{empty}
-\DR@define@key{l}{dramatis}{beforeskip}{0pt}
-\DR@define@key{l}{dramatis}{afterskip}{0pt}
 %    \end{macrocode}
 % \begin{macro}{\DR@dramper@entry}
-%   This is how an entry in the character list is typeset.
+%   This is how an entry in the automated character list is typeset.
 %    \begin{macrocode}
 \newcommand\DR@dramper@entry{%
   {\noexpand\DR@dramatis@rolefont\noexpand\DR@dramatis@rolecase{\DR@character@role}}%
@@ -1138,28 +1183,27 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \end{macro}
 % The same remarks made for document divisions hold here.
+% \begin{macro}{\DRamPer}
+%   This is the user command for typesetting an automated list of
+%   characters, complete with its header. Internally it calls
+%   |\dramperhead|, |\DR@begin@dramperlist|, |\dodramperlist| e
+%   |\DR@end@dramperlist|, after setting the correct parameters for
+%   both the header and the list of characters.
 %    \begin{macrocode}
-\newcommand\drampermark[1]{}
-\newcommand{\printcasttitle}{\centering\DR@dramatis@titlefont \DR@dramatis@titlename}
-\def\castheadstart{\vspace*{\DR@dramatis@beforeskip}}
-\def\aftercasttitle{\par\nobreak\vskip\DR@dramatis@afterskip}
-\newcommand{\DramPer}{%
+\newcommand{\DramPer}[1][]{%
   \DR@setvalues{dramatis}%
-  \@ifundefined{if@openright}{\clearpage}{%
-    \if@openright\cleardoublepage\else\clearpage\fi}
-  \secdef\DR@dramper\DR@sdramper}
-\newcommand\DR@dramper[1][]{%
-  \phantomsection
-  \addcontentsline{toc}{chapter}{\DR@dramatis@titlename}
-  \drampermark{\DR@dramatis@titlename}
-  \DR@begin@dramperhead{#1}\dodramperlist\DR@end@dramperhead}
-\newcommand\DR@sdramper[1][]{%
-  \DR@begin@dramperhead{#1}\dodramperlist\DR@end@dramperhead}
-\newcommand\DR@begin@dramperhead[1]{
-  \thispagestyle{\DR@dramatis@pagestyle}
-  \castheadstart
-  {\printcasttitle #1
-  \aftercasttitle}
+  \setkeys*{dramatis}{#1}
+  \dramperhead[#1]
+  \DR@begin@dramperlist\dodramperlist\DR@end@dramperlist
+}
+%    \end{macrocode}
+% \end{macro}
+% We start a list, pass the correct parameters
+% (|\DR@begin@dramperlist|\DescribeMacro{\DR@begin@dramperlist}) and
+% then close the list
+% (|\DR@end@dramperlist|\DescribeMacro{\DR@end@dramperlist}).
+%    \begin{macrocode}
+\newcommand\DR@begin@dramperlist{
   \begin{list}{}{%
     \leftmargin\DR@dramatis@leftmargin%
     \rightmargin\DR@dramatis@rightmargin%
@@ -1170,7 +1214,7 @@ and the derived files           dramatist.ins,
     \itemindent\DR@dramatis@indent%
     }
 }
-\newcommand\DR@end@dramperhead{%
+\newcommand\DR@end@dramperlist{%
   \end{list}
 }
 %    \end{macrocode}
@@ -1188,21 +1232,22 @@ and the derived files           dramatist.ins,
 % \end{macro}
 % \begin{macro}{dramper}
 %   Free form list of characters. Unlike |\DramPer|, it does not start
-%   a new page, nor makes an entry for the table of contents. The user
-%   is on her own, here.
+%   a new page, nor makes an entry for the table of contents. And no
+%   header, too. The user is on her own, here.
 %    \begin{macrocode}
 \newenvironment{dramper}[1][]{%
   \DR@setvalues{dramatis}%
-  \DR@begin@dramperhead{#1}}{\DR@end@dramperhead}
+  \DR@begin@dramperlist}{\DR@end@dramperlist}
 %    \end{macrocode}
 % \end{macro}
+% The following macros should be used inside a |dramper| environment.
 % \begin{macro}{\dramperentry}
 %   Free form entry in the list of characters. 
 %    \begin{macrocode}
 \newcommand\dramperentry[1]{\item #1}
 %    \end{macrocode}
 % \end{macro}
-% The following macros should be used inside a |dramper| environment.
+% The following macros should be used inside |\dramperentry|.
 % \begin{macro}{\roleentry}
 %   This macro typesets the name of the character (role) following the
 %   formatting instructions of the current style.
@@ -1361,7 +1406,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \end{macro}
 % \subsection{Localization}
-% This code is loaded only whith \pkgname{babel} or
+% This code is loaded only with \pkgname{babel} or
 % \pkgname{polyglossia}. Otherwise the user is left on her own. I
 % should collect more language settings.
 % \begin{macro}{\@ifldfl@aded}
@@ -1371,7 +1416,7 @@ and the derived files           dramatist.ins,
 %   we have to take into account that for historical reasons the
 %   respective file names of the \optname{german}, \optname{ngerman}
 %   and \optname{french} languages, take an additional ``b'' at the
-%   end. The code need optimization.
+%   end. The code needs optimization.
 %    \begin{macrocode}
 \def\@ifldfl@aded#1{%
   \edef\@tempa{#1}
@@ -1465,12 +1510,24 @@ and the derived files           dramatist.ins,
   postitem,
 }
 \DR@setdefaults{sections}{
-  namefont,
-  numfont,
-  titlefont,
   name,
-  sep,
+  namecase,
+  namefont,
+  namenumbersep,
+  numcase,
+  numfont,
+  numbertitlesep,
+  title,
+  titlecase,
+  titlefont,
+  counterformat,
+  level,
+  contentsline,
+  markline,
+  mark,
+  pagebreak,
   pagestyle,
+  justification,
   beforeskip,
   afterskip,
 }
@@ -1510,12 +1567,6 @@ and the derived files           dramatist.ins,
   rolefont,
   descfont,
   actorfont,
-  headfont,
-  titlefont,
-  titlename=\drampername,
-  pagestyle,
-  beforeskip,
-  afterskip,
 }
 \DR@setdefaults{stage}{
   leftmargin,
@@ -1536,6 +1587,7 @@ and the derived files           dramatist.ins,
   \def\setup@versedrama{\DR@drama@defaults}
   \def\setup@act{\DR@sections@defaults}
   \def\setup@scene{\DR@sections@defaults}
+  \def\setup@dramperhead{\DR@sections@defaults}
   \def\setup@character{\DR@character@defaults}
   \def\setup@speaker{\DR@speaker@defaults}
   \def\setup@dramatis{\DR@dramatis@defaults}
@@ -1621,14 +1673,41 @@ and the derived files           dramatist.ins,
     postitem=\hskip 0pt plus 4pt minus 4pt,
   }
   \DRSetup{act}{sections}{
+    namecase=\MakeUppercase,
     namefont=\large\scshape,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\Roman,
+    level=\@ifundefined{chapter}{section}{chapter},
+    mark=both,
+    pagebreak=\cleardoublepage,
+    pagestyle=\thispagestyle{empty},
     beforeskip=\baselineskip,
-    afterskip=\baselineskip
+    afterskip=2\baselineskip,
   }
   \DRSetup{scene}{sections}{
+    namecase=\MakeUppercase,
     namefont=\scshape,
-    beforeskip=\baselineskip,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\Roman,
+    level=\@ifundefined{chapter}{subsection}{section},
+    mark=right,
+    beforeskip=2\baselineskip,
     afterskip=\baselineskip
+  }
+  \DRSetup{dramperhead}{sections}{
+    namecase=\MakeLowercase,
+    namefont=\large\scshape,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\SuppressNumber,
+    level=\@ifundefined{chapter}{section}{chapter},
+    mark=none,
+    pagebreak=\cleardoublepage,
+    pagestyle=\thispagestyle{empty},
+    beforeskip=\baselineskip,
+    afterskip=2\baselineskip,
   }
   \DRSetup{character}{character}{
     rdsep={,\ },
@@ -1646,8 +1725,6 @@ and the derived files           dramatist.ins,
     topsep=2\baselineskip,
     rolecase=\MakeLowercase,
     rolefont=\scshape,
-    titlefont=\scshape\Large,
-    titlename=\drampername,
   }
   \DRSetup{set}{stage}{
     topsep=\baselineskip,
@@ -1700,14 +1777,41 @@ and the derived files           dramatist.ins,
     postitem=\hskip 0pt plus 4pt minus 4pt,
   }
   \DRSetup{act}{sections}{
+    namecase=\MakeUppercase,
     namefont=\large\scshape,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\Roman,
+    level=\@ifundefined{chapter}{section}{chapter},
+    mark=both,
+    pagebreak=\cleardoublepage,
+    pagestyle=\thispagestyle{empty},
     beforeskip=\baselineskip,
-    afterskip=\baselineskip
+    afterskip=2\baselineskip,
   }
   \DRSetup{scene}{sections}{
+    namecase=\MakeUppercase,
     namefont=\scshape,
-    beforeskip=\baselineskip,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\Roman,
+    level=\@ifundefined{chapter}{subsection}{section},
+    mark=right,
+    beforeskip=2\baselineskip,
     afterskip=\baselineskip
+  }
+  \DRSetup{dramperhead}{sections}{
+    namecase=\MakeLowercase,
+    namefont=\large\scshape,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\SuppressNumber,
+    level=\@ifundefined{chapter}{section}{chapter},
+    mark=none,
+    pagebreak=\cleardoublepage,
+    pagestyle=\thispagestyle{empty},
+    beforeskip=\baselineskip,
+    afterskip=2\baselineskip,
   }
   \DRSetup{character}{character}{
     dirname=\DR@character@role,
@@ -1721,8 +1825,6 @@ and the derived files           dramatist.ins,
     del=.
   }
   \DRSetup{dramatis}{dramatis}{
-    titlename=\drampername,
-    titlefont=\scshape\Large,
     rolefont=\scshape,
     leftmargin=0pt,
     indent=-\DR@dramatis@leftmargin,
@@ -1780,14 +1882,41 @@ and the derived files           dramatist.ins,
     postitem=\leavevmode\vadjust{\nobreak}\vskip.25\baselineskip,
   }
   \DRSetup{act}{sections}{
+    namecase=\MakeUppercase,
     namefont=\large\scshape,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\Roman,
+    level=\@ifundefined{chapter}{section}{chapter},
+    mark=both,
+    pagebreak=\cleardoublepage,
+    pagestyle=\thispagestyle{empty},
     beforeskip=\baselineskip,
-    afterskip=\baselineskip
+    afterskip=2\baselineskip,
   }
   \DRSetup{scene}{sections}{
+    namecase=\MakeUppercase,
     namefont=\scshape,
-    beforeskip=\baselineskip,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\Roman,
+    level=\@ifundefined{chapter}{subsection}{section},
+    mark=right,
+    beforeskip=2\baselineskip,
     afterskip=\baselineskip
+  }
+  \DRSetup{dramperhead}{sections}{
+    namecase=\MakeLowercase,
+    namefont=\large\scshape,
+    titlefont=\scshape,
+    justification=\centering,
+    counterformat=\SuppressNumber,
+    level=\@ifundefined{chapter}{section}{chapter},
+    mark=none,
+    pagebreak=\cleardoublepage,
+    pagestyle=\thispagestyle{empty},
+    beforeskip=\baselineskip,
+    afterskip=2\baselineskip,
   }
   \DRSetup{character}{character}{
     dirname=\DR@character@role,
@@ -1802,8 +1931,6 @@ and the derived files           dramatist.ins,
     labelwidth=0pt,
   }
   \DRSetup{dramatis}{dramatis}{
-    titlename=\drampername,
-    titlefont=\scshape\Large,
     rolefont=\scshape,
     leftmargin=0pt,
     indent=-\DR@dramatis@leftmargin,
@@ -1839,4 +1966,4 @@ and the derived files           dramatist.ins,
 %    \begin{macrocode}
 %<package|modern|classic|centered>\endinput
 %    \end{macrocode}
-%\Finale
+% \Finale
