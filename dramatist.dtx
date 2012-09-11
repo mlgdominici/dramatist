@@ -892,7 +892,7 @@ and the derived files           dramatist.ins,
 \newcommand\DefineNewHead[2]{%
   \newcounter{#1}
   \expandafter\renewcommand\csname the#1\endcsname{%
-    \DR@sections@counterformat{#1}
+    \DR@sections@counterformat{#1}%
   }
   \setcounter{#1}{0}
   \expandafter\newcommand\csname #1\endcsname{%
@@ -1702,7 +1702,7 @@ and the derived files           dramatist.ins,
     afterskip=\baselineskip
   }
   \DRSetup{dramperhead}{sections}{
-    namecase=\MakeLowercase,
+    namecase=\MakeUppercase,
     namefont=\large\scshape,
     titlefont=\scshape,
     justification=\centering,
@@ -1806,7 +1806,7 @@ and the derived files           dramatist.ins,
     afterskip=\baselineskip
   }
   \DRSetup{dramperhead}{sections}{
-    namecase=\MakeLowercase,
+    namecase=\MakeUppercase,
     namefont=\large\scshape,
     titlefont=\scshape,
     justification=\centering,
@@ -1911,7 +1911,7 @@ and the derived files           dramatist.ins,
     afterskip=\baselineskip
   }
   \DRSetup{dramperhead}{sections}{
-    namecase=\MakeLowercase,
+    namecase=\MakeUppercase,
     namefont=\large\scshape,
     titlefont=\scshape,
     justification=\centering,
