@@ -749,8 +749,8 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{sections}{namenumbersep}{\ }
 \DR@define@key{c}{sections}{numbertitlesep}{\endgraf}
 \DR@define@key{c}{sections}{level}{\@ifundefined{chapter}{section}{chapter}}
-\DR@define@key{c}{sections}{contentsline}{\DR@sections@name\ \csname the\DR@counter@sectionname\endcsname}
-\DR@define@key{c}{sections}{markline}{\DR@sections@name\ \csname the\DR@counter@sectionname\endcsname}
+\DR@define@key{c}{sections}{contentsline}{\DR@sections@name\xspace\csname the\DR@counter@sectionname\endcsname}
+\DR@define@key{c}{sections}{markline}{\DR@sections@name\xspace\csname the\DR@counter@sectionname\endcsname}
 \define@choicekey+{sections}{mark}[\val\nr]{none,left,right,both}[none]{%
   \ifcase\nr\relax
     \let\DR@sections@mark\@gobble
