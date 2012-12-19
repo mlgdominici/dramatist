@@ -112,7 +112,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{1515}
+% \CheckSum{1529}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -354,6 +354,33 @@ and the derived files           dramatist.ins,
 }
 %    \end{macrocode}
 % \end{macro}
+% \subsection{Options}
+% Currently \pkgname{\jobname} offers three package options: different
+% line numberings for verse drama, style loading, compatibility
+% version.
+%    \begin{macrocode}
+\def\DR@lnpa{}
+\def\DR@lnps{}
+\let\DR@compatversion\relax
+\define@choicekey+{dramatist.sty}{numbering}[\val\nr]{document,act,scene}{%
+  \renewcommand\DR@linenumberwarning{\PackageWarning{dramatist}{\DR@lnpwarning}}
+  \ifcase\nr\relax
+  \or
+    \let\DR@lnpa\DR@setlinenumber
+  \or
+    \let\DR@lnps\DR@setlinenumber
+  \fi
+}{\PackageWarning{dramatist}{Invalid input `##1' for option `##2'}}
+\define@key{dramatist.sty}{style}[modern]{%
+  \def\DR@stylefile{#1}
+}
+\define@key{dramatist.sty}{compatibility}[1.2d]{%
+  \def\DR@compatversion{#1}
+}
+\ExecuteOptionsX{style}
+\ProcessOptionsX
+\ifx\DR@compatversion\relax\else\RequirePackage{dramatist-\DR@compatversion}\endinput\fi
+%    \end{macrocode}
 % \subsection{Auxiliary macros}
 % We need a bunch of new conditionals.
 %    \begin{macrocode}
@@ -406,27 +433,6 @@ and the derived files           dramatist.ins,
 \if@DRpoemscol\else\refstepcounter{storelineno}\fi
 \newcounter{storeprintlineindex}
 \newcounter{character}
-%    \end{macrocode}
-% \subsection{Options}
-% Currently \pkgname{\jobname} offers only two package options:
-% different line numberings for verse drama and style loading.
-%    \begin{macrocode}
-\def\DR@lnpa{}
-\def\DR@lnps{}
-\define@choicekey+{dramatist.sty}{numbering}[\val\nr]{document,act,scene}{%
-  \renewcommand\DR@linenumberwarning{\PackageWarning{dramatist}{\DR@lnpwarning}}
-  \ifcase\nr\relax
-  \or
-    \let\DR@lnpa\DR@setlinenumber
-  \or
-    \let\DR@lnps\DR@setlinenumber
-  \fi
-}{\PackageWarning{dramatist}{Invalid input `##1' for option `##2'}}
-\define@key{dramatist.sty}{style}[modern]{%
-  \def\DR@stylefile{#1}
-}
-\ExecuteOptionsX{style}
-\ProcessOptionsX
 %    \end{macrocode}
 % \subsection{Environments for dialogues}
 % We start defining the customizable elements for the dialogues.
