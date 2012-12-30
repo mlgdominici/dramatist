@@ -1,7 +1,7 @@
 BUILDDIR=tmp/
 PACKAGE=dramatist
 SOURCE=$(PACKAGE).dtx
-STYLES=$(PACKAGE).sty centered.dst classic.dst modern.dst
+STYLES=$(PACKAGE).sty centered.dst classic.dst modern.dst $(PACKAGE)-1.2d.sty
 GENERATED=$(PACKAGE).ins README.txt $(STYLES)
 DOC=$(PACKAGE).pdf
 ALL=$(GENERATED) README $(DOC)
