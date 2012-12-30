@@ -114,7 +114,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{2258}
+% \CheckSum{2259}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -358,8 +358,8 @@ and the derived files           dramatist.ins,
 % \end{macro}
 % \subsection{Options}
 % Currently \pkgname{\jobname} offers three package options: different
-% line numberings for verse drama, style loading, compatibility
-% version.
+% line numberings for verse drama, style loading, compatibility with
+% old versions.
 %    \begin{macrocode}
 \def\DR@lnpa{}
 \def\DR@lnps{}
@@ -381,7 +381,10 @@ and the derived files           dramatist.ins,
 }
 \ExecuteOptionsX{style}
 \ProcessOptionsX
-\ifDR@compatibility\RequirePackage{dramatist-1.2d}\endinput\fi
+\ifDR@compatibility
+  \PackageWarningNoLine{dramatist}{You are running in compatibility mode}
+  \RequirePackage{dramatist-1.2d}
+\endinput\fi
 %    \end{macrocode}
 % \subsection{Auxiliary macros}
 % We need a bunch of new conditionals.
@@ -1658,6 +1661,7 @@ and the derived files           dramatist.ins,
 %</package>
 %    \end{macrocode}
 % \subsection{Ready-made styles}\label{sec:styles}
+% \subsubsection{Modern style}\label{sec:modern}
 %    \begin{macrocode}
 %<*modern>
 %    \end{macrocode}
@@ -1763,6 +1767,9 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 %</modern>
+%    \end{macrocode}
+% \subsubsection{Classic style}\label{sec:classic}
+%    \begin{macrocode}
 %<*classic>
 %    \end{macrocode}
 %    \begin{macrocode}
@@ -1869,6 +1876,7 @@ and the derived files           dramatist.ins,
 %    \begin{macrocode}
 %</classic>
 %    \end{macrocode}
+% \subsubsection{Centered style}\label{sec:centered}
 %    \begin{macrocode}
 %<*centered>
 %    \end{macrocode}
@@ -1979,9 +1987,14 @@ and the derived files           dramatist.ins,
 %    \begin{macrocode}
 %<package|modern|classic|centered>\endinput
 %    \end{macrocode}
+% \subsection{Compatibility with old versions}\label{sec:compatibility}
+% 
+% When option \optname{compatibility} is activated, the package loads
+% \pkgname{dramatist-1.2d} and then exits. A warning is issued.
 %    \begin{macrocode}
 %<*compatibility>
-\ProvidesPackage{dramatist-1.2d}[2005/12/01 v1.2d Package for typesetting drama -- Author: Massimiliano Dominici]
+\ProvidesPackage{dramatist-1.2d}
+                [2005/12/01 v1.2d Package for typesetting drama -- Author: Massimiliano Dominici]
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xspace}
 \@ifundefined{if@openright}{\newif\if@openright}{}
