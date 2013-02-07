@@ -6,10 +6,6 @@ GENERATED=$(PACKAGE).ins README.txt $(STYLES)
 DOC=$(PACKAGE).pdf
 ALL=$(GENERATED) README $(DOC)
 
-COMMITDATE=`git log -1 --date=short --pretty=format:"%ad" HEAD | tr - /`
-VERSION=`git describe --tags | awk '{split($$0,a,"-"); print a[1] "." a[2]}'`
-REVISION=`git describe --tags | awk '{split($$0,a,"-"); print a[3]}' | tail -c +2`
-
 .PHONY : clean ctan doc localinstall all
 
 $(addprefix $(BUILDDIR), $(GENERATED)) : $(addprefix $(BUILDDIR), $(SOURCE))
@@ -20,8 +16,7 @@ $(addprefix $(BUILDDIR), README) : $(addprefix $(BUILDDIR),  README.txt)
 
 $(addprefix $(BUILDDIR), $(SOURCE)) : $(SOURCE)
 	mkdir -p $(BUILDDIR)
-	cd $(BUILDDIR)	&& cp ../$< . && \
-	sed -i "s_£Id£_$(COMMITDATE) $(VERSION) Revision: $(REVISION)_g" $< 
+	cd $(BUILDDIR)	&& cp ../$< .
 
 all : $(addprefix $(BUILDDIR), $(ALL))
 
