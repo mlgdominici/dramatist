@@ -88,7 +88,7 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dramatist}[2013/01/15 v1.99a.46 Revision: 0550024. Package for typesetting drama]
+\ProvidesPackage{dramatist}[2013/02/07 v1.99a.48 Revision: d02b958. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -114,7 +114,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{2262}
+% \CheckSum{2265}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -1045,20 +1045,22 @@ and the derived files           dramatist.ins,
 }
 %    \end{macrocode}
 % \end{macro}
-% \begin{macro}{\Character}
+% \begin{macro}{\DeclareCharacter}
 %   And this is the user version of |\DR@character|. A ``key = value''
 %   interface is provided to set values for each parameter. By default
 %   the macro will not build an entry for the character list, but, as
 %   soon as the user specifies values for elements belonging to the
-%   latter, the behaviour is reversed.
+%   latter, the behaviour is reversed. |\Character| is an alias for
+%   historical reasons.
 %    \begin{macrocode}
-\newcommand\Character[3][entry=false]{%
+\newcommand\DeclareCharacter[3][entry=false]{%
   {
     \DR@setvalues{character}
     \setkeys{character}{#1}
     \DR@character{#2}{#3}
   }
 }
+\let\Character\DeclareCharacter
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{CharacterGroup}
@@ -1668,7 +1670,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{modern.dst}
-                [2013/01/15 v1.99a.46 Revision: 0550024. `modern' style for `dramatist' package]
+                [2013/02/07 v1.99a.48 Revision: d02b958. `modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1775,7 +1777,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{classic.dst}
-                [2013/01/15 v1.99a.46 Revision: 0550024. `classic' style for `dramatist' package]
+                [2013/02/07 v1.99a.48 Revision: d02b958. `classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     speakerlabel=short,
@@ -1883,7 +1885,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{centered.dst}
-                [2013/01/15 v1.99a.46 Revision: 0550024. `centered' style for `dramatist' package]
+                [2013/02/07 v1.99a.48 Revision: d02b958. `centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
