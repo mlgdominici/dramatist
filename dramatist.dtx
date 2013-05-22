@@ -88,7 +88,7 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dramatist}[2013/02/07 v1.99a.48 Revision: d02b958. Package for typesetting drama]
+\ProvidesPackage{dramatist}[2013/02/07 v1.99a.50 Revision: dce181f. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -356,37 +356,6 @@ and the derived files           dramatist.ins,
 }
 %    \end{macrocode}
 % \end{macro}
-% \subsection{Options}
-% Currently \pkgname{\jobname} offers three package options: different
-% line numberings for verse drama, style loading, compatibility with
-% old versions.
-%    \begin{macrocode}
-\def\DR@lnpa{}
-\def\DR@lnps{}
-\newif\ifDR@compatibility
-\define@choicekey+{dramatist.sty}{numbering}[\val\nr]{document,act,scene}{%
-  \renewcommand\DR@linenumberwarning{\PackageWarning{dramatist}{\DR@lnpwarning}}
-  \ifcase\nr\relax
-  \or
-    \let\DR@lnpa\DR@setlinenumber
-  \or
-    \let\DR@lnps\DR@setlinenumber
-  \fi
-}{\PackageWarning{dramatist}{Invalid input `##1' for option `##2'}}
-\define@key{dramatist.sty}{style}[modern]{%
-  \def\DR@stylefile{#1}
-}
-\define@key{dramatist.sty}{compatibility}[1.2d]{%
-  \DR@compatibilitytrue
-  \def\DR@compat@version{#1}
-}
-\ExecuteOptionsX{style}
-\ProcessOptionsX
-\ifDR@compatibility
-  \PackageWarningNoLine{dramatist}{You are running in compatibility mode}
-  \RequirePackage{dramatist-\DR@compat@version}
-\endinput\fi
-%    \end{macrocode}
 % \subsection{Auxiliary macros}
 % We need a bunch of new conditionals.
 %    \begin{macrocode}
@@ -439,6 +408,37 @@ and the derived files           dramatist.ins,
 \if@DRpoemscol\else\refstepcounter{storelineno}\fi
 \newcounter{storeprintlineindex}
 \newcounter{character}
+%    \end{macrocode}
+% \subsection{Options}
+% Currently \pkgname{\jobname} offers three package options: different
+% line numberings for verse drama, style loading, compatibility with
+% old versions.
+%    \begin{macrocode}
+\def\DR@lnpa{}
+\def\DR@lnps{}
+\newif\ifDR@compatibility
+\define@choicekey+{dramatist.sty}{numbering}[\val\nr]{document,act,scene}{%
+  \renewcommand\DR@linenumberwarning{\PackageWarning{dramatist}{\DR@lnpwarning}}
+  \ifcase\nr\relax
+  \or
+    \let\DR@lnpa\DR@setlinenumber
+  \or
+    \let\DR@lnps\DR@setlinenumber
+  \fi
+}{\PackageWarning{dramatist}{Invalid input `##1' for option `##2'}}
+\define@key{dramatist.sty}{style}[modern]{%
+  \def\DR@stylefile{#1}
+}
+\define@key{dramatist.sty}{compatibility}[1.2d]{%
+  \DR@compatibilitytrue
+  \def\DR@compat@version{#1}
+}
+\ExecuteOptionsX{style}
+\ProcessOptionsX
+\ifDR@compatibility
+  \PackageWarningNoLine{dramatist}{You are running in compatibility mode}
+  \RequirePackage{dramatist-\DR@compat@version}
+\endinput\fi
 %    \end{macrocode}
 % \subsection{Environments for dialogues}
 % We start defining the customizable elements for the dialogues.
@@ -1670,7 +1670,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{modern.dst}
-                [2013/02/07 v1.99a.48 Revision: d02b958. `modern' style for `dramatist' package]
+                [2013/02/07 v1.99a.50 Revision: dce181f. `modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1777,7 +1777,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{classic.dst}
-                [2013/02/07 v1.99a.48 Revision: d02b958. `classic' style for `dramatist' package]
+                [2013/02/07 v1.99a.50 Revision: dce181f. `classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     speakerlabel=short,
@@ -1885,7 +1885,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{centered.dst}
-                [2013/02/07 v1.99a.48 Revision: d02b958. `centered' style for `dramatist' package]
+                [2013/02/07 v1.99a.50 Revision: dce181f. `centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
