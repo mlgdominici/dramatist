@@ -2,7 +2,7 @@
 # Makefile for package 'dramatist'
 
 BUILDDIR	=tmp/
-TDSDIR		=tds/
+TDSDIR		=tds
 PACKAGE		=dramatist
 SOURCE		=$(PACKAGE).dtx
 STYLES		=$(PACKAGE).sty $(PACKAGE)-1.2d.sty *.dst 
@@ -49,9 +49,9 @@ ctan : $(addprefix $(BUILDDIR), $(addsuffix .zip, $(PACKAGE)))
 
 localinstall: all
 	mkdir -p $(TDSDIR)/{doc,source,tex}/latex/dramatist
-	cp $(addprefix $(BUILDDIR), $(DOC)) tds/doc/latex/dramatist/
-	cp $(addprefix $(BUILDDIR), $(SOURCE)) tds/source/latex/dramatist/
-	cp $(addprefix $(BUILDDIR), $(STYLES)) tds/tex/latex/dramatist/
+	cp $(addprefix $(BUILDDIR), $(DOC)) $(TDSDIR)/doc/latex/dramatist/
+	cp $(addprefix $(BUILDDIR), $(SOURCE)) $(TDSDIR)/source/latex/dramatist/
+	cp $(addprefix $(BUILDDIR), $(STYLES)) $(TDSDIR)/tex/latex/dramatist/
 	texhash $(TDSDIR)/
 
 clean:
