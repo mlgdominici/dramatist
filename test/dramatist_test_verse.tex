@@ -10,6 +10,19 @@
 \usepackage{geometry}
 %\usepackage{zref-savepos}
 
+\makeatletter
+\def\loggingall{
+%\tracingcommands\tw@
+\tracingstats\tw@
+\tracingpages\@ne\tracingoutput\@ne
+\tracinglostchars\@ne
+%\tracingmacros\tw@
+\tracingparagraphs\@ne\tracingrestores\@ne
+\showboxbreadth\maxdimen\showboxdepth\maxdimen}%
+
+\def\tracingboxes{\showboxbreadth = \maxdimen
+  \showboxdepth = \maxdimen}%
+
 \def\testodicontrollo{%
 Questo re di Sparta ebbe con voi comune la morte, per giudizio
 iniquo degli efori; come voi, per quello d'un ingiusto parlamento.
@@ -50,6 +63,8 @@ tomba.
 
 \begin{document}
 
+\loggingall
+
 \shorthandoff{>}
 \actname
 
@@ -76,7 +91,7 @@ tomba.
   che ambizíosa stolidezza: è tale\\
 \end{versedrama}
 
-\leftmargini=1.5em
+\leftmargini=1.6em
 
 \begin{verse}
   pure il disegno suo; quindi ebbe ei quasi\\
