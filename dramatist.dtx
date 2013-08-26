@@ -88,7 +88,7 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dramatist}[2013/07/19 v1.99.2. Package for typesetting drama]
+\ProvidesPackage{dramatist}[2013/08/26 v1.99.2. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -786,11 +786,11 @@ and the derived files           dramatist.ins,
 %   be built on top of it.
 %    \begin{macrocode}
 \newcommand\DR@div@header[1][]{
-  \refstepcounter{\DR@counter@sectionname}
   \setkeys*{sections}{#1}
   \DR@sections@pagebreak
   \DR@sections@pagestyle
   \DR@sections@before
+  \refstepcounter{\DR@counter@sectionname}
   \DR@sections@auxinfo
   {
     \DR@sections@justification
@@ -1670,7 +1670,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{modern.dst}
-                [2013/07/19 v1.99.2. `modern' style for `dramatist' package]
+                [2013/08/26 v1.99.2. `modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1777,7 +1777,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{classic.dst}
-                [2013/07/19 v1.99.2. `classic' style for `dramatist' package]
+                [2013/08/26 v1.99.2. `classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     speakerlabel=short,
@@ -1885,7 +1885,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{centered.dst}
-                [2013/07/19 v1.99.2. `centered' style for `dramatist' package]
+                [2013/08/26 v1.99.2. `centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
