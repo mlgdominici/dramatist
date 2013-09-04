@@ -88,7 +88,7 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dramatist}[2013/08/27 v1.99.2. Package for typesetting drama]
+\ProvidesPackage{dramatist}[2013/09/04 v1.99.2. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -114,7 +114,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{2270}
+% \CheckSum{2281}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -455,13 +455,15 @@ and the derived files           dramatist.ins,
 \DR@define@key{l}{drama}{labelsep}{0pt}
 \DR@define@key{l}{drama}{bvsep}{0pt}
 \DR@define@key{b}{drama}{alignbv}{false}
-\define@choicekey+{drama}{speakerlabel}[\val\nr]{centered,long,short}[short]{%
+\define@choicekey+{drama}{speakerlabel}[\val\nr]{centered,long,short,altlong}[short]{%
   \ifcase\nr\relax
     \let\DR@speakerlabel\DR@speakerlabel@centered
   \or
     \let\DR@speakerlabel\DR@speakerlabel@long
   \or
     \let\DR@speakerlabel\DR@speakerlabel@short
+  \or
+    \let\DR@speakerlabel\DR@speakerlabel@altlong
   \fi  
 }{\PackageWarning{dramatist}{Invalid input for key `speakerlabel' in family `drama'}}
 \DR@define@key{c}{drama}{font}{}
@@ -658,7 +660,7 @@ and the derived files           dramatist.ins,
 % flexible enough to be formatted \emph{ad libitum} from
 % inside. \emph{E.~g.} long directions spanning multiple lines should
 % go outside the item label, but we need them inside when typesetting
-% the name of the speaker centered. So we provide three different kind
+% the name of the speaker centered. So we provide four different kind
 % of labels.
 % \begin{macro}{\DR@speakerlabel@centered}
 %    \begin{macrocode}
@@ -674,6 +676,20 @@ and the derived files           dramatist.ins,
   \item[\DR@speaker{#1}]%
     \@ifmtarg{#2}{}{%
       \hskip-\DR@drama@labelsep\hskip 0pt plus 4pt\ #2\hskip\DR@drama@labelsep
+    }\DR@drama@postitem
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@speakerlabel@altlong}
+%   This is different from previous macro in that \verb+\labelsep+ is
+%   not posponed after a potential stage direction. Useful when
+%   typesetting characters names flushed left with regard to the
+%   longest character name.
+%    \begin{macrocode}
+\newcommand\DR@speakerlabel@altlong[2]{%
+  \item[\DR@speaker{#1}]%
+    \@ifmtarg{#2}{}{%
+      #2\space%
     }\DR@drama@postitem
 }
 %    \end{macrocode}
@@ -1672,7 +1688,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{modern.dst}
-                [2013/08/27 v1.99.2. `modern' style for `dramatist' package]
+                [2013/09/04 v1.99.2. `modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1780,7 +1796,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{classic.dst}
-                [2013/08/27 v1.99.2. `classic' style for `dramatist' package]
+                [2013/09/04 v1.99.2. `classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     speakerlabel=short,
@@ -1889,7 +1905,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{centered.dst}
-                [2013/08/27 v1.99.2. `centered' style for `dramatist' package]
+                [2013/09/04 v1.99.2. `centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
