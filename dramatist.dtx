@@ -88,7 +88,7 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dramatist}[2013/09/04 v1.99.2. Package for typesetting drama]
+\ProvidesPackage{dramatist}[2014/05/16 v1.99.2. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -114,7 +114,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{2289}
+% \CheckSum{2236}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -182,6 +182,7 @@ and the derived files           dramatist.ins,
 \RequirePackage{ifmtarg}
 \RequirePackage{etoolbox}
 \RequirePackage{zref-base}
+\RequirePackage{translations}
 %    \end{macrocode}
 % \subsection{Private tools}
 % A series of tools making ``key = value'' definitions simpler follows here.
@@ -390,14 +391,12 @@ and the derived files           dramatist.ins,
 \newlength\DR@saved@leftmargin
 \setlength\DR@saved@leftmargin{0pt}
 %    \end{macrocode}
-% Default names for the main document divisions related to
-% drama. These will be set later language-wise, but we need something
-% to be used when \pkgname{babel} or \pkgname{polyglossia} is not
-% loaded.
+% Default names for the main document divisions related to drama. We
+% use here commands from package \pkgname{translations}.
 %    \begin{macrocode}
-\def\actname{Act}
-\def\scenename{Scene}
-\def\drampername{Dramatis Person\ae}
+\def\actname{\GetTranslation{Act}}
+\def\scenename{\GetTranslation{Scene}}
+\def\drampername{\GetTranslation{Personae}}
 %    \end{macrocode}
 % Some useful counters.
 %    \begin{macrocode}
@@ -1445,88 +1444,46 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 % \end{macro}
 % \subsection{Localization}
-% This code is loaded only with \pkgname{babel} or
-% \pkgname{polyglossia}. Otherwise the user is left on her own. I
-% should collect more language settings.
-% \begin{macro}{\@ifldfl@aded}
-%   This is an helper macro. It checks if a file of name
-%   |[gloss-]<arg#1>| has been loaded. We rely on file name rather
-%   than option name in order to avoid redundance. For \pkgname{babel}
-%   we have to take into account that for historical reasons the
-%   respective file names of the \optname{german}, \optname{ngerman}
-%   and \optname{french} languages, take an additional ``b'' at the
-%   end. The code needs optimization.
+% Keys for localization.
 %    \begin{macrocode}
-\def\@ifldfl@aded#1{%
-  \edef\@tempa{#1}
-  \edef\@tempb{}
-  \edef\DR@french@test{french}
-  \edef\DR@german@test{german}
-  \edef\DR@ngerman@test{ngerman}
-  \ifx\@tempa\DR@french@test
-    \edef\@tempb{b}
-  \else
-    \ifx\@tempa\DR@german@test
-      \edef\@tempb{b}
-    \else
-      \ifx\@tempa\DR@ngerman@test
-        \edef\@tempb{b}
-      \fi
-    \fi
-  \fi
-  \@ifl@aded{ldf}{\@ifpackageloaded{polyglossia}{gloss-\@tempa}{\@tempa\@tempb}}
+\DR@define@key{c}{language}{act}{}
+\DR@define@key{c}{language}{scene}{}
+\DR@define@key{c}{language}{personae}{}
+%    \end{macrocode}
+% We define `captions' for five languages.
+%    \begin{macrocode}
+\DeclareTranslationFallback{Act}{Act}
+\DeclareTranslationFallback{Scene}{Scene}
+\DeclareTranslationFallback{Personae}{Dramatis Person\ae}
+\DeclareTranslation{Italian}{Act}{Atto}
+\DeclareTranslation{Spanish}{Act}{Acto}
+\DeclareTranslation{English}{Act}{Act}
+\DeclareTranslation{French} {Act}{Acte}
+\DeclareTranslation{German} {Act}{Akt}
+\DeclareTranslation{Italian}{Act}{Atto}
+\DeclareTranslation{Spanish}{Act}{Acto}
+\DeclareTranslation{English}{Scene}{Scene}
+\DeclareTranslation{French} {Scene}{Sc\`ene}
+\DeclareTranslation{German} {Scene}{Szene}
+\DeclareTranslation{Italian}{Scene}{Scena}
+\DeclareTranslation{Spanish}{Scene}{Escena}
+\DeclareTranslation{English}{Personae}{Dramatis Person\ae}
+\DeclareTranslation{French} {Personae}{Personnages}
+\DeclareTranslation{German} {Personae}{Personen}
+\DeclareTranslation{Italian}{Personae}{Personaggi}
+\DeclareTranslation{Spanish}{Personae}{Personajes}
+%    \end{macrocode}
+% \begin{macro}{\DRSetupLanguage}
+% A key-value interface for translations.
+%    \begin{macrocode}
+\newcommand\DRSetupLanguage[2]{%
+  \setkeys{language}{#2}
+  \DeclareTranslation{#1}{Act}{\DR@language@act}
+  \DeclareTranslation{#1}{Scene}{\DR@language@scene}
+  \DeclareTranslation{#1}{Personae}{\DR@language@personae}
 }
 %    \end{macrocode}
 % \end{macro}
-% Captions are added at the end of the preamble, when we are sure that
-% localization files have been actually loaded, but no language has
-% been yet selected. More language settings should be added.
-%    \begin{macrocode}
-\AtEndPreamble{%
-  \@ifldfl@aded{italian}{
-    \addto\captionsitalian{%
-      \def\actname{Atto}
-      \def\scenename{Scena}
-      \def\drampername{Personaggi}
-    }
-  }{}
-  \@ifldfl@aded{english}{
-    \addto\captionsenglish{%
-      \def\actname{Act}
-      \def\scenename{Scene}
-      \def\drampername{Dramatis Person\ae}
-    }
-  }{}
-  \@ifldfl@aded{german}{
-    \addto\captionsgerman{%
-      \def\actname{Akt}
-      \def\scenename{Szene}
-      \def\drampername{Personen}
-    }
-  }{}
-  \@ifldfl@aded{ngerman}{
-    \addto\captionsngerman{%
-      \def\actname{Akt}
-      \def\scenename{Szene}
-      \def\drampername{Personen}
-    }
-  }{}
-  \@ifldfl@aded{french}{
-    \addto\captionsfrench{%
-      \def\actname{Acte}
-      \def\scenename{Scene}
-      \def\drampername{Personnages}
-    }
-  }{}
-  \@ifldfl@aded{spanish.ldf}{
-    \addto\captionsspanish{%
-      \def\actname{Acto}
-      \def\scenename{Escena}
-      \def\drampername{Personajes}
-    }
-  }{}
-}
-%    \end{macrocode}
 % \subsection{Default settings}
 % These are mostly dummy defaults. Most values will be overwritten by
 % the chosen style. Default one is \optname{modern}.
@@ -1621,6 +1578,11 @@ and the derived files           dramatist.ins,
   prehook,
   posthook,
 }
+\DR@setdefaults{language}{
+  act,
+  scene,
+  personae,
+}
 \newcommand\DRresetdefaults{%
   \def\setup@drama{\DR@drama@defaults}
   \def\setup@versedrama{\DR@drama@defaults}
@@ -1641,6 +1603,7 @@ and the derived files           dramatist.ins,
 \DR@speaker@defaults
 \DR@dramatis@defaults
 \DR@stage@defaults
+\DR@language@defaults
 %    \end{macrocode}
 % The chosen style is loaded at the end of the package in order to
 % ensure that (dummy) defaults will be overwritten.
@@ -1690,7 +1653,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{modern.dst}
-                [2013/09/04 v1.99.2. `modern' style for `dramatist' package]
+                [2014/05/16 v1.99.2. `modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1798,7 +1761,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{classic.dst}
-                [2013/09/04 v1.99.2. `classic' style for `dramatist' package]
+                [2014/05/16 v1.99.2. `classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     speakerlabel=short,
@@ -1907,7 +1870,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{centered.dst}
-                [2013/09/04 v1.99.2. `centered' style for `dramatist' package]
+                [2014/05/16 v1.99.2. `centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
