@@ -114,7 +114,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{2236}
+% \CheckSum{2237}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -805,13 +805,14 @@ and the derived files           dramatist.ins,
 %   be built on top of it.
 %    \begin{macrocode}
 \newcommand\DR@div@header[1][]{
-  \setkeys*{sections}{#1}
-  \DR@sections@pagebreak
-  \DR@sections@pagestyle
-  \DR@sections@before
-  \refstepcounter{\DR@counter@sectionname}
-  \DR@sections@auxinfo
-  {
+  {%
+    \DR@setvalues{\DR@counter@sectionname}
+    \setkeys*{sections}{#1}
+    \DR@sections@pagebreak
+    \DR@sections@pagestyle
+    \DR@sections@before
+    \refstepcounter{\DR@counter@sectionname}
+    \DR@sections@auxinfo
     \DR@sections@justification
     \DR@sections@printname%
     \DR@sections@namenumbersep%
@@ -819,8 +820,8 @@ and the derived files           dramatist.ins,
     \DR@sections@numbertitlesep
     \DR@sections@printtitle
     \par
+    \DR@sections@after
   }
-  \DR@sections@after
 }
 %    \end{macrocode}
 % \end{macro}
@@ -929,7 +930,6 @@ and the derived files           dramatist.ins,
   \expandafter\newcommand\csname #1\endcsname{%
     \def\DR@counter@sectionname{#1}
     \def\DR@current@sectionname{#2}
-    \DR@setvalues{#1}
     \DR@div@header
   }  
 }
