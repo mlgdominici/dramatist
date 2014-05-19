@@ -88,7 +88,7 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dramatist}[2014/05/19 v1.99.2. Package for typesetting drama]
+\ProvidesPackage{dramatist}[2014/05/20 v1.99.2. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -114,7 +114,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{2244}
+% \CheckSum{2250}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -1232,7 +1232,7 @@ and the derived files           dramatist.ins,
 \newcommand{\DramPer}[1][]{%
   \DR@setvalues{dramatis}%
   \setkeys*{dramatis}{#1}
-  \dramperhead[#1]
+  \dramperhead%[#1]
   \DR@begin@dramperlist\dodramperlist\DR@end@dramperlist
 }
 %    \end{macrocode}
@@ -1279,6 +1279,7 @@ and the derived files           dramatist.ins,
 %    \begin{macrocode}
 \newenvironment{dramper}[1][]{%
   \DR@setvalues{dramatis}%
+  \setkeys*{dramatis}{#1}
   \DR@begin@dramperlist}{\DR@end@dramperlist}
 %    \end{macrocode}
 % \end{macro}
@@ -1663,7 +1664,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{modern.dst}
-                [2014/05/19 v1.99.2. `modern' style for `dramatist' package]
+                [2014/05/20 v1.99.2. `modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1771,7 +1772,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{classic.dst}
-                [2014/05/19 v1.99.2. `classic' style for `dramatist' package]
+                [2014/05/20 v1.99.2. `classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     speakerlabel=short,
@@ -1880,7 +1881,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{centered.dst}
-                [2014/05/19 v1.99.2. `centered' style for `dramatist' package]
+                [2014/05/20 v1.99.2. `centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
