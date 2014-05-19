@@ -1208,6 +1208,7 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{dramatis}{rolefont}{}
 \DR@define@key{c}{dramatis}{descfont}{}
 \DR@define@key{c}{dramatis}{actorfont}{}
+\DR@define@key{b}{dramatis}{empty}{true}
 %    \end{macrocode}
 % \begin{macro}{\DR@dramper@entry}
 %   This is how an entry in the automated character list is typeset.
@@ -1254,6 +1255,9 @@ and the derived files           dramatist.ins,
 }
 \newcommand\DR@end@dramperlist{%
   \end{list}
+  \ifDR@dramatis@empty
+    \global\setcounter{character}{0}
+  \fi
 }
 %    \end{macrocode}
 % \begin{macro}{\dodramperlist}
@@ -1567,6 +1571,7 @@ and the derived files           dramatist.ins,
   rolefont,
   descfont,
   actorfont,
+  empty,
 }
 \DR@setdefaults{stage}{
   leftmargin,
