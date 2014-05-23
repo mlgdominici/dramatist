@@ -88,7 +88,7 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dramatist}[2014/05/20 v1.99.2. Package for typesetting drama]
+\ProvidesPackage{dramatist}[2014/05/23 v1.99.2. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -114,7 +114,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{2250}
+% \CheckSum{2275}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -397,6 +397,7 @@ and the derived files           dramatist.ins,
 \def\actname{\GetTranslation{Act}}
 \def\scenename{\GetTranslation{Scene}}
 \def\drampername{\GetTranslation{Personae}}
+\def\curtainname{\GetTranslation{Curtain}}
 %    \end{macrocode}
 % Some useful counters.
 %    \begin{macrocode}
@@ -1440,6 +1441,20 @@ and the derived files           dramatist.ins,
 }
 %    \end{macrocode}
 % \end{macro}
+% \begin{macro}{\curtain}
+%   At the and of an act (display).
+%    \begin{macrocode}
+\newcommand\curtain{%
+  {
+    \DR@setvalues{settings}
+    \setkeys{stage}{font=\scshape,justification=\centering}
+    \DR@stage@display
+    \curtainname
+    \endDR@stage@display
+  }
+}
+%    \end{macrocode}
+% \end{macro}
 % \begin{macro}{\delivery}
 %   Short notes inside a single speech. Inline (the only one so far).
 %    \begin{macrocode}
@@ -1455,22 +1470,22 @@ and the derived files           dramatist.ins,
 % \subsection{Localization}
 % Keys for localization.
 %    \begin{macrocode}
-\DR@define@key{c}{language}{act}{}
-\DR@define@key{c}{language}{scene}{}
-\DR@define@key{c}{language}{personae}{}
+\DR@define@key{c}{language}{act}{\GetTranslationFor{fallback}{Act}}
+\DR@define@key{c}{language}{scene}{\GetTranslationFor{fallback}{Scene}}
+\DR@define@key{c}{language}{personae}{\GetTranslationFor{fallback}{Personae}}
+\DR@define@key{c}{language}{curtain}{\GetTranslationFor{fallback}{Curtain}}
 %    \end{macrocode}
 % We define `captions' for five languages.
 %    \begin{macrocode}
 \DeclareTranslationFallback{Act}{Act}
 \DeclareTranslationFallback{Scene}{Scene}
 \DeclareTranslationFallback{Personae}{Dramatis Person\ae}
+\DeclareTranslationFallback{Curtain}{Curtain}
 \DeclareTranslation{Italian}{Act}{Atto}
 \DeclareTranslation{Spanish}{Act}{Acto}
 \DeclareTranslation{English}{Act}{Act}
 \DeclareTranslation{French} {Act}{Acte}
 \DeclareTranslation{German} {Act}{Akt}
-\DeclareTranslation{Italian}{Act}{Atto}
-\DeclareTranslation{Spanish}{Act}{Acto}
 \DeclareTranslation{English}{Scene}{Scene}
 \DeclareTranslation{French} {Scene}{Sc\`ene}
 \DeclareTranslation{German} {Scene}{Szene}
@@ -1481,6 +1496,11 @@ and the derived files           dramatist.ins,
 \DeclareTranslation{German} {Personae}{Personen}
 \DeclareTranslation{Italian}{Personae}{Personaggi}
 \DeclareTranslation{Spanish}{Personae}{Personajes}
+\DeclareTranslation{Italian}{Curtain}{Sipario}
+\DeclareTranslation{Spanish}{Curtain}{Tel\'on}
+\DeclareTranslation{English}{Curtain}{Curtain}
+\DeclareTranslation{French} {Curtain}{Rideau}
+\DeclareTranslation{German} {Curtain}{Vorhang}
 %    \end{macrocode}
 % \begin{macro}{\DRSetupLanguage}
 % A key-value interface for translations.
@@ -1490,6 +1510,7 @@ and the derived files           dramatist.ins,
   \DeclareTranslation{#1}{Act}{\DR@language@act}
   \DeclareTranslation{#1}{Scene}{\DR@language@scene}
   \DeclareTranslation{#1}{Personae}{\DR@language@personae}
+  \DeclareTranslation{#1}{Curtain}{\DR@language@curtain}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1593,6 +1614,7 @@ and the derived files           dramatist.ins,
   act,
   scene,
   personae,
+  curtain
 }
 \newcommand\DRresetdefaults{%
   \def\setup@drama{\DR@drama@defaults}
@@ -1664,7 +1686,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{modern.dst}
-                [2014/05/20 v1.99.2. `modern' style for `dramatist' package]
+                [2014/05/23 v1.99.2. `modern' style for `dramatist' package]
 \NewStyle{modern}{%
   \DRSetup{drama}{drama}{
     leftmargin=1.5em,
@@ -1772,7 +1794,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{classic.dst}
-                [2014/05/20 v1.99.2. `classic' style for `dramatist' package]
+                [2014/05/23 v1.99.2. `classic' style for `dramatist' package]
 \NewStyle{classic}{%
   \DRSetup{drama}{drama}{
     speakerlabel=short,
@@ -1881,7 +1903,7 @@ and the derived files           dramatist.ins,
 %    \end{macrocode}
 %    \begin{macrocode}
 \ProvidesFile{centered.dst}
-                [2014/05/20 v1.99.2. `centered' style for `dramatist' package]
+                [2014/05/23 v1.99.2. `centered' style for `dramatist' package]
 \NewStyle{centered}{%
   \DRSetup{drama}{drama}{
     speakerlabel=centered,
