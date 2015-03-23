@@ -114,7 +114,7 @@ and the derived files           dramatist.ins,
 %</driver>
 % \fi
 %
-% \CheckSum{2274}
+% \CheckSum{0}
 % \CharacterTable%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
 %   Digits        \0\1\2\3\4\5\6\7\8\9
@@ -365,7 +365,10 @@ and the derived files           dramatist.ins,
 \newif\if@DRverse
 \newif\if@DRmemoir
 \newif\if@DR@broken@verse
-\newif\if@firstdirection
+\newif\if@DRfirstdirection
+\newif\if@DRafterstage
+\newif\if@DRdrama
+\newcount\DR@drama@env
 %    \end{macrocode}
 % We also need to save the original meaning of |\@roman| and |\roman|
 % since \pkgname{spanish.ldf} fiddles with it. (Really?)
@@ -468,6 +471,8 @@ and the derived files           dramatist.ins,
 }{\PackageWarning{dramatist}{Invalid input for key `speakerlabel' in family `drama'}}
 \DR@define@key{c}{drama}{font}{}
 \DR@define@key{c}{drama}{postitem}{}
+\DR@define@key{c}{drama}{prehook}{}
+\DR@define@key{c}{drama}{posthook}{}
 \define@cmdkey{drama}[DR@drama@]{largest}{\global\settowidth\DR@drama@largestwidth{\DR@speaker{\DR@drama@largest}}}
 \newlength\DR@drama@largestwidth
 %    \end{macrocode}
@@ -482,9 +487,11 @@ and the derived files           dramatist.ins,
 %   by a dedicated package like \pkgname{lineno}.
 %    \begin{macrocode}
 \newenvironment{DR@drama@prose}{%
-  \@firstdirectiontrue
-  \let\DR@pidefault\DR@drama@postitem
+  \DR@drama@env=1%
+  \@DRfirstdirectiontrue%
+  \let\DR@pidefault\DR@drama@postitem%
   \DR@linenumberwarning%
+  \DR@drama@prehook%
     \list{}{%
       \leftmargin\DR@drama@leftmargin%
       \rightmargin\DR@drama@rightmargin%
@@ -496,12 +503,13 @@ and the derived files           dramatist.ins,
       \labelsep\DR@drama@labelsep%
       \topsep\DR@drama@topsep%
       \partopsep\DR@drama@partopsep%
-      \setlength\DR@saved@leftmargin{\leftmargin}
+      \setlength\DR@saved@leftmargin{\leftmargin}%
     }%
     \DR@drama@font%
-    \vspace{-\baselineskip}%
-    \item\relax
-    }{\endlist}
+    }{%
+      \endlist
+      \DR@drama@posthook%
+    }
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{drama}
@@ -511,8 +519,8 @@ and the derived files           dramatist.ins,
 %   argument, local ones.
 %    \begin{macrocode}
 \newenvironment{drama}[1][]{%
-  \DR@setvalues{drama}
-  \setkeys{drama}{#1}
+  \DR@setvalues{drama}%
+  \setkeys{drama}{#1}%
   \DR@drama@prose}{\endDR@drama@prose}
 %    \end{macrocode}
 % \end{macro}
@@ -595,7 +603,8 @@ and the derived files           dramatist.ins,
 %   counter.
 %    \begin{macrocode}
 \newenvironment{DR@drama@verse}{%
-  \@firstdirectiontrue
+  \@DRfirstdirectiontrue
+  \DR@drama@env=2
   \let\DR@pidefault\DR@drama@postitem%
   \let\@listi\DR@listi
   \def\@trivlist{\DR@appendparameters\DR@trivlist}
@@ -624,7 +633,7 @@ and the derived files           dramatist.ins,
     \begin{verse}
   \fi
   \DR@drama@font%
-  \vspace{-\baselineskip}%
+  \DR@drama@prehook
 }{%
   \if@DRpoemscol
     \end{poem}
@@ -634,6 +643,7 @@ and the derived files           dramatist.ins,
       \let\brokenline\DR@orig@brokenline
     \fi
   \else
+  \DR@drama@posthook
     \end{verse}
     \if@DRverse
       \ifDR@drama@alignbv
@@ -1005,6 +1015,8 @@ and the derived files           dramatist.ins,
 %   speeches.
 %    \begin{macrocode}
 \newcommand\DR@speaker[1]{%
+  \global\@DRfirstdirectionfalse
+  \global\@DRafterstagefalse
   \DR@setvalues{speaker}%
   \DR@speaker@prelabel%
   \DR@speaker@font\DR@speaker@case{#1}\DR@speaker@del
@@ -1400,6 +1412,9 @@ and the derived files           dramatist.ins,
 %    \begin{macrocode}
 \newcommand\settings[2][]{%
   {
+    \if@DRfirstdirection
+      \item[]
+    \fi
     \DR@setvalues{settings}
     \setkeys{stage}{#1}
     \DR@stage@display#2
@@ -1429,14 +1444,19 @@ and the derived files           dramatist.ins,
   {%
     \DR@setvalues{direction}
     \setkeys{stage}{#1}
-    \if@firstdirection
+    \if@DRafterstage
       \vspace{-\DR@stage@topsep}%
+    \fi
+    \if@DRfirstdirection
+      \vspace{-\DR@drama@env\DR@stage@topsep}%
+      \item[]
       \hspace{\DR@saved@leftmargin}%
     \fi
     \goodbreak
     \DR@stage@display#2\nobreak%
     \endDR@stage@display
-    \global\@firstdirectionfalse
+    \global\@DRfirstdirectionfalse
+    \global\@DRafterstagetrue
   }%
 }
 %    \end{macrocode}
@@ -1534,6 +1554,8 @@ and the derived files           dramatist.ins,
   speakerlabel,
   font,
   postitem,
+  prehook,
+  posthook,
 }
 \DR@setdefaults{sections}{
   name,
