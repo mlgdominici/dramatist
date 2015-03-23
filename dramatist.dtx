@@ -808,6 +808,7 @@ and the derived files           dramatist.ins,
 \DR@define@key{c}{sections}{pagebreak}{}
 \DR@define@key{c}{sections}{justification}{}
 \DR@define@key{c}{sections}{counterformat}{\arabic}
+\define@key{sections}{counterwithin}[]{\DR@addtoreset{\DR@counter@sectionname}{#1}}
 \DR@define@key{l}{sections}{beforeskip}{0pt}
 \DR@define@key{l}{sections}{afterskip}{0pt}
 %    \end{macrocode}
@@ -920,6 +921,13 @@ and the derived files           dramatist.ins,
 %   |\arabic|.)
 %    \begin{macrocode}
 \let\SuppressNumber\@gobble
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\DR@addtoreset}
+%    \begin{macrocode}
+\newcommand\DR@addtoreset[2]{%
+  \if#2\relax\else\@addtoreset{#1}{#2}\fi
+}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\DefineNewHead}
@@ -1569,6 +1577,7 @@ and the derived files           dramatist.ins,
   titlecase,
   titlefont,
   counterformat,
+  counterwithin,
   level,
   contentsline,
   markline,
@@ -1750,6 +1759,7 @@ and the derived files           dramatist.ins,
     titlefont=\scshape,
     justification=\centering,
     counterformat=\Roman,
+    counterwithin=act,
     level=\@ifundefined{chapter}{subsection}{section},
     mark=right,
     beforeskip=2\baselineskip,
@@ -1858,6 +1868,7 @@ and the derived files           dramatist.ins,
     titlefont=\scshape,
     justification=\centering,
     counterformat=\Roman,
+    counterwithin=act,
     level=\@ifundefined{chapter}{subsection}{section},
     mark=right,
     beforeskip=2\baselineskip,
@@ -1965,6 +1976,7 @@ and the derived files           dramatist.ins,
     titlefont=\scshape,
     justification=\centering,
     counterformat=\Roman,
+    counterwithin=act,
     level=\@ifundefined{chapter}{subsection}{section},
     mark=right,
     beforeskip=2\baselineskip,
