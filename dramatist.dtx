@@ -88,7 +88,7 @@ and the derived files           dramatist.ins,
 %</internal>
 %<*package>
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dramatist}[2014/05/23 v1.99.2. Package for typesetting drama]
+\ProvidesPackage{dramatist}[2015/12/30 v1.99.2. Package for typesetting drama]
 %</package>
 %<*driver>
 \documentclass{ltxdoc}
@@ -489,6 +489,7 @@ and the derived files           dramatist.ins,
 \newenvironment{DR@drama@prose}{%
   \DR@drama@env=1%
   \@DRfirstdirectiontrue%
+  \global\@DRafterstagetrue%
   \let\DR@pidefault\DR@drama@postitem%
   \DR@linenumberwarning%
   \DR@drama@prehook%
@@ -603,8 +604,9 @@ and the derived files           dramatist.ins,
 %   counter.
 %    \begin{macrocode}
 \newenvironment{DR@drama@verse}{%
-  \@DRfirstdirectiontrue
   \DR@drama@env=2
+  \@DRfirstdirectiontrue%
+  \global\@DRafterstagetrue%
   \let\DR@pidefault\DR@drama@postitem%
   \let\@listi\DR@listi
   \def\@trivlist{\DR@appendparameters\DR@trivlist}
@@ -1464,7 +1466,7 @@ and the derived files           dramatist.ins,
     \DR@stage@display#2\nobreak%
     \endDR@stage@display
     \global\@DRfirstdirectionfalse
-    \global\@DRafterstagetrue
+    \global\@DRafterstagefalse
   }%
 }
 %    \end{macrocode}
