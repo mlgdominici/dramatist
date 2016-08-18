@@ -1370,8 +1370,8 @@ and the derived files           dramatist.ins,
 %   directions. It's a list environment as almost everything, here.
 %    \begin{macrocode}
 \newenvironment{DR@stage@display}{%
-  \DR@stage@prehook
-  \let\@trivlist\DR@trivlist
+  \DR@stage@prehook%
+  \let\@trivlist\DR@trivlist%
   \list{}{%
     \leftmargin\dimexpr-\DR@saved@leftmargin+\DR@stage@leftmargin\relax%
     \rightmargin\DR@stage@rightmargin%
@@ -1382,10 +1382,10 @@ and the derived files           dramatist.ins,
     \labelwidth\z@%
     \labelsep\z@%
     \itemindent\DR@stage@indent%
-  }
+  }%
   \DR@stage@justification%
   \DR@stage@font%
-  \item[]
+  \item[]%
   \DR@stage@leftdelimiter}{%
   \DR@stage@rightdelimiter%
   \endlist
