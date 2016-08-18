@@ -896,7 +896,7 @@ and the derived files           dramatist.ins,
 %   \emph{Second}, etc.) instead of an actual number.
 %    \begin{macrocode}
 \def\DR@sections@printnumber{%
-  {\DR@sections@numfont\csname the\DR@counter@sectionname\endcsname}%
+  {\DR@sections@numfont\DR@sections@namecase{\csname the\DR@counter@sectionname\endcsname}}%
 }
 %    \end{macrocode}
 % \end{macro}
